@@ -538,7 +538,7 @@ with PdfPages(PDF_PATH) as pdf:
     section_title(fig, '6. Correlation Matrix Analysis', 0.90)
 
     gs = gridspec.GridSpec(2, 3, figure=fig,
-                           top=0.855, bottom=0.06,
+                           top=0.855, bottom=0.14,
                            left=0.05, right=0.97,
                            wspace=0.32, hspace=0.42)
 
@@ -591,7 +591,7 @@ with PdfPages(PDF_PATH) as pdf:
         "LiquidBees is essentially uncorrelated to all other assets, acting as a pure cash proxy. "
         "JuniorBees (mid-cap tilt) is highly correlated with NiftyBees but captures the size-premium factor."
     )
-    y_note = 0.082
+    y_note = 0.115
     fig.text(0.04, y_note, '📌 Correlation Insights:', fontsize=8.5, fontweight='bold', color=BLUE, va='top')
     for line in textwrap.wrap(corr_text, width=160):
         y_note -= 0.020
@@ -606,7 +606,7 @@ with PdfPages(PDF_PATH) as pdf:
     section_title(fig, f'7. Efficient Frontier — {N_MC:,} Monte Carlo Portfolios', 0.90)
 
     gs5 = gridspec.GridSpec(1, 2, figure=fig,
-                            top=0.850, bottom=0.140,
+                            top=0.850, bottom=0.190,
                             left=0.05, right=0.97,
                             wspace=0.30)
 
@@ -614,7 +614,7 @@ with PdfPages(PDF_PATH) as pdf:
     axEF = fig.add_subplot(gs5[0, 0])
     sc   = axEF.scatter(mc_v*100, mc_r*100, c=mc_sr, cmap='RdYlGn',
                         alpha=0.35, s=2, zorder=1)
-    cb   = plt.colorbar(sc, ax=axEF, pad=0.02, fraction=0.04)
+    cb   = plt.colorbar(sc, ax=axEF, pad=0.06, fraction=0.04)
     cb.set_label('Sharpe Ratio', fontsize=8)
     cb.ax.tick_params(labelsize=7)
 
@@ -689,7 +689,7 @@ with PdfPages(PDF_PATH) as pdf:
     bx_w = 0.27; bx_h = 0.085
     for bi,(btitle,blines) in enumerate(ef_stats):
         bx = 0.05 + bi*(bx_w+0.025)
-        info_box(fig, bx, 0.06, bx_w, bx_h, btitle, blines)
+        info_box(fig, bx, 0.045, bx_w, bx_h, btitle, blines)
 
     pdf.savefig(fig, dpi=180, bbox_inches='tight', facecolor=WH); plt.close(fig)
 
