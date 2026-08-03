@@ -379,10 +379,14 @@ with PdfPages(PDF_PATH) as pdf:
 
     # Wrap text
     y_txt = 0.855
-    wrapped = textwrap.wrap(summary_text, width=175)
-    for line in wrapped:
-        fig.text(0.04, y_txt, line, fontsize=9, color=DARK, va='top')
-        y_txt -= 0.022
+    for paragraph in summary_text.split('\n'):
+        if not paragraph.strip(): 
+            y_txt -= 0.010
+            continue
+        wrapped = textwrap.wrap(paragraph, width=175)
+        for line in wrapped:
+            fig.text(0.04, y_txt, line, fontsize=9, color=DARK, va='top')
+            y_txt -= 0.022
 
     section_title(fig, '2. Key Findings at a Glance', y_txt - 0.015)
     y_txt -= 0.065
@@ -941,14 +945,14 @@ with PdfPages(PDF_PATH) as pdf:
     y_c = 0.856
     for title, body in conclusion_paras:
         fig.text(0.04, y_c, f'▸  {title}', fontsize=9.5, fontweight='bold', color=BLUE, va='top')
-        y_c -= 0.024
-        for line in textwrap.wrap(body, width=172):
+        y_c -= 0.022
+        for line in textwrap.wrap(body, width=180):
             fig.text(0.055, y_c, line, fontsize=8.8, color=DARK, va='top')
-            y_c -= 0.020
-        y_c -= 0.012
+            y_c -= 0.018
+        y_c -= 0.010
 
     section_title(fig, '13. Methodology Summary', y_c - 0.005)
-    y_c -= 0.050
+    y_c -= 0.045
 
     method_items = [
         '• Data: Daily adjusted closing prices from Yahoo Finance via yfinance 1.5.1',
