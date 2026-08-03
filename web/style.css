@@ -307,3 +307,32 @@ footer {
   .hero-actions { flex-direction: column; }
   .methodology-content { padding: 2rem; }
 }
+
+/* Live Price Cards */
+.price-card {
+  text-align: center;
+  padding: 1.5rem;
+}
+.price-card h3 {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+.price-card .ticker {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 1rem;
+}
+.price-value {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+.price-change {
+  font-weight: 600;
+  font-size: 1rem;
+}
+.price-up { color: var(--accent-green); }
+.price-down { color: #ef4444; }
+.price-neutral { color: var(--text-secondary); }
