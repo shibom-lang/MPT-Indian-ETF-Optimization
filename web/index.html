@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian ETF Portfolio Optimization</title>
+    <meta name="description" content="Modern Portfolio Theory applied to NSE-listed ETFs using Monte Carlo simulations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <header>
+        <div class="container header-container">
+            <div class="logo">ETF Optima</div>
+            <nav>
+                <a href="#methodology">Methodology</a>
+                <a href="#results">Key Findings</a>
+                <a href="#report" class="nav-cta">View Report</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-content">
+                <div class="badge">NISM RA Series 15 Project</div>
+                <h1>Indian ETF Portfolio Optimization</h1>
+                <p class="subtitle">A robust implementation of Modern Portfolio Theory using 10,000 Monte Carlo simulations to find the optimal allocation across 5 major NSE-listed ETFs.</p>
+                <div class="hero-actions">
+                    <a href="#results" class="btn btn-primary">Explore Findings</a>
+                    <a href="/MPT_Indian_ETF_Detailed_Report.pdf" target="_blank" class="btn btn-secondary">Download PDF Report</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="results" class="results-section">
+            <div class="container">
+                <h2>Optimal Portfolio Configurations</h2>
+                <p class="section-desc">Comparing strategic allocations against a naive equal-weight benchmark.</p>
+                
+                <div class="cards-grid">
+                    <div class="glass-card premium-card">
+                        <div class="card-header">
+                            <span class="icon">⭐</span>
+                            <h3>Max Sharpe</h3>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric"><span class="label">Expected Return</span><span class="value text-green">17.22%</span></div>
+                            <div class="metric"><span class="label">Volatility</span><span class="value">12.08%</span></div>
+                            <div class="metric"><span class="label">Sharpe Ratio</span><span class="value text-gold">0.8626</span></div>
+                        </div>
+                        <div class="allocation">
+                            <h4>Allocation</h4>
+                            <ul>
+                                <li><span>GoldBees</span> <span>45.0%</span></li>
+                                <li><span>JuniorBees</span> <span>33.4%</span></li>
+                                <li><span>NiftyBees</span> <span>21.6%</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <span class="icon">🛡️</span>
+                            <h3>Min Volatility</h3>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric"><span class="label">Expected Return</span><span class="value">10.66%</span></div>
+                            <div class="metric"><span class="label">Volatility</span><span class="value text-blue">6.51%</span></div>
+                            <div class="metric"><span class="label">Sharpe Ratio</span><span class="value">0.5930</span></div>
+                        </div>
+                        <div class="allocation">
+                            <h4>Allocation</h4>
+                            <ul>
+                                <li><span>LiquidBees</span> <span>45.0%</span></li>
+                                <li><span>GoldBees</span> <span>42.1%</span></li>
+                                <li><span>NiftyBees</span> <span>12.9%</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <span class="icon">⚖️</span>
+                            <h3>Equal Weight</h3>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric"><span class="label">Expected Return</span><span class="value">12.28%</span></div>
+                            <div class="metric"><span class="label">Volatility</span><span class="value">9.66%</span></div>
+                            <div class="metric"><span class="label">Sharpe Ratio</span><span class="value">0.5672</span></div>
+                        </div>
+                        <div class="allocation">
+                            <h4>Allocation</h4>
+                            <p class="naive-text">Naive 20% allocation across all 5 assets.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="methodology" class="methodology-section">
+            <div class="container">
+                <div class="methodology-content glass-card">
+                    <h2>The Strategic Takeaway</h2>
+                    <p>The data clearly proves the flaw of naive equal-weighting. By utilizing the lack of correlation between broad equities (like Nifty 50 and Nifty Next 50) and physical Gold ETFs, the optimized model significantly improves risk-adjusted returns (alpha).</p>
+                    <ul class="key-points">
+                        <li><strong>Data:</strong> 1,875 trading days (2019-2026)</li>
+                        <li><strong>Optimization:</strong> SLSQP via SciPy</li>
+                        <li><strong>Constraints:</strong> 45% maximum weight cap per asset to enforce realistic diversification</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="report" class="cta-section">
+            <div class="container text-center">
+                <h2>Ready to Dive Deeper?</h2>
+                <p class="section-desc">Read the comprehensive 10-page institutional-grade report featuring detailed correlation matrices, return distributions, and actionable insights.</p>
+                <a href="/MPT_Indian_ETF_Detailed_Report.pdf" target="_blank" class="btn btn-primary glowing-btn">Read Full Report</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container text-center">
+            <p>© 2026 ETF Optima. Built for NISM RA Series 15.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="/main.js"></script>
+</body>
+</html>
