@@ -1,5 +1,8 @@
 # Indian ETF Portfolio Optimization (MPT)
 
+🚀 **Live Demo & Dashboard:** [https://web-six-zeta-72.vercel.app](https://web-six-zeta-72.vercel.app)  
+*(Features live ETF prices and on-demand dynamic PDF report generation using a Vercel Serverless Python API)*
+
 An automated portfolio optimization model in Python using live market data (2019–2026) for 5 major NSE-listed ETFs to construct institutional-grade asset allocation strategies. This project was built as part of preparation for the NISM Research Analyst (RA Series 15) exam.
 
 ## Key Technical Highlights
