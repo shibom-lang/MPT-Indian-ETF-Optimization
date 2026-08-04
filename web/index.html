@@ -3,148 +3,568 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indian ETF Portfolio Optimization</title>
-    <meta name="description" content="Modern Portfolio Theory applied to NSE-listed ETFs using Monte Carlo simulations.">
+    <title>ETF Optima — Indian ETF Portfolio Optimizer</title>
+    <meta name="description" content="See exactly how to split your money across 5 NSE ETFs using Modern Portfolio Theory. Live prices, instant calculator, free PDF report.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+
     <div class="background-effects">
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
     </div>
 
+    <!-- HEADER -->
     <header>
         <div class="container header-container">
             <div class="logo">ETF Optima</div>
             <nav>
-                <a href="#methodology">Methodology</a>
-                <a href="#results">Key Findings</a>
-                <a href="#report" class="nav-cta">View Report</a>
+                <a href="#live-market">Live Prices</a>
+                <a href="#calculator">Calculator</a>
+                <a href="#results">Results</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#report-section" class="nav-cta">📄 Get Report</a>
             </nav>
         </div>
     </header>
 
     <main>
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- HERO -->
+        <!-- ═══════════════════════════════════════════════════════ -->
         <section class="hero">
             <div class="container hero-content">
-                <div class="badge">NISM RA Series 15 Project</div>
-                <h1>Indian ETF Portfolio Optimization</h1>
-                <p class="subtitle">A robust implementation of Modern Portfolio Theory using 10,000 Monte Carlo simulations to find the optimal allocation across 5 major NSE-listed ETFs.</p>
+                <div class="badge">NISM RA Series 15 Research Project</div>
+                <h1>Smarter ETF Investing<br>for Every Indian</h1>
+                <p class="subtitle">
+                    We use advanced math (Modern Portfolio Theory) to find the <strong>best way to split your money</strong>
+                    across 5 major NSE-listed ETFs — so you get the highest returns for the lowest risk.
+                </p>
                 <div class="hero-actions">
-                    <a href="#results" class="btn btn-primary">Explore Findings</a>
-                    <a href="/api/generate" target="_blank" class="btn btn-secondary">Generate Live Report</a>
+                    <a href="#calculator" class="btn btn-primary">💰 Try the Calculator</a>
+                    <a href="#how-it-works" class="btn btn-secondary">How Does It Work?</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="stat-val">7+ Years</span>
+                        <span class="stat-label">of Market Data</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-val">10,000</span>
+                        <span class="stat-label">Simulations Run</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-val">52%</span>
+                        <span class="stat-label">Better Sharpe vs Equal Weight</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- LIVE MARKET DASHBOARD -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- LIVE MARKET PRICES -->
+        <!-- ═══════════════════════════════════════════════════════ -->
         <section id="live-market" class="live-market-section">
             <div class="container">
-                <h2>Live Market Prices</h2>
-                <p class="section-desc">Real-time data fetched directly from the markets.</p>
-                <div id="price-grid" class="cards-grid">
-                    <p class="text-center" style="grid-column: 1 / -1;">Loading live data...</p>
+                <h2>📡 Live Market Prices</h2>
+                <p class="section-desc">Real-time NSE ETF prices fetched directly from the market.</p>
+                <div id="price-grid" class="price-grid-layout">
+                    <div class="price-skeleton"></div>
+                    <div class="price-skeleton"></div>
+                    <div class="price-skeleton"></div>
+                    <div class="price-skeleton"></div>
+                    <div class="price-skeleton"></div>
+                </div>
+                <p class="price-disclaimer">⏱ Prices may be delayed by 15–30 minutes. Source: Yahoo Finance via NSE.</p>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- HOW IT WORKS — PUBLIC FRIENDLY -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <section id="how-it-works" class="how-section">
+            <div class="container">
+                <h2>🧠 How Are These Numbers Calculated?</h2>
+                <p class="section-desc">No jargon. Here's the simple version of what happens behind the scenes.</p>
+
+                <div class="steps-grid">
+                    <div class="step-card glass-card">
+                        <div class="step-num">1</div>
+                        <h3>Collect 7 Years of Price Data</h3>
+                        <p>We download daily closing prices for all 5 ETFs from January 2019 to today — that's over <strong>1,875 trading days</strong> of real market data from NSE via Yahoo Finance.</p>
+                    </div>
+                    <div class="step-card glass-card">
+                        <div class="step-num">2</div>
+                        <h3>Calculate Returns & Risk</h3>
+                        <p>For each ETF, we compute the <strong>annual return</strong> (how much it grew per year) and <strong>volatility</strong> (how wildly the price swings). Lower volatility = smoother, less scary ride.</p>
+                    </div>
+                    <div class="step-card glass-card">
+                        <div class="step-num">3</div>
+                        <h3>Find Which Funds Move Together</h3>
+                        <p>Using a <strong>correlation matrix</strong>, we check if funds move together. If two funds always go up and down at the same time, owning both is like doubling down on the same bet — no safety net.</p>
+                        <div class="insight-box">
+                            💡 <strong>Key finding:</strong> GoldBees moves opposite to equity ETFs — making it the perfect "shock absorber" in your portfolio.
+                        </div>
+                    </div>
+                    <div class="step-card glass-card">
+                        <div class="step-num">4</div>
+                        <h3>Run 10,000 Random Portfolios</h3>
+                        <p>We randomly try <strong>10,000 different combinations</strong> of how to split money across the 5 ETFs and plot them on a chart — this is called the <strong>Efficient Frontier</strong>. The best portfolios cluster along the top edge.</p>
+                    </div>
+                    <div class="step-card glass-card">
+                        <div class="step-num">5</div>
+                        <h3>Find the Mathematical Best</h3>
+                        <p>Using an algorithm called <strong>SLSQP optimization</strong>, we precisely find the one combination that gives you the <strong>highest return for every unit of risk taken</strong>. This "score" is called the <strong>Sharpe Ratio</strong>.</p>
+                    </div>
+                    <div class="step-card glass-card">
+                        <div class="step-num">6</div>
+                        <h3>The Result: Your Optimal Split</h3>
+                        <p>The math says: <strong>45% Gold, 33% Junior Nifty, 22% Nifty 50</strong> is the best mix. This achieves a <strong>17.22% expected annual return</strong> with controlled risk — far better than splitting equally.</p>
+                        <div class="insight-box insight-gold">
+                            🏆 Max Sharpe Ratio: <strong>0.8626</strong> vs Equal Weight: <strong>0.5672</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sharpe ratio explainer -->
+                <div class="explainer-card glass-card">
+                    <h3>📐 What is the Sharpe Ratio? (Simple explanation)</h3>
+                    <p>
+                        Imagine two roads to the same destination. Road A is fast but full of potholes (high risk). Road B is slightly slower but smooth (low risk).
+                        The <strong>Sharpe Ratio measures how smooth your ride is per kilometre of speed</strong>. A higher Sharpe ratio = better bang for your risk buck.
+                    </p>
+                    <div class="sharpe-visual">
+                        <div class="sharpe-bar">
+                            <span class="sharpe-label">Equal Weight (Naive)</span>
+                            <div class="bar-track">
+                                <div class="bar-fill bar-grey" style="width: 56.72%">0.567</div>
+                            </div>
+                        </div>
+                        <div class="sharpe-bar">
+                            <span class="sharpe-label">Min Volatility</span>
+                            <div class="bar-track">
+                                <div class="bar-fill bar-blue" style="width: 59.30%">0.593</div>
+                            </div>
+                        </div>
+                        <div class="sharpe-bar">
+                            <span class="sharpe-label">Max Sharpe (Optimal ⭐)</span>
+                            <div class="bar-track">
+                                <div class="bar-fill bar-gold" style="width: 86.26%">0.8626</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="sharpe-note">* Bar length = Sharpe Ratio. Longer = better risk-adjusted return.</p>
                 </div>
             </div>
         </section>
 
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- INVESTMENT CALCULATOR -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <section id="calculator" class="calculator-section">
+            <div class="container">
+                <h2>💰 How Should I Split My Money?</h2>
+                <p class="section-desc">Enter your investment amount and instantly see the exact rupee allocation for each strategy.</p>
+
+                <div class="calculator-wrapper glass-card">
+                    <div class="calc-input-area">
+                        <label for="invest-amount" class="calc-label">My Investment Amount</label>
+                        <div class="input-row">
+                            <span class="rupee-sign">₹</span>
+                            <input type="number" id="invest-amount" class="calc-input"
+                                   value="100000" min="1000" step="1000"
+                                   placeholder="Enter amount in ₹">
+                        </div>
+                        <div class="quick-amounts">
+                            <span class="qa-label">Quick select:</span>
+                            <button class="qa-btn" onclick="setAmount(10000)">₹10K</button>
+                            <button class="qa-btn" onclick="setAmount(50000)">₹50K</button>
+                            <button class="qa-btn" onclick="setAmount(100000)">₹1 Lakh</button>
+                            <button class="qa-btn" onclick="setAmount(500000)">₹5 Lakh</button>
+                            <button class="qa-btn" onclick="setAmount(1000000)">₹10 Lakh</button>
+                        </div>
+                    </div>
+
+                    <div class="strategy-tabs">
+                        <button class="tab-btn active" id="tab-maxsharpe" onclick="switchTab('maxsharpe')">⭐ Max Sharpe</button>
+                        <button class="tab-btn" id="tab-minvol" onclick="switchTab('minvol')">🛡️ Min Volatility</button>
+                        <button class="tab-btn" id="tab-equal" onclick="switchTab('equal')">⚖️ Equal Weight</button>
+                    </div>
+
+                    <!-- MAX SHARPE ALLOCATION -->
+                    <div id="alloc-maxsharpe" class="alloc-panel active">
+                        <div class="alloc-summary">
+                            <div class="alloc-metric">
+                                <span class="am-label">Expected Annual Return</span>
+                                <span class="am-val text-green">17.22%</span>
+                            </div>
+                            <div class="alloc-metric">
+                                <span class="am-label">Annual Volatility (Risk)</span>
+                                <span class="am-val">12.08%</span>
+                            </div>
+                            <div class="alloc-metric">
+                                <span class="am-label">Sharpe Ratio</span>
+                                <span class="am-val text-gold">0.8626</span>
+                            </div>
+                        </div>
+                        <div class="alloc-description">
+                            <p>🎯 <strong>Best for:</strong> Investors seeking the <strong>highest risk-adjusted returns</strong>. This portfolio combines Gold's stability with the growth engine of India's top mid and large-cap companies.</p>
+                        </div>
+                        <div class="alloc-bars" id="bars-maxsharpe">
+                            <!-- filled by JS -->
+                        </div>
+                        <div class="growth-projection">
+                            <h4>📈 Projected Growth of your investment</h4>
+                            <div class="projection-grid" id="proj-maxsharpe">
+                                <!-- filled by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MIN VOL ALLOCATION -->
+                    <div id="alloc-minvol" class="alloc-panel">
+                        <div class="alloc-summary">
+                            <div class="alloc-metric">
+                                <span class="am-label">Expected Annual Return</span>
+                                <span class="am-val text-green">10.66%</span>
+                            </div>
+                            <div class="alloc-metric">
+                                <span class="am-label">Annual Volatility (Risk)</span>
+                                <span class="am-val text-blue">6.51%</span>
+                            </div>
+                            <div class="alloc-metric">
+                                <span class="am-label">Sharpe Ratio</span>
+                                <span class="am-val">0.5930</span>
+                            </div>
+                        </div>
+                        <div class="alloc-description">
+                            <p>🛡️ <strong>Best for:</strong> <strong>Conservative investors or retirees</strong> who prioritise capital protection over aggressive growth. The large cash (LiquidBees) and Gold allocation keeps portfolio swings minimal.</p>
+                        </div>
+                        <div class="alloc-bars" id="bars-minvol">
+                            <!-- filled by JS -->
+                        </div>
+                        <div class="growth-projection">
+                            <h4>📈 Projected Growth of your investment</h4>
+                            <div class="projection-grid" id="proj-minvol">
+                                <!-- filled by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EQUAL WEIGHT ALLOCATION -->
+                    <div id="alloc-equal" class="alloc-panel">
+                        <div class="alloc-summary">
+                            <div class="alloc-metric">
+                                <span class="am-label">Expected Annual Return</span>
+                                <span class="am-val text-green">12.28%</span>
+                            </div>
+                            <div class="alloc-metric">
+                                <span class="am-label">Annual Volatility (Risk)</span>
+                                <span class="am-val">9.66%</span>
+                            </div>
+                            <div class="alloc-metric">
+                                <span class="am-label">Sharpe Ratio</span>
+                                <span class="am-val">0.5672</span>
+                            </div>
+                        </div>
+                        <div class="alloc-description">
+                            <p>⚖️ <strong>Best for:</strong> Beginners who want a <strong>simple, no-thought approach</strong>. Just put 20% in each ETF. It works, but the math shows it leaves significant alpha on the table compared to Max Sharpe.</p>
+                        </div>
+                        <div class="alloc-bars" id="bars-equal">
+                            <!-- filled by JS -->
+                        </div>
+                        <div class="growth-projection">
+                            <h4>📈 Projected Growth of your investment</h4>
+                            <div class="projection-grid" id="proj-equal">
+                                <!-- filled by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-disclaimer glass-card">
+                    ⚠️ <strong>Disclaimer:</strong> These projections are based on <em>historical data (2019–2026)</em> and the mathematical model.
+                    Past performance does not guarantee future results. Please consult a SEBI-registered financial advisor before investing.
+                    This tool is for <strong>educational purposes only</strong>.
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- PORTFOLIO RESULTS (DETAILED) -->
+        <!-- ═══════════════════════════════════════════════════════ -->
         <section id="results" class="results-section">
             <div class="container">
-                <h2>Optimal Portfolio Configurations</h2>
-                <p class="section-desc">Comparing strategic allocations against a naive equal-weight benchmark.</p>
-                
+                <h2>📊 Optimal Portfolio Configurations</h2>
+                <p class="section-desc">Comparing the three strategies against each other — from the math's perspective.</p>
+
                 <div class="cards-grid">
-                    <div class="glass-card premium-card">
+                    <!-- MAX SHARPE -->
+                    <div class="glass-card premium-card reveal">
                         <div class="card-header">
                             <span class="icon">⭐</span>
-                            <h3>Max Sharpe</h3>
+                            <div>
+                                <h3>Max Sharpe Portfolio</h3>
+                                <span class="card-badge badge-gold">Recommended for Growth</span>
+                            </div>
                         </div>
                         <div class="metrics">
-                            <div class="metric"><span class="label">Expected Return</span><span class="value text-green">17.22%</span></div>
-                            <div class="metric"><span class="label">Volatility</span><span class="value">12.08%</span></div>
-                            <div class="metric"><span class="label">Sharpe Ratio</span><span class="value text-gold">0.8626</span></div>
+                            <div class="metric">
+                                <span class="label">Expected Annual Return</span>
+                                <span class="value text-green">17.22%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Annual Volatility</span>
+                                <span class="value">12.08%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Sharpe Ratio</span>
+                                <span class="value text-gold">0.8626 🏆</span>
+                            </div>
                         </div>
                         <div class="allocation">
-                            <h4>Allocation</h4>
-                            <ul>
-                                <li><span>GoldBees</span> <span>45.0%</span></li>
-                                <li><span>JuniorBees</span> <span>33.4%</span></li>
-                                <li><span>NiftyBees</span> <span>21.6%</span></li>
-                            </ul>
+                            <h4>Allocation Breakdown</h4>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-gold"></span>GoldBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:45%; background:#fbbf24"></div></div><span>45.0%</span></div>
+                            </div>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-red"></span>JuniorBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:33.4%; background:#ef4444"></div></div><span>33.4%</span></div>
+                            </div>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-blue"></span>NiftyBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:21.6%; background:#60a5fa"></div></div><span>21.6%</span></div>
+                            </div>
+                            <div class="alloc-row zero-weight">
+                                <div class="alloc-info"><span class="dot dot-dim"></span>BankBees</div>
+                                <div class="alloc-right"><span class="zero-tag">0% — Excluded</span></div>
+                            </div>
+                            <div class="alloc-row zero-weight">
+                                <div class="alloc-info"><span class="dot dot-dim"></span>LiquidBees</div>
+                                <div class="alloc-right"><span class="zero-tag">0% — Excluded</span></div>
+                            </div>
+                        </div>
+                        <div class="card-insight">
+                            💡 <strong>Why is BankBees excluded?</strong> Bank stocks move almost identically to the Nifty 50. Adding both is like buying the same thing twice — no diversification benefit.
                         </div>
                     </div>
 
-                    <div class="glass-card">
+                    <!-- MIN VOLATILITY -->
+                    <div class="glass-card reveal">
                         <div class="card-header">
                             <span class="icon">🛡️</span>
-                            <h3>Min Volatility</h3>
+                            <div>
+                                <h3>Min Volatility Portfolio</h3>
+                                <span class="card-badge badge-blue">Best for Conservative Investors</span>
+                            </div>
                         </div>
                         <div class="metrics">
-                            <div class="metric"><span class="label">Expected Return</span><span class="value">10.66%</span></div>
-                            <div class="metric"><span class="label">Volatility</span><span class="value text-blue">6.51%</span></div>
-                            <div class="metric"><span class="label">Sharpe Ratio</span><span class="value">0.5930</span></div>
+                            <div class="metric">
+                                <span class="label">Expected Annual Return</span>
+                                <span class="value text-green">10.66%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Annual Volatility</span>
+                                <span class="value text-blue">6.51% (lowest)</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Sharpe Ratio</span>
+                                <span class="value">0.5930</span>
+                            </div>
                         </div>
                         <div class="allocation">
-                            <h4>Allocation</h4>
-                            <ul>
-                                <li><span>LiquidBees</span> <span>45.0%</span></li>
-                                <li><span>GoldBees</span> <span>42.1%</span></li>
-                                <li><span>NiftyBees</span> <span>12.9%</span></li>
+                            <h4>Allocation Breakdown</h4>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-purple"></span>LiquidBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:45%; background:#a78bfa"></div></div><span>45.0%</span></div>
+                            </div>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-gold"></span>GoldBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:42.1%; background:#fbbf24"></div></div><span>42.1%</span></div>
+                            </div>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-blue"></span>NiftyBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:12.9%; background:#60a5fa"></div></div><span>12.9%</span></div>
+                            </div>
+                            <div class="alloc-row zero-weight">
+                                <div class="alloc-info"><span class="dot dot-dim"></span>BankBees</div>
+                                <div class="alloc-right"><span class="zero-tag">~0% — Excluded</span></div>
+                            </div>
+                            <div class="alloc-row zero-weight">
+                                <div class="alloc-info"><span class="dot dot-dim"></span>JuniorBees</div>
+                                <div class="alloc-right"><span class="zero-tag">~0% — Excluded</span></div>
+                            </div>
+                        </div>
+                        <div class="card-insight">
+                            💡 LiquidBees behaves like a savings account — near zero risk. Paired with Gold, this portfolio is designed to protect your capital first.
+                        </div>
+                    </div>
+
+                    <!-- EQUAL WEIGHT -->
+                    <div class="glass-card reveal">
+                        <div class="card-header">
+                            <span class="icon">⚖️</span>
+                            <div>
+                                <h3>Equal Weight (Benchmark)</h3>
+                                <span class="card-badge badge-grey">Naive / Beginner Approach</span>
+                            </div>
+                        </div>
+                        <div class="metrics">
+                            <div class="metric">
+                                <span class="label">Expected Annual Return</span>
+                                <span class="value text-green">12.28%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Annual Volatility</span>
+                                <span class="value">9.66%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="label">Sharpe Ratio</span>
+                                <span class="value">0.5672</span>
+                            </div>
+                        </div>
+                        <div class="allocation">
+                            <h4>Allocation Breakdown</h4>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-blue"></span>NiftyBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:20%; background:#60a5fa"></div></div><span>20%</span></div>
+                            </div>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-red"></span>JuniorBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:20%; background:#ef4444"></div></div><span>20%</span></div>
+                            </div>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-yellow"></span>BankBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:20%; background:#f59e0b"></div></div><span>20%</span></div>
+                            </div>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-gold"></span>GoldBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:20%; background:#fbbf24"></div></div><span>20%</span></div>
+                            </div>
+                            <div class="alloc-row">
+                                <div class="alloc-info"><span class="dot dot-purple"></span>LiquidBees</div>
+                                <div class="alloc-right"><div class="mini-bar"><div class="mini-fill" style="width:20%; background:#a78bfa"></div></div><span>20%</span></div>
+                            </div>
+                        </div>
+                        <div class="card-insight insight-warn">
+                            ⚠️ Equal weighting ignores correlations entirely. BankBees + NiftyBees together means 40% in effectively the same thing. The math finds a much better balance.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- ETF UNIVERSE EXPLAINER -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <section id="etfs" class="etf-section">
+            <div class="container">
+                <h2>🏦 What Are These 5 ETFs?</h2>
+                <p class="section-desc">Understanding what you're actually investing in.</p>
+                <div class="etf-grid">
+                    <div class="etf-card glass-card reveal">
+                        <div class="etf-icon" style="background: linear-gradient(135deg,#1565C0,#42a5f5)">N50</div>
+                        <h3>NiftyBees</h3>
+                        <div class="etf-ticker">NIFTYBEES.NS</div>
+                        <p>Tracks India's <strong>top 50 large companies</strong> like Reliance, TCS, HDFC Bank. Owning this is like owning a tiny piece of India's 50 biggest businesses.</p>
+                        <div class="etf-tag tag-equity">Equity · Large Cap</div>
+                    </div>
+                    <div class="etf-card glass-card reveal">
+                        <div class="etf-icon" style="background: linear-gradient(135deg,#b71c1c,#ef5350)">N+50</div>
+                        <h3>JuniorBees</h3>
+                        <div class="etf-ticker">JUNIORBEES.NS</div>
+                        <p>Tracks the <strong>next 50 companies</strong> after the Nifty 50 — fast-growing mid-to-large companies with higher growth potential. Historically outperforms the Nifty 50.</p>
+                        <div class="etf-tag tag-equity">Equity · Mid-Large Cap</div>
+                    </div>
+                    <div class="etf-card glass-card reveal">
+                        <div class="etf-icon" style="background: linear-gradient(135deg,#e65100,#ff9800)">BNK</div>
+                        <h3>BankBees</h3>
+                        <div class="etf-ticker">BANKBEES.NS</div>
+                        <p>Tracks India's <strong>top 12 banking stocks</strong> like HDFC, ICICI, SBI. Moves very similarly to the Nifty 50, which is why the optimizer often excludes it.</p>
+                        <div class="etf-tag tag-equity">Equity · Banking Sector</div>
+                    </div>
+                    <div class="etf-card glass-card reveal">
+                        <div class="etf-icon" style="background: linear-gradient(135deg,#827717,#ffd600)">GOLD</div>
+                        <h3>GoldBees</h3>
+                        <div class="etf-ticker">GOLDBEES.NS</div>
+                        <p>Backed by <strong>physical gold stored in vaults</strong>. When stock markets fall, gold often rises — making it the best diversifier. No storage hassle, no purity worries.</p>
+                        <div class="etf-tag tag-commodity">Commodity · Gold</div>
+                    </div>
+                    <div class="etf-card glass-card reveal">
+                        <div class="etf-icon" style="background: linear-gradient(135deg,#1b5e20,#66bb6a)">LIQ</div>
+                        <h3>LiquidBees</h3>
+                        <div class="etf-ticker">LIQUIDBEES.NS</div>
+                        <p>Like a <strong>super-liquid savings account</strong> that earns overnight interest rates (~6-7% p.a.). Near-zero risk. Used to park money safely while staying invested in markets.</p>
+                        <div class="etf-tag tag-fixed">Fixed Income · Liquid</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <!-- REPORT SECTION — SINGLE CTA -->
+        <!-- ═══════════════════════════════════════════════════════ -->
+        <section id="report-section" class="report-section">
+            <div class="container">
+                <div class="report-card glass-card">
+                    <div class="report-content">
+                        <div class="report-icon">📄</div>
+                        <div>
+                            <h2>Get the Full 10-Page Institutional Report</h2>
+                            <p>Includes Efficient Frontier charts, correlation matrix, return distributions, drawdown analysis, and actionable investment insights — all generated fresh with <strong>live market data</strong>.</p>
+                            <ul class="report-features">
+                                <li>✅ Correlation heatmap of all 5 ETFs</li>
+                                <li>✅ Efficient Frontier with Capital Market Line</li>
+                                <li>✅ Rolling 12-month return & volatility charts</li>
+                                <li>✅ Portfolio drawdown analysis (underwater chart)</li>
+                                <li>✅ Complete methodology & glossary</li>
                             </ul>
                         </div>
                     </div>
-
-                    <div class="glass-card">
-                        <div class="card-header">
-                            <span class="icon">⚖️</span>
-                            <h3>Equal Weight</h3>
-                        </div>
-                        <div class="metrics">
-                            <div class="metric"><span class="label">Expected Return</span><span class="value">12.28%</span></div>
-                            <div class="metric"><span class="label">Volatility</span><span class="value">9.66%</span></div>
-                            <div class="metric"><span class="label">Sharpe Ratio</span><span class="value">0.5672</span></div>
-                        </div>
-                        <div class="allocation">
-                            <h4>Allocation</h4>
-                            <p class="naive-text">Naive 20% allocation across all 5 assets.</p>
+                    <div class="report-cta">
+                        <a id="generate-btn" href="/api/generate" target="_blank" class="btn btn-primary glowing-btn" onclick="showGenerating(event)">
+                            🚀 Generate My Live Report (PDF)
+                        </a>
+                        <p class="report-note">⏱ Report generation takes ~30–60 seconds — it downloads live data and runs the full optimization in real time.</p>
+                        <div id="generating-msg" class="generating-msg" style="display:none">
+                            <div class="spinner"></div>
+                            <span>Running analysis with live market data… this may take up to 60 seconds.</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <section id="methodology" class="methodology-section">
-            <div class="container">
-                <div class="methodology-content glass-card">
-                    <h2>The Strategic Takeaway</h2>
-                    <p>The data clearly proves the flaw of naive equal-weighting. By utilizing the lack of correlation between broad equities (like Nifty 50 and Nifty Next 50) and physical Gold ETFs, the optimized model significantly improves risk-adjusted returns (alpha).</p>
-                    <ul class="key-points">
-                        <li><strong>Data:</strong> 1,875 trading days (2019-2026)</li>
-                        <li><strong>Optimization:</strong> SLSQP via SciPy</li>
-                        <li><strong>Constraints:</strong> 45% maximum weight cap per asset to enforce realistic diversification</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section id="report" class="cta-section">
-            <div class="container text-center">
-                <h2>Ready to Dive Deeper?</h2>
-                <p class="section-desc">Read the comprehensive 10-page institutional-grade report featuring detailed correlation matrices, return distributions, and actionable insights.</p>
-                <a href="/api/generate" target="_blank" class="btn btn-primary glowing-btn">Generate Fresh Live Report</a>
             </div>
         </section>
     </main>
 
+    <!-- FOOTER -->
     <footer>
-        <div class="container text-center">
-            <p>© 2026 ETF Optima. Built for NISM RA Series 15.</p>
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <div class="logo">ETF Optima</div>
+                <p>Built using Modern Portfolio Theory (MPT).<br>NISM Research Analyst RA Series 15 Project.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Sections</h4>
+                <a href="#live-market">Live Prices</a>
+                <a href="#calculator">Calculator</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#results">Portfolio Results</a>
+            </div>
+            <div class="footer-tech">
+                <h4>Built With</h4>
+                <p>Python · NumPy · SciPy · Pandas<br>Matplotlib · yfinance · Vercel</p>
+            </div>
+        </div>
+        <div class="footer-bottom container">
+            <p>© 2026 ETF Optima. Data source: Yahoo Finance via NSE. Not investment advice.</p>
         </div>
     </footer>
 
-    <script type="module" src="/main.js"></script>
+    <script src="/main.js"></script>
 </body>
 </html>
