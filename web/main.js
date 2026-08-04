@@ -253,3 +253,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up scroll reveal
     setupReveal();
 });
+
+// ─── EXPOSE GLOBALS FOR onclick ATTRIBUTES ───────────────
+// type="module" scopes functions — must attach to window
+// for HTML onclick="..." attributes to find them
+window.setAmount      = setAmount;
+window.switchTab      = switchTab;
+window.showGenerating = showGenerating;
