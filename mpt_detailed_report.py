@@ -2,6 +2,9 @@
 """
 MPT Indian ETF — Detailed Multi-Page PDF Report
 Professional, white-background, content-rich report with analysis narrative.
+
+Usage:  python mpt_detailed_report.py
+Output: ./output/MPT_Indian_ETF_Detailed_Report.pdf
 """
 
 import numpy as np
@@ -14,38 +17,29 @@ import matplotlib.patches as mpatches
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.patches import FancyBboxPatch
-import yfinance as yf
-from scipy.optimize import minimize
 from scipy.stats import skew, kurtosis
-import warnings, os, datetime, textwrap
+import warnings, datetime, textwrap
 
-warnings.filterwarnings('ignore')
+# ── Suppress only known benign warnings ───────────────────────────────────────
+warnings.filterwarnings('ignore', category=FutureWarning, module='yfinance')
+warnings.filterwarnings('ignore', category=FutureWarning, module='pandas')
+
+# ── Import shared engine (DRY — no data/optimization code duplicated here) ───
+from mpt_core import (
+    OUTPUT_DIR, RISK_FREE_RATE, TICKERS, SHORT_NAMES, TICKER_NAMES,
+    START_DATE, END_DATE, REPORT_DATE, MAX_WEIGHT, N_MC, TRADING_DAYS,
+    download_and_clean, download_benchmark,
+    compute_returns, optimize_portfolios, run_monte_carlo,
+    compute_asset_stats, portfolio_metrics, portfolio_drawdown,
+    port_return, port_vol, port_sharpe, max_drawdown,
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CONFIG
+# OUTPUT — portable path (no hardcoded user directory)
 # ─────────────────────────────────────────────────────────────────────────────
-OUTPUT_DIR      = "/Users/surajitdas/untitled folder 5"
-PDF_PATH        = os.path.join(OUTPUT_DIR, "MPT_Indian_ETF_Detailed_Report.pdf")
-RISK_FREE_RATE  = 0.068
-START_DATE      = '2019-01-01'
-END_DATE        = datetime.date.today().strftime('%Y-%m-%d')
-REPORT_DATE     = datetime.date.today().strftime('%d %B %Y')
-MAX_WEIGHT      = 0.45
-N_MC            = 10_000
-TRADING_DAYS    = 252
-
-TICKERS  = ['NIFTYBEES.NS','JUNIORBEES.NS','BANKBEES.NS','GOLDBEES.NS','LIQUIDBEES.NS']
-SHORT    = {'NIFTYBEES.NS':'NiftyBees','JUNIORBEES.NS':'JuniorBees',
-            'BANKBEES.NS':'BankBees','GOLDBEES.NS':'GoldBees','LIQUIDBEES.NS':'LiquidBees'}
-FULL     = {'NIFTYBEES.NS':'Nifty 50 BeES','JUNIORBEES.NS':'Junior BeES (Nifty Next 50)',
-            'BANKBEES.NS':'Bank BeES','GOLDBEES.NS':'Gold BeES','LIQUIDBEES.NS':'Liquid BeES'}
-DESC     = {
-    'NIFTYBEES.NS' : 'Tracks Nifty 50 — India\'s benchmark large-cap index (50 stocks)',
-    'JUNIORBEES.NS': 'Tracks Nifty Next 50 — mid-to-large cap segment (50 stocks)',
-    'BANKBEES.NS'  : 'Tracks Nifty Bank — top 12 liquid banking stocks',
-    'GOLDBEES.NS'  : 'Physical gold ETF — tracks domestic gold spot price',
-    'LIQUIDBEES.NS': 'Overnight liquid fund — near-zero risk, money-market returns',
-}
+# OUTPUT_DIR is defined in mpt_core as <project_root>/output/ and is created
+# automatically. No hardcoded paths needed here.
+PDF_PATH = OUTPUT_DIR / "MPT_Indian_ETF_Detailed_Report.pdf"
 
 PALETTE  = ['#1565C0','#E53935','#F9A825','#2E7D32','#6A1B9A']
 DARK     = '#1A1A2E'
@@ -134,140 +128,95 @@ def info_box(fig, x, y, w, h, title, lines, bg='#EEF4FF', title_color=BLUE):
                  color=DARK, va='top')
 
 # ─────────────────────────────────────────────────────────────────────────────
-# DATA DOWNLOAD & CLEAN
+# DATA DOWNLOAD & CLEAN  (via mpt_core — no duplication)
 # ─────────────────────────────────────────────────────────────────────────────
 print("📥  Downloading live data from Yahoo Finance …")
-raw    = yf.download(TICKERS, start=START_DATE, end=END_DATE,
-                     auto_adjust=True, progress=True, group_by='column')
-prices = raw['Close'].copy() if isinstance(raw.columns, pd.MultiIndex) else raw.copy()
-prices.dropna(how='all', inplace=True)
-prices.ffill(inplace=True); prices.dropna(inplace=True)
-
-# Clean Dec-2019 split artifacts (1:10 split for NIFTYBEES, BANKBEES, GOLDBEES)
-prices_c = prices.copy().astype(float)
-cleaned_dates = {}
-for col in prices_c.columns:
-    chk = prices_c[col].pct_change()
-    bad = chk.index[chk.abs() > 0.15].tolist()
-    if bad:
-        nan_set = set()
-        for d in bad:
-            pos = prices_c.index.get_loc(d)
-            if pos > 0: nan_set.add(prices_c.index[pos-1])
-            nan_set.add(d)
-        prices_c.loc[sorted(nan_set), col] = np.nan
-        cleaned_dates[col] = sorted([str(d.date()) for d in nan_set])
-prices_c = prices_c.interpolate(method='time', limit=10)
-prices_c.ffill(inplace=True); prices_c.bfill(inplace=True)
-prices = prices_c
+prices, available, cleaned_dates = download_and_clean(verbose=True)
+benchmark_px = download_benchmark(verbose=True)
 
 actual_start = prices.index[0].strftime('%Y-%m-%d')
 actual_end   = prices.index[-1].strftime('%Y-%m-%d')
 n_days       = len(prices)
-available    = list(prices.columns)
-snames       = [SHORT[t] for t in available]
-fnames       = [FULL[t]  for t in available]
 n            = len(available)
+
+# Name lookups (SHORT / FULL / DESC come from mpt_core via TICKER_NAMES / SHORT_NAMES)
+SHORT = SHORT_NAMES
+FULL  = TICKER_NAMES
+DESC  = {
+    'NIFTYBEES.NS' : "Tracks Nifty 50 — India's benchmark large-cap index (50 stocks)",
+    'JUNIORBEES.NS': 'Tracks Nifty Next 50 — mid-to-large cap segment (50 stocks)',
+    'BANKBEES.NS'  : 'Tracks Nifty Bank — top 12 liquid banking stocks',
+    'GOLDBEES.NS'  : 'Physical gold ETF — tracks domestic gold spot price',
+    'LIQUIDBEES.NS': 'Overnight liquid fund — near-zero risk, money-market returns',
+}
+snames = [SHORT.get(t, t) for t in available]
+fnames = [FULL.get(t, t)  for t in available]
 print(f"✅  {n_days} trading days  |  {actual_start} → {actual_end}")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# RETURNS & STATISTICS
+# RETURNS & STATISTICS  (via mpt_core)
 # ─────────────────────────────────────────────────────────────────────────────
-daily       = prices.pct_change().dropna()
-mu_s        = daily.mean() * TRADING_DAYS
-cov_s       = daily.cov()  * TRADING_DAYS
-corr_s      = daily.corr()
-mu          = mu_s.values
-Sigma       = cov_s.values
-vol_s       = np.sqrt(np.diag(Sigma))
+daily, mu, Sigma, corr_s = compute_returns(prices)
+mu_s  = pd.Series(mu,  index=available)
+cov_s = pd.DataFrame(Sigma, index=available, columns=available)
+vol_s = np.sqrt(np.diag(Sigma))
 
 # Rolling 252-day return & vol
 roll_ret = daily.rolling(252).mean() * 252
 roll_vol = daily.rolling(252).std()  * np.sqrt(252)
 
-# Max drawdown helper
-def max_drawdown(price_series):
-    cum = (1 + price_series.pct_change().dropna()).cumprod()
-    roll_max = cum.cummax()
-    dd = (cum - roll_max) / roll_max
-    return dd.min()
-
-# Individual asset stats
-stats = {}
-for t in available:
-    dr = daily[t].dropna()
-    stats[t] = {
-        'ann_ret'  : float(mu_s[t]),
-        'ann_vol'  : float(np.sqrt(cov_s.loc[t,t])),
-        'sharpe'   : float((mu_s[t] - RISK_FREE_RATE) / np.sqrt(cov_s.loc[t,t])),
-        'skew'     : float(skew(dr)),
-        'kurt'     : float(kurtosis(dr)),
-        'max_dd'   : float(max_drawdown(prices[t])),
-        'best_day' : float(dr.max()),
-        'worst_day': float(dr.min()),
-        'total_ret': float((prices[t].iloc[-1]/prices[t].iloc[0]) - 1),
-    }
+# Comprehensive asset statistics (Sharpe + Sortino + Calmar + CVaR)
+stats = compute_asset_stats(prices, daily, mu_s, cov_s)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# OPTIMISATION
+# OPTIMISATION  (via mpt_core)
 # ─────────────────────────────────────────────────────────────────────────────
-def perf(w):
-    r  = float(np.dot(w, mu))
-    v  = float(np.sqrt(w @ Sigma @ w))
-    sr = (r - RISK_FREE_RATE)/v if v>1e-10 else 0.0
-    return r, v, sr
+opts  = optimize_portfolios(mu, Sigma, n, verbose=True)
+w_sh  = opts['w_sharpe']
+w_mv  = opts['w_minvol']
+w_eq  = opts['w_equal']
+res_sh = opts['res_sh']
+res_mv = opts['res_mv']
 
-con = [{'type':'eq','fun':lambda w: np.sum(w)-1}]
-bds = tuple((0, MAX_WEIGHT) for _ in range(n))
-w0  = np.array([1/n]*n)
+# Full portfolio metrics (Sharpe + Sortino + Calmar + CVaR + Max DD)
+pm = {}
+for lbl, w in [('sharpe', w_sh), ('minvol', w_mv), ('equal', w_eq)]:
+    pm[lbl] = portfolio_metrics(w, mu, Sigma, daily, available)
 
-res_sh = minimize(lambda w: -(perf(w)[2]), w0, method='SLSQP', bounds=bds,
-                  constraints=con, options={'maxiter':3000,'ftol':1e-12})
-res_mv = minimize(lambda w: perf(w)[1], w0, method='SLSQP', bounds=bds,
-                  constraints=con, options={'maxiter':3000,'ftol':1e-12})
-
-def clean_w(w):
-    w[w<1e-5]=0.0; w/=w.sum(); return w
-
-w_sh = clean_w(res_sh.x if res_sh.success else w0.copy())
-w_mv = clean_w(res_mv.x if res_mv.success else w0.copy())
-w_eq = clean_w(w0.copy())
-
-r_sh,v_sh,sr_sh = perf(w_sh)
-r_mv,v_mv,sr_mv = perf(w_mv)
-r_eq,v_eq,sr_eq = perf(w_eq)
+r_sh, v_sh, sr_sh = pm['sharpe']['return'], pm['sharpe']['vol'], pm['sharpe']['sharpe']
+r_mv, v_mv, sr_mv = pm['minvol']['return'], pm['minvol']['vol'], pm['minvol']['sharpe']
+r_eq, v_eq, sr_eq = pm['equal']['return'],  pm['equal']['vol'],  pm['equal']['sharpe']
 
 # ─────────────────────────────────────────────────────────────────────────────
-# MONTE CARLO
+# MONTE CARLO  (via mpt_core)
 # ─────────────────────────────────────────────────────────────────────────────
 print(f"🎲  Monte Carlo ({N_MC:,}) …")
-np.random.seed(42)
-mc_r,mc_v,mc_sr = np.zeros(N_MC),np.zeros(N_MC),np.zeros(N_MC)
-mc_w = np.zeros((N_MC, n))
-for i in range(N_MC):
-    w = np.clip(np.random.dirichlet(np.ones(n)), 0, MAX_WEIGHT)
-    w /= w.sum(); mc_w[i]=w
-    mc_r[i],mc_v[i],mc_sr[i] = perf(w)
-
-# Best MC portfolio
-best_idx  = np.argmax(mc_sr)
+mc_res   = run_monte_carlo(mu, Sigma, n)
+mc_r     = mc_res['returns']
+mc_v     = mc_res['vols']
+mc_sr    = mc_res['sharpes']
+mc_w     = mc_res['weights']
+best_idx  = mc_res['best_idx']
 best_mc_w = mc_w[best_idx]
 
-# Portfolio cumulative growth
-cum_g    = (1+daily).cumprod()*100
-port_sh  = (1+daily[available].dot(pd.Series(w_sh,index=available))).cumprod()*100
-port_mv  = (1+daily[available].dot(pd.Series(w_mv,index=available))).cumprod()*100
-port_eq  = (1+daily[available].dot(pd.Series(w_eq,index=available))).cumprod()*100
+# Portfolio cumulative growth (₹100 invested)
+cum_g   = (1 + daily).cumprod() * 100
+port_sh = (1 + daily[available].dot(pd.Series(w_sh, index=available))).cumprod() * 100
+port_mv = (1 + daily[available].dot(pd.Series(w_mv, index=available))).cumprod() * 100
+port_eq = (1 + daily[available].dot(pd.Series(w_eq, index=available))).cumprod() * 100
+
+# Nifty 50 benchmark growth (aligned dates)
+port_bm = None
+if benchmark_px is not None:
+    bm_d    = benchmark_px.pct_change().dropna().reindex(daily.index).dropna()
+    port_bm = (1 + bm_d).cumprod() * 100
 
 # Portfolio drawdowns
-def port_dd(w_vec):
-    pret = daily[available].dot(pd.Series(w_vec, index=available))
-    cum  = (1+pret).cumprod()
-    return (cum - cum.cummax()) / cum.cummax()
+dd_sh = portfolio_drawdown(w_sh, daily, available)
+dd_mv = portfolio_drawdown(w_mv, daily, available)
+dd_eq = portfolio_drawdown(w_eq, daily, available)
 
-dd_sh = port_dd(w_sh)
-dd_mv = port_dd(w_mv)
-dd_eq = port_dd(w_eq)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # BUILD PDF
@@ -461,21 +410,21 @@ with PdfPages(PDF_PATH) as pdf:
     fig = new_page('Asset Statistics & Risk Metrics', 'Indian ETF MPT Report', '3')
     section_title(fig, '4. Individual Asset Analysis (2019 – 2026)', 0.90)
 
-    # Big stats table
-    tbl_cols  = ['ETF', 'Ann. Return', 'Ann. Volatility', 'Sharpe Ratio',
-                 'Total Return', 'Max Drawdown', 'Best Day', 'Worst Day', 'Skewness', 'Excess Kurt.']
+    # Big stats table — now includes Sortino, Calmar, CVaR (Expected Shortfall)
+    tbl_cols  = ['ETF', 'Ann. Return', 'Ann. Vol', 'Sharpe', 'Sortino', 'Calmar',
+                 'CVaR 95%', 'Max DD', 'Total Ret', 'Skew']
     tbl_data  = []
     for t in available:
         s = stats[t]
         tbl_data.append([
-            SHORT[t],
-            f"{s['ann_ret']:.2%}", f"{s['ann_vol']:.2%}", f"{s['sharpe']:.3f}",
-            f"{s['total_ret']:.2%}", f"{s['max_dd']:.2%}",
-            f"{s['best_day']:.2%}", f"{s['worst_day']:.2%}",
-            f"{s['skew']:.3f}", f"{s['kurt']:.3f}",
+            SHORT.get(t, t),
+            f"{s['ann_ret']:.2%}", f"{s['ann_vol']:.2%}",
+            f"{s['sharpe']:.3f}",  f"{s['sortino']:.3f}", f"{s['calmar']:.3f}",
+            f"{s['cvar_95']:.2%}", f"{s['max_dd']:.2%}",
+            f"{s['total_ret']:.2%}", f"{s['skew']:.3f}",
         ])
 
-    col_widths = [0.08, 0.085, 0.095, 0.085, 0.085, 0.090, 0.075, 0.080, 0.075, 0.085]
+    col_widths = [0.075, 0.078, 0.070, 0.065, 0.068, 0.068, 0.070, 0.070, 0.072, 0.058]
     col_x0 = 0.04
     col_xs = []
     cx = col_x0
@@ -784,7 +733,7 @@ with PdfPages(PDF_PATH) as pdf:
     plt.setp(ax_cg.get_xticklabels(), rotation=25, ha='right')
     for sp in ax_cg.spines.values(): sp.set_color(BORDER)
 
-    # Portfolio comparison cumulative growth
+    # Portfolio comparison cumulative growth — with Nifty 50 benchmark
     ax_pc = fig.add_subplot(gs7[0:2, 1])
     ax_pc.plot(port_sh.index, port_sh.values, color=GOLD, linewidth=2.2,
                label=f'Max Sharpe ★ (₹{port_sh.iloc[-1]:.0f})', zorder=4)
@@ -792,11 +741,15 @@ with PdfPages(PDF_PATH) as pdf:
                label=f'Min Volatility ■ (₹{port_mv.iloc[-1]:.0f})', zorder=3)
     ax_pc.plot(port_eq.index, port_eq.values, color='tomato', linewidth=1.5, linestyle='--',
                label=f'Equal Weight ▲ (₹{port_eq.iloc[-1]:.0f})', zorder=2)
+    # ── Nifty 50 benchmark line ──
+    if port_bm is not None:
+        ax_pc.plot(port_bm.index, port_bm.values, color='#888888', linewidth=1.2,
+                   linestyle=':', label=f'Nifty 50 Benchmark (₹{port_bm.iloc[-1]:.0f})', zorder=1)
     ax_pc.axhline(100, color='#AAAAAA', linewidth=0.8, linestyle=':')
     ax_pc.set_xlabel('Date', fontsize=8.5); ax_pc.set_ylabel('Portfolio Value (₹)', fontsize=8.5)
-    ax_pc.set_title('Portfolio Strategy Comparison (₹100 invested)', fontsize=9,
+    ax_pc.set_title('Portfolio Strategy Comparison vs Nifty 50 Benchmark (₹100 invested)', fontsize=9,
                     fontweight='bold', color=DARK, pad=8)
-    ax_pc.legend(fontsize=8.5, loc='upper left', framealpha=0.9)
+    ax_pc.legend(fontsize=7.5, loc='upper left', framealpha=0.9)
     ax_pc.grid(True, alpha=0.3, linestyle='--'); ax_pc.tick_params(labelsize=8)
     plt.setp(ax_pc.get_xticklabels(), rotation=25, ha='right')
     for sp in ax_pc.spines.values(): sp.set_color(BORDER)
@@ -823,7 +776,10 @@ with PdfPages(PDF_PATH) as pdf:
         '■ Min Vol'   : port_mv.iloc[-1],
         '▲ Equal Wt'  : port_eq.iloc[-1],
     }
+    if port_bm is not None:
+        end_vals['Nifty 50 BM'] = port_bm.iloc[-1]
     note = '  |  '.join([f'{k}: ₹{v:.0f} (on ₹100)' for k,v in end_vals.items()])
+
     fig.text(0.5, 0.048, note, ha='center', fontsize=8.5,
              color=DARK, fontweight='bold', va='top')
 

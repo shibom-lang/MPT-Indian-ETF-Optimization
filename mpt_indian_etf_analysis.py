@@ -2,7 +2,10 @@
 """
 Portfolio Optimization with Modern Portfolio Theory (MPT)
 Indian NSE-Listed Index ETFs Analysis
-Date: 2026-07-15  |  Risk-Free Rate: India 10-Yr G-Sec ~6.80%
+Risk-Free Rate: India 10-Yr G-Sec ~6.80%
+
+Usage:  python mpt_indian_etf_analysis.py
+Output: ./output/  (charts + PDF dashboard)
 """
 
 import numpy as np
@@ -14,59 +17,31 @@ import matplotlib.patches as mpatches
 import matplotlib.gridspec as gridspec
 from matplotlib.colors import LinearSegmentedColormap
 import seaborn as sns
-import yfinance as yf
-from scipy.optimize import minimize
-import warnings
-import os
 import datetime
-import sys
 
-warnings.filterwarnings('ignore')
+# ── Import shared engine (DRY — all data/optimization logic lives in mpt_core)
+from mpt_core import (
+    OUTPUT_DIR, RISK_FREE_RATE, TICKERS, SHORT_NAMES, TICKER_NAMES,
+    START_DATE, END_DATE, MAX_WEIGHT, N_MC, TRADING_DAYS,
+    download_and_clean, download_benchmark,
+    compute_returns, optimize_portfolios, run_monte_carlo,
+    compute_asset_stats, portfolio_metrics, portfolio_drawdown,
+    port_return, port_vol, port_sharpe,
+    max_drawdown,
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CONFIGURATION
+# OUTPUT — portable path (no hardcoded user directory)
 # ─────────────────────────────────────────────────────────────────────────────
-OUTPUT_DIR = "/Users/surajitdas/untitled folder 5"
-
-# ✅ India 10-Year G-Sec yield as of 15-Jul-2026 (~6.80%)
-# Source: worldgovernmentbonds.com / tradingeconomics.com
-RISK_FREE_RATE = 0.068   # 6.80% per annum
-
-TICKERS = [
-    'NIFTYBEES.NS',
-    'JUNIORBEES.NS',
-    'BANKBEES.NS',
-    'GOLDBEES.NS',
-    'LIQUIDBEES.NS',
-]
-TICKER_NAMES = {
-    'NIFTYBEES.NS': 'Nifty 50 BeES',
-    'JUNIORBEES.NS': 'Junior BeES\n(Next 50)',
-    'BANKBEES.NS': 'Bank BeES',
-    'GOLDBEES.NS': 'Gold BeES',
-    'LIQUIDBEES.NS': 'Liquid BeES',
-}
-SHORT_NAMES = {
-    'NIFTYBEES.NS': 'NiftyBees',
-    'JUNIORBEES.NS': 'JuniorBees',
-    'BANKBEES.NS': 'BankBees',
-    'GOLDBEES.NS': 'GoldBees',
-    'LIQUIDBEES.NS': 'LiquidBees',
-}
-
-START_DATE  = '2019-01-01'
-END_DATE    = datetime.date.today().strftime('%Y-%m-%d')
-
-MAX_WEIGHT  = 0.45   # 45% cap per asset
-N_MC        = 10_000  # Monte Carlo portfolios
-TRADING_DAYS = 252
+# OUTPUT_DIR is defined in mpt_core as: <project_root>/output/
+# It is created automatically if it doesn't exist.
 
 # Color palette (vibrant, dark-mode friendly)
-PALETTE     = ['#00D4FF', '#FF6B6B', '#FFD93D', '#6BCB77', '#C77DFF']
-BG_COLOR    = '#0D1117'
-CARD_COLOR  = '#161B22'
-TEXT_COLOR  = '#E6EDF3'
-ACCENT      = '#58A6FF'
+PALETTE    = ['#00D4FF', '#FF6B6B', '#FFD93D', '#6BCB77', '#C77DFF']
+BG_COLOR   = '#0D1117'
+CARD_COLOR = '#161B22'
+TEXT_COLOR = '#E6EDF3'
+ACCENT     = '#58A6FF'
 
 print("=" * 65)
 print("  INDIAN ETF PORTFOLIO OPTIMIZER — MPT ANALYSIS")
@@ -76,111 +51,15 @@ print(f"  Max weight : {MAX_WEIGHT:.0%} per asset")
 print("=" * 65)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STEP 1: DOWNLOAD DATA
+# STEP 1: DOWNLOAD DATA  (handled by mpt_core.download_and_clean)
 # ─────────────────────────────────────────────────────────────────────────────
-print("\n📥  Downloading historical price data from Yahoo Finance …")
-
-raw = yf.download(
-    TICKERS,
-    start=START_DATE,
-    end=END_DATE,
-    auto_adjust=True,       # returns 'Close' already split/dividend-adjusted
-    progress=True,
-    group_by='column',
-)
-
-# Extract 'Close' prices — works with both new and legacy yfinance column layouts
-if isinstance(raw.columns, pd.MultiIndex):
-    if 'Close' in raw.columns.get_level_values(0):
-        prices = raw['Close'].copy()
-    else:
-        raise KeyError("No 'Close' level found in downloaded data.")
-else:
-    prices = raw.copy()
-
-prices.columns = prices.columns.str.upper() if hasattr(prices.columns, 'str') else prices.columns
-
-# ── Ticker health-check ──────────────────────────────────────────────────────
-ALTERNATIVES = {
-    'NIFTYBEES.NS' : 'NIFTYBEES.NS  (try NIFTYBEES.BO if .NS fails)',
-    'JUNIORBEES.NS': 'JUNIORBEES.NS (try SETFNN50.NS — Nifty Next 50 ETF)',
-    'BANKBEES.NS'  : 'BANKBEES.NS   (try BANKBEES.BO if .NS fails)',
-    'GOLDBEES.NS'  : 'GOLDBEES.NS   (try GOLDBEES.BO if .NS fails)',
-    'LIQUIDBEES.NS': 'LIQUIDBEES.NS (try LIQUIDBEES.BO if .NS fails)',
-}
-
-missing_tickers = []
-downloaded_tickers = list(prices.columns)
-
-for ticker in TICKERS:
-    col = ticker.upper()
-    if col not in downloaded_tickers or prices[col].isna().all():
-        print(f"\n  ⚠️  TICKER FAILED: {ticker}")
-        print(f"      → Suggestion: {ALTERNATIVES.get(ticker, 'No suggestion available')}")
-        missing_tickers.append(ticker)
-
-if missing_tickers:
-    print(f"\n  ❌  {len(missing_tickers)} ticker(s) could not be downloaded.")
-    print("      Proceeding with available tickers only.\n")
-
-# Keep only successfully downloaded tickers
-available_tickers = [t.upper() for t in TICKERS if t.upper() in downloaded_tickers and not prices[t.upper()].isna().all()]
-prices = prices[available_tickers].copy()
-
-# ── Handle LIQUIDBEES — it trades near ₹1,000 (stable NAV) ──────────────────
-# Identify any ticker with essentially zero variance (liquid/money-market fund)
-returns_check = prices.pct_change().dropna()
-zero_vol_cols = [c for c in returns_check.columns if returns_check[c].std() < 0.0005]
-if zero_vol_cols:
-    print(f"  ℹ️   Near-zero volatility detected for: {zero_vol_cols}")
-    print("      These are liquid / money-market ETFs — included as cash-like asset.\n")
-
-prices.dropna(how='all', inplace=True)
-prices.ffill(inplace=True)    # forward-fill minor gaps (holidays, halts)
-prices.dropna(inplace=True)   # drop any remaining NaN rows
-
-# ── Clean split / corporate-action artifacts ─────────────────────────────────
-# Yahoo Finance has 2-day price discontinuities around NSE stock splits
-# (e.g., NIFTYBEES/BANKBEES/GOLDBEES 1:10 split in Dec 2019).
-# The bad price causes TWO bad returns: the day the price is bad, AND the
-# following day (return from bad_price -> next_good_price).
-# Fix: detect |return| > 15% and NaN both the bad price AND the next price,
-# then interpolate linearly to restore a smooth continuous price series.
-RAW_RETURN_THRESHOLD = 0.15   # flag any single-day move beyond ±15%
-
-prices_clean = prices.copy().astype(float)
-
-for col in prices_clean.columns:
-    chk = prices_clean[col].pct_change()
-    bad_idx = chk.index[chk.abs() > RAW_RETURN_THRESHOLD].tolist()
-    if bad_idx:
-        dates_to_nan = set()
-        for bad_dt in bad_idx:
-            pos = prices_clean.index.get_loc(bad_dt)
-            # NaN the bad price itself and the price BEFORE it (causing the bad return)
-            if pos > 0:
-                dates_to_nan.add(prices_clean.index[pos - 1])
-            dates_to_nan.add(bad_dt)
-        print(f"  ⚠️   {col}: cleaning {sorted([str(d.date()) for d in dates_to_nan])}")
-        prices_clean.loc[sorted(dates_to_nan), col] = np.nan
-
-# Linearly interpolate the cleaned gaps, then ffill/bfill any edge NaNs
-prices_clean = prices_clean.interpolate(method='time', limit=10)
-prices_clean.ffill(inplace=True)
-prices_clean.bfill(inplace=True)
-prices = prices_clean
-
-# Verify cleaning worked
-verify_ret = prices.pct_change()
-still_bad = verify_ret.abs() > RAW_RETURN_THRESHOLD
-if still_bad.any().any():
-    print(f"  ⚠️   Warning: {still_bad.sum().sum()} data artifact(s) could not be cleaned automatically.")
-else:
-    print("  ✓ All data-artifact rows cleaned successfully.\n")
+prices, available_tickers, cleaned_dates = download_and_clean(verbose=True)
+benchmark_px = download_benchmark(verbose=True)
 
 actual_start = prices.index[0].strftime('%Y-%m-%d')
 actual_end   = prices.index[-1].strftime('%Y-%m-%d')
 n_days       = len(prices)
+n_assets     = len(available_tickers)
 
 print(f"\n  ✅  Download complete!")
 print(f"      Tickers in use : {available_tickers}")
@@ -192,137 +71,79 @@ print(f"      Trading days   : {n_days}")
 # ─────────────────────────────────────────────────────────────────────────────
 print("\n📊  Calculating returns and covariance matrix …")
 
-daily_returns = prices.pct_change().dropna()
-mean_returns  = daily_returns.mean() * TRADING_DAYS   # annualised
-cov_matrix    = daily_returns.cov() * TRADING_DAYS    # annualised
-corr_matrix   = daily_returns.corr()
+daily_returns, mu, Sigma, corr_matrix = compute_returns(prices)
+mean_returns  = pd.Series(mu, index=available_tickers)
+cov_matrix_df = pd.DataFrame(Sigma, index=available_tickers, columns=available_tickers)
 
-n_assets = len(available_tickers)
+short_labels = [SHORT_NAMES.get(t, t) for t in available_tickers]
 
 print("\n  Annualised Expected Returns:")
-for t in available_tickers:
-    name = SHORT_NAMES.get(t + '.NS' if not t.endswith('.NS') else t, t)
-    name = SHORT_NAMES.get(t, SHORT_NAMES.get(t.replace('.NS', '') + '.NS', t))
-    print(f"    {name:14s}  {mean_returns[t]:>8.2%}")
+for t, ret in zip(available_tickers, mu):
+    name = SHORT_NAMES.get(t, t)
+    print(f"    {name:14s}  {ret:>8.2%}")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STEP 3: PORTFOLIO PERFORMANCE FUNCTIONS
-# ─────────────────────────────────────────────────────────────────────────────
-def port_return(w, mu):
-    return float(np.dot(w, mu))
-
-def port_vol(w, Sigma):
-    return float(np.sqrt(w @ Sigma @ w))
-
-def port_sharpe(w, mu, Sigma, rf=RISK_FREE_RATE):
-    vol = port_vol(w, Sigma)
-    return (port_return(w, mu) - rf) / vol if vol > 1e-10 else 0.0
-
-def neg_sharpe(w, mu, Sigma, rf=RISK_FREE_RATE):
-    return -port_sharpe(w, mu, Sigma, rf)
-
-def min_vol_obj(w, Sigma):
-    return port_vol(w, Sigma)
-
-# ─────────────────────────────────────────────────────────────────────────────
-# STEP 4: OPTIMIZATION
+# STEP 3 & 4: OPTIMIZATION  (via mpt_core)
 # ─────────────────────────────────────────────────────────────────────────────
 print("\n🚀  Optimizing portfolios …")
-
-mu    = mean_returns.values
-Sigma = cov_matrix.values
-
-constraints = [{'type': 'eq', 'fun': lambda w: np.sum(w) - 1}]
-bounds      = tuple((0.0, MAX_WEIGHT) for _ in range(n_assets))
-w0          = np.array([1 / n_assets] * n_assets)
-
-# ── Max Sharpe ───────────────────────────────────────────────────────────────
-res_sharpe = minimize(
-    neg_sharpe, w0,
-    args=(mu, Sigma, RISK_FREE_RATE),
-    method='SLSQP',
-    bounds=bounds,
-    constraints=constraints,
-    options={'maxiter': 2000, 'ftol': 1e-12},
-)
-w_sharpe = res_sharpe.x if res_sharpe.success else w0.copy()
-
-# ── Min Volatility ───────────────────────────────────────────────────────────
-res_minvol = minimize(
-    min_vol_obj, w0,
-    args=(Sigma,),
-    method='SLSQP',
-    bounds=bounds,
-    constraints=constraints,
-    options={'maxiter': 2000, 'ftol': 1e-12},
-)
-w_minvol = res_minvol.x if res_minvol.success else w0.copy()
-
-# ── Equal Weight ─────────────────────────────────────────────────────────────
-w_equal = w0.copy()
-
-# Clip tiny numerical noise
-for w in [w_sharpe, w_minvol, w_equal]:
-    w[w < 1e-6] = 0.0
-    w /= w.sum()
+opts     = optimize_portfolios(mu, Sigma, n_assets)
+w_sharpe = opts['w_sharpe']
+w_minvol = opts['w_minvol']
+w_equal  = opts['w_equal']
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STEP 5: PERFORMANCE METRICS
+# STEP 5: PERFORMANCE METRICS (Sharpe + Sortino + Calmar)
 # ─────────────────────────────────────────────────────────────────────────────
-def metrics(w):
-    r   = port_return(w, mu)
-    v   = port_vol(w, Sigma)
-    sr  = (r - RISK_FREE_RATE) / v if v > 1e-10 else 0.0
-    return r, v, sr
+pm = {}
+for label, w in [('sharpe', w_sharpe), ('minvol', w_minvol), ('equal', w_equal)]:
+    pm[label] = portfolio_metrics(w, mu, Sigma, daily_returns, available_tickers)
 
-r_sh, v_sh, sr_sh       = metrics(w_sharpe)
-r_mv, v_mv, sr_mv       = metrics(w_minvol)
-r_eq, v_eq, sr_eq       = metrics(w_equal)
+r_sh, v_sh, sr_sh = pm['sharpe']['return'], pm['sharpe']['vol'], pm['sharpe']['sharpe']
+r_mv, v_mv, sr_mv = pm['minvol']['return'], pm['minvol']['vol'], pm['minvol']['sharpe']
+r_eq, v_eq, sr_eq = pm['equal']['return'],  pm['equal']['vol'],  pm['equal']['sharpe']
 
-print(f"\n  {'Portfolio':18s} {'Return':>8s} {'Volatility':>12s} {'Sharpe':>8s}")
-print("  " + "-" * 52)
-print(f"  {'Max Sharpe':18s} {r_sh:>8.2%} {v_sh:>12.2%} {sr_sh:>8.3f}")
-print(f"  {'Min Volatility':18s} {r_mv:>8.2%} {v_mv:>12.2%} {sr_mv:>8.3f}")
-print(f"  {'Equal Weight':18s} {r_eq:>8.2%} {v_eq:>12.2%} {sr_eq:>8.3f}")
+print(f"\n  {'Portfolio':18s} {'Return':>8s} {'Vol':>8s} {'Sharpe':>8s} {'Sortino':>9s} {'Calmar':>8s}")
+print("  " + "-" * 65)
+for lbl, name in [('sharpe','Max Sharpe'), ('minvol','Min Volatility'), ('equal','Equal Weight')]:
+    m = pm[lbl]
+    print(f"  {name:18s} {m['return']:>8.2%} {m['vol']:>8.2%} "
+          f"{m['sharpe']:>8.3f} {m['sortino']:>9.3f} {m['calmar']:>8.3f}")
 
 print(f"\n  Max Sharpe Weights:")
 for t, w in zip(available_tickers, w_sharpe):
-    name = SHORT_NAMES.get(t, t)
-    print(f"    {name:14s}: {w:.2%}")
+    print(f"    {SHORT_NAMES.get(t, t):14s}: {w:.2%}")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # STEP 6: MONTE CARLO EFFICIENT FRONTIER
 # ─────────────────────────────────────────────────────────────────────────────
 print(f"\n🎲  Running {N_MC:,} Monte Carlo simulations …")
-
-np.random.seed(42)
-mc_ret = np.zeros(N_MC)
-mc_vol = np.zeros(N_MC)
-mc_sr  = np.zeros(N_MC)
-mc_w   = np.zeros((N_MC, n_assets))
-
-for i in range(N_MC):
-    raw_w  = np.random.dirichlet(np.ones(n_assets))
-    raw_w  = np.clip(raw_w, 0, MAX_WEIGHT)
-    raw_w /= raw_w.sum()
-    mc_w[i]   = raw_w
-    mc_ret[i] = port_return(raw_w, mu)
-    mc_vol[i] = port_vol(raw_w, Sigma)
-    mc_sr[i]  = port_sharpe(raw_w, mu, Sigma)
+mc     = run_monte_carlo(mu, Sigma, n_assets)
+mc_ret = mc['returns']
+mc_vol = mc['vols']
+mc_sr  = mc['sharpes']
 
 # ─────────────────────────────────────────────────────────────────────────────
 # STEP 7: CUMULATIVE GROWTH
 # ─────────────────────────────────────────────────────────────────────────────
-cum_growth = (1 + daily_returns).cumprod() * 100  # ₹100 invested
+cum_growth = (1 + daily_returns).cumprod() * 100   # ₹100 invested per ETF
 
 # Portfolio cumulative growth
-port_daily_returns = daily_returns[available_tickers].dot(pd.Series(w_sharpe, index=available_tickers))
-port_cum = (1 + port_daily_returns).cumprod() * 100
+port_cum = (1 + daily_returns[available_tickers]
+            .dot(pd.Series(w_sharpe, index=available_tickers))).cumprod() * 100
+
+# Nifty 50 benchmark growth (aligned to our date range)
+bm_growth = None
+if benchmark_px is not None:
+    bm_daily  = benchmark_px.pct_change().dropna()
+    bm_daily  = bm_daily.reindex(daily_returns.index).dropna()
+    bm_growth = (1 + bm_daily).cumprod() * 100
 
 # ─────────────────────────────────────────────────────────────────────────────
 # STEP 8: CHARTING
 # ─────────────────────────────────────────────────────────────────────────────
 print("\n🎨  Generating charts …")
+
+
 
 plt.rcParams.update({
     'figure.facecolor'  : BG_COLOR,
