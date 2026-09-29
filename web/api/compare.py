@@ -1,3 +1,4 @@
+
 """
 /api/compare — Returns full MPT comparison data (portfolio weights, metrics,
 cumulative growth series, efficient frontier cloud) for the Compare Dashboard.

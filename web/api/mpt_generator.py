@@ -31,7 +31,7 @@ START_DATE      = '2019-01-01'
 END_DATE        = datetime.date.today().strftime('%Y-%m-%d')
 REPORT_DATE     = datetime.date.today().strftime('%d %B %Y')
 MAX_WEIGHT      = 0.45
-N_MC            = 2500
+N_MC            = 10_000
 TRADING_DAYS    = 252
 
 TICKERS  = ['NIFTYBEES.NS','JUNIORBEES.NS','BANKBEES.NS','GOLDBEES.NS','LIQUIDBEES.NS']
@@ -243,6 +243,18 @@ def generate_report():
     r_sh,v_sh,sr_sh = perf(w_sh)
     r_mv,v_mv,sr_mv = perf(w_mv)
     r_eq,v_eq,sr_eq = perf(w_eq)
+
+    # ─────────────────────────────────────────────────────────────────────────────
+    # WACC — Weighted Average Cost of Capital (proxy: weighted expected return)
+    # For ETF portfolios, WACC = Σ(wᵢ × Kᵢ) where Kᵢ = annualised expected return
+    # ─────────────────────────────────────────────────────────────────────────────
+    wacc_sh = float(np.dot(w_sh, mu))   # same as r_sh but made explicit
+    wacc_mv = float(np.dot(w_mv, mu))   # same as r_mv but made explicit
+    wacc_eq = float(np.dot(w_eq, mu))   # same as r_eq but made explicit
+    # WACC spread over risk-free: how much the portfolio earns above the hurdle rate
+    wacc_spread_sh = wacc_sh - RISK_FREE_RATE
+    wacc_spread_mv = wacc_mv - RISK_FREE_RATE
+    wacc_spread_eq = wacc_eq - RISK_FREE_RATE
     
     # ─────────────────────────────────────────────────────────────────────────────
     # MONTE CARLO
@@ -317,7 +329,7 @@ def generate_report():
             ('Risk-Free Rate', [f'{RISK_FREE_RATE:.2%} per annum', 'India 10-Yr G-Sec (Jul-2026)']),
             ('Max Weight Cap', [f'{MAX_WEIGHT:.0%} per asset', 'Concentration limit']),
             ('Monte Carlo', [f'{N_MC:,} portfolios simulated', 'Efficient Frontier mapping']),
-            ('Data Source', ['Yahoo Finance (Live)', 'Auto-adjusted prices']),
+            ('WACC (Max Sharpe)', [f'{wacc_sh:.2%} p.a.  (Spread: +{wacc_spread_sh:.2%})', 'Wtd. avg. expected return of portfolio']),
         ]
         card_w, card_h = 0.27, 0.100
         card_positions = [(0.035,0.595),(0.37,0.595),(0.70,0.595),
@@ -682,14 +694,14 @@ def generate_report():
                 f'Return:     {r_sh:.2%} p.a.',
                 f'Volatility: {v_sh:.2%} p.a.',
                 f'Sharpe:     {sr_sh:.4f}',
-                f'Optimiser:  SLSQP (scipy)',
+                f'WACC:       {wacc_sh:.2%} p.a.',
                 f'Status:     {"Converged" if res_sh.success else "Did not converge"}',
             ]),
             ('Min Volatility Portfolio', [
                 f'Return:     {r_mv:.2%} p.a.',
                 f'Volatility: {v_mv:.2%} p.a.',
                 f'Sharpe:     {sr_mv:.4f}',
-                f'Optimiser:  SLSQP (scipy)',
+                f'WACC:       {wacc_mv:.2%} p.a.',
                 f'Status:     {"Converged" if res_mv.success else "Did not converge"}',
             ]),
         ]
@@ -845,6 +857,8 @@ def generate_report():
         # Full metrics comparison table
         metrics_rows = [
             ('Expected Return (p.a.)', f'{r_sh:.2%}', f'{r_mv:.2%}', f'{r_eq:.2%}'),
+            ('WACC (Wtd. Avg. Cost of Capital)', f'{wacc_sh:.2%}', f'{wacc_mv:.2%}', f'{wacc_eq:.2%}'),
+            ('WACC Spread over Risk-Free',  f'+{wacc_spread_sh:.2%}', f'+{wacc_spread_mv:.2%}', f'+{wacc_spread_eq:.2%}'),
             ('Annualised Volatility',  f'{v_sh:.2%}', f'{v_mv:.2%}', f'{v_eq:.2%}'),
             ('Sharpe Ratio',           f'{sr_sh:.4f}',f'{sr_mv:.4f}',f'{sr_eq:.4f}'),
             ('Max Portfolio Drawdown', f'{dd_sh.min():.2%}', f'{dd_mv.min():.2%}', f'{dd_eq.min():.2%}'),
