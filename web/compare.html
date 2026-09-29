@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETF Optima — Compare Dashboard</title>
+    <meta name="description" content="Compare Max Sharpe, Min Volatility, and Equal Weight ETF portfolios side by side with live charts.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <style>
+        body { background: #0b0f1a; }
+
+        .dash-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(15,23,42,0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .dash-header .logo { font-size: 1.2rem; font-weight: 800; color: #fff; }
+        .dash-header nav a {
+            color: rgba(255,255,255,0.7); text-decoration: none;
+            margin-left: 1.5rem; font-size: 0.88rem; transition: color .2s;
+        }
+        .dash-header nav a:hover, .dash-header nav a.active { color: #60a5fa; }
+
+        .cmp-main {
+            max-width: 1400px; margin: 0 auto;
+            padding: 1.5rem 1.5rem 3rem;
+        }
+
+        /* ── Widget ──────────────────────────────────────────────── */
+        .widget {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px; padding: 1.2rem 1.4rem;
+            transition: border-color .2s;
+        }
+        .widget:hover { border-color: rgba(96,165,250,0.25); }
+        .widget-title {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: .08em;
+            color: rgba(255,255,255,0.45); margin-bottom: 1rem; font-weight: 600;
+        }
+
+        /* ── Section heading ─────────────────────────────────────── */
+        .section-head {
+            display: flex; align-items: center; justify-content: space-between;
+            margin: 2rem 0 1rem;
+        }
+        .section-head h2 { font-size: 1.25rem; color: #f1f5f9; margin: 0; }
+
+        /* ── Portfolio scorecards ────────────────────────────────── */
+        .scorecard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem; margin-bottom: 1.5rem;
+        }
+        @media (max-width: 900px) { .scorecard-grid { grid-template-columns: 1fr; } }
+
+        .scorecard {
+            border-radius: 14px; padding: 1.5rem;
+            position: relative; overflow: hidden;
+        }
+        .sc-gold   { background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(251,191,36,0.05)); border: 1px solid rgba(251,191,36,0.35); }
+        .sc-blue   { background: linear-gradient(135deg, rgba(96,165,250,0.15), rgba(96,165,250,0.05)); border: 1px solid rgba(96,165,250,0.35); }
+        .sc-grey   { background: linear-gradient(135deg, rgba(148,163,184,0.12), rgba(148,163,184,0.04)); border: 1px solid rgba(148,163,184,0.25); }
+
+        .sc-badge {
+            display: inline-block; font-size: 0.68rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .06em;
+            padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 0.8rem;
+        }
+        .badge-gold { background: rgba(251,191,36,0.2); color: #fbbf24; }
+        .badge-blue { background: rgba(96,165,250,0.2); color: #60a5fa; }
+        .badge-grey { background: rgba(148,163,184,0.15); color: #94a3b8; }
+
+        .sc-title { font-size: 1.1rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.3rem; }
+        .sc-subtitle { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-bottom: 1.2rem; }
+        .sc-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+        .sc-metric {
+            background: rgba(255,255,255,0.04); border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+        }
+        .sc-metric-label { font-size: 0.65rem; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 0.2rem; }
+        .sc-metric-val { font-size: 1rem; font-weight: 700; color: #f1f5f9; }
+        .sc-weights { margin-top: 1rem; }
+        .sc-w-bar-wrap { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 0.4rem; }
+        .sc-legend { display: flex; flex-wrap: wrap; gap: 0.35rem 0.7rem; }
+        .sc-leg-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+        .sc-leg-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+        .sc-winner-badge {
+            position: absolute; top: 1.2rem; right: 1.2rem;
+            background: rgba(251,191,36,0.25); color: #fbbf24;
+            font-size: 0.7rem; font-weight: 700;
+            padding: 0.2rem 0.5rem; border-radius: 4px;
+            border: 1px solid rgba(251,191,36,0.4);
+        }
+
+        /* ── Chart containers ────────────────────────────────────── */
+        .chart-grid-2 {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1rem; margin-bottom: 1.5rem;
+        }
+        .chart-grid-3 {
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem; margin-bottom: 1.5rem;
+        }
+        @media (max-width: 1000px) {
+            .chart-grid-2 { grid-template-columns: 1fr; }
+            .chart-grid-3 { grid-template-columns: 1fr; }
+        }
+        .chart-wrap { position: relative; }
+        .chart-h300 { height: 300px; }
+        .chart-h380 { height: 380px; }
+        .chart-h260 { height: 260px; }
+
+        /* ── Comparison table ────────────────────────────────────── */
+        .cmp-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        .cmp-table th {
+            text-align: center; padding: 0.7rem 0.8rem;
+            font-size: 0.72rem; text-transform: uppercase; letter-spacing: .06em;
+            color: rgba(255,255,255,0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-weight: 600;
+        }
+        .cmp-table th:first-child { text-align: left; }
+        .cmp-table td { padding: 0.6rem 0.8rem; color: #cbd5e1; text-align: center; vertical-align: middle; }
+        .cmp-table td:first-child { text-align: left; color: rgba(255,255,255,0.55); font-size: 0.78rem; }
+        .cmp-table tr:not(:last-child) td { border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .cmp-table tr:hover td { background: rgba(255,255,255,0.025); }
+        .best-cell { font-weight: 700; }
+        .best-gold { color: #fbbf24 !important; }
+        .best-blue { color: #60a5fa !important; }
+        .neg-val { color: #f87171 !important; }
+        .pos-val { color: #4ade80 !important; }
+        .cmp-header-sh { color: #fbbf24; }
+        .cmp-header-mv { color: #60a5fa; }
+        .cmp-header-eq { color: #94a3b8; }
+
+        /* ── Heatmap / correlation ───────────────────────────────── */
+        .corr-grid {
+            display: grid;
+            gap: 2px;
+        }
+        .corr-cell {
+            border-radius: 4px; display: flex; align-items: center;
+            justify-content: center; font-size: 0.75rem; font-weight: 700;
+            aspect-ratio: 1; min-height: 44px;
+        }
+
+        /* ── ETF stats card grid ─────────────────────────────────── */
+        .etf-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.8rem; margin-bottom: 1.5rem;
+        }
+        @media (max-width: 1000px) { .etf-stat-grid { grid-template-columns: 1fr 1fr; } }
+        .etf-stat-card {
+            border-radius: 10px; padding: 1rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+        }
+        .etf-stat-name { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.88rem; }
+        .etf-stat-rows { font-size: 0.76rem; }
+        .etf-stat-row { display: flex; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .etf-stat-row:last-child { border: none; }
+        .etf-stat-lbl { color: rgba(255,255,255,0.4); }
+
+        /* ── Spinner ─────────────────────────────────────────────── */
+        .cmp-loading {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 400px; gap: 1rem;
+            color: rgba(255,255,255,0.4);
+        }
+        .cmp-spinner {
+            width: 48px; height: 48px;
+            border: 3px solid rgba(255,255,255,0.08);
+            border-top-color: #60a5fa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Legend ──────────────────────────────────────────────── */
+        .chart-legend {
+            display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.7rem;
+        }
+        .legend-item {
+            display: flex; align-items: center; gap: 0.4rem;
+            font-size: 0.76rem; color: rgba(255,255,255,0.6);
+            cursor: pointer;
+        }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+        /* ── Radar axis labels ────────────────────────────────────── */
+        .radar-note { font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 0.5rem; text-align: center; }
+
+        /* ── Tabs (growth chart) ──────────────────────────────────── */
+        .view-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.8rem; }
+        .view-tab {
+            padding: 0.3rem 0.7rem;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px; background: transparent;
+            color: rgba(255,255,255,0.5); font-size: 0.75rem;
+            cursor: pointer; transition: all .2s;
+        }
+        .view-tab.active { background: rgba(96,165,250,0.2); border-color: #60a5fa; color: #60a5fa; }
+
+        /* ── Regenerate note ──────────────────────────────────────── */
+        .regen-note {
+            margin-top: 1.5rem; padding: 1rem 1.4rem;
+            background: rgba(96,165,250,0.06); border: 1px solid rgba(96,165,250,0.2);
+            border-radius: 10px; font-size: 0.8rem; color: rgba(255,255,255,0.5);
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .regen-btn {
+            padding: 0.5rem 1.2rem;
+            background: #3b82f6; color: white;
+            border: none; border-radius: 6px;
+            cursor: pointer; font-weight: 600; font-size: 0.8rem;
+            white-space: nowrap; flex-shrink: 0;
+            transition: background .2s;
+        }
+        .regen-btn:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="dash-header">
+    <div class="logo">📈 ETF Optima</div>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/dashboard.html">Live Dashboard</a>
+        <a href="/compare.html" class="active">Compare</a>
+        <a href="/#calculator">Calculator</a>
+        <a href="/#report-section">📄 Report</a>
+    </nav>
+</header>
+
+<div class="cmp-main">
+
+    <!-- Page header -->
+    <div class="section-head" style="margin-top:0;">
+        <div>
+            <h2 style="font-size:1.6rem; margin-bottom:0.3rem;">🔬 Portfolio Compare Dashboard</h2>
+            <p style="margin:0; font-size:0.82rem; color:rgba(255,255,255,0.4);">
+                Side-by-side analysis of all three MPT strategies using live historical data (2019 – today)
+            </p>
+        </div>
+        <div id="data-status" style="font-size:0.78rem; color:rgba(255,255,255,0.3);">Loading live data…</div>
+    </div>
+
+    <!-- Loading state -->
+    <div id="cmp-loading" class="cmp-loading">
+        <div class="cmp-spinner"></div>
+        <p>Running full MPT analysis with live data…<br>
+           <span style="font-size:0.78rem;">This takes ~30–60 seconds on first load.</span></p>
+    </div>
+
+    <!-- Dashboard content (hidden until data loads) -->
+    <div id="cmp-content" style="display:none;">
+
+        <!-- ── Scorecards ───────────────────────────────────────── -->
+        <div class="scorecard-grid" id="scorecard-grid"></div>
+
+        <!-- ── Head-to-head comparison table ───────────────────── -->
+        <div class="section-head">
+            <h2>📋 Head-to-Head Metrics Comparison</h2>
+        </div>
+        <div class="widget" style="margin-bottom:1.5rem;">
+            <div style="overflow-x:auto;">
+                <table class="cmp-table" id="cmp-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th class="cmp-header-sh">⭐ Max Sharpe</th>
+                            <th class="cmp-header-mv">🛡️ Min Volatility</th>
+                            <th class="cmp-header-eq">⚖️ Equal Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cmp-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ── Growth chart ──────────────────────────────────────── -->
+        <div class="section-head">
+            <h2>📈 Cumulative Growth (₹100 Invested)</h2>
+            <div class="view-tabs">
+                <button class="view-tab active" onclick="setGrowthView('portfolios')">Portfolios</button>
+                <button class="view-tab" onclick="setGrowthView('etfs')">Individual ETFs</button>
+                <button class="view-tab" onclick="setGrowthView('all')">All Together</button>
+            </div>
+        </div>
+        <div class="widget" style="margin-bottom:1.5rem;">
+            <div class="chart-legend" id="growth-legend"></div>
+            <div class="chart-wrap chart-h380">
+                <canvas id="growthChart"></canvas>
+            </div>
+        </div>
+
+        <!-- ── Drawdown + Efficient Frontier ───────────────────── -->
+        <div class="chart-grid-2" style="margin-bottom:1.5rem;">
+            <div class="widget">
+                <div class="widget-title">📉 Portfolio Drawdown Analysis</div>
+                <div class="chart-legend" id="dd-legend"></div>
+                <div class="chart-wrap chart-h300">
+                    <canvas id="ddChart"></canvas>
+                </div>
+            </div>
+            <div class="widget">
+                <div class="widget-title">🎯 Efficient Frontier — Monte Carlo (3,000 Portfolios)</div>
+                <div class="chart-wrap chart-h300">
+                    <canvas id="efChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Radar + Correlation ───────────────────────────────── -->
+        <div class="chart-grid-2" style="margin-bottom:1.5rem;">
+            <div class="widget">
+                <div class="widget-title">🕸️ Portfolio Risk Radar</div>
+                <div class="chart-wrap chart-h300" style="display:flex; align-items:center; justify-content:center;">
+                    <canvas id="radarChart" style="max-width:320px;"></canvas>
+                </div>
+                <p class="radar-note">All metrics normalised 0–10 (higher = better for return/sharpe; lower = better for vol/dd)</p>
+            </div>
+            <div class="widget">
+                <div class="widget-title">🔥 ETF Correlation Heatmap</div>
+                <div id="heatmap-container" style="overflow-x:auto;"></div>
+            </div>
+        </div>
+
+        <!-- ── Weight comparison bar chart ──────────────────────── -->
+        <div class="section-head">
+            <h2>⚖️ Weight Allocation Comparison</h2>
+        </div>
+        <div class="widget" style="margin-bottom:1.5rem;">
+            <div class="chart-wrap chart-h300">
+                <canvas id="weightChart"></canvas>
+            </div>
+        </div>
+
+        <!-- ── Individual ETF stats ──────────────────────────────── -->
+        <div class="section-head">
+            <h2>🏦 Individual ETF Statistics</h2>
+        </div>
+        <div class="etf-stat-grid" id="etf-stat-grid"></div>
+
+        <!-- Regenerate note -->
+        <div class="regen-note">
+            <span>⏱️ Compare data is generated live using the latest market data. Results are cached for 6 hours.
+            Click "Regenerate" to force a fresh analysis (takes ~30–60 seconds).</span>
+            <button class="regen-btn" onclick="loadCompareData(true)">🔄 Regenerate</button>
+        </div>
+
+        <!-- Disclaimer -->
+        <div style="margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(255,255,255,0.03);
+                    border:1px solid rgba(255,255,255,0.06); border-radius:10px;
+                    font-size:0.76rem; color:rgba(255,255,255,0.3); line-height:1.6;">
+            ⚠️ <strong style="color:rgba(255,255,255,0.5);">Disclaimer:</strong>
+            Analysis based on historical data 2019 to today. Past performance does not guarantee future results.
+            This is for educational purposes only. Not investment advice. Risk-free rate: 6.80% p.a. (India 10-yr G-Sec).
+        </div>
+    </div>
+</div>
+
+<script type="module">
+/* ── Chart instances ─────────────────────────────────────────────── */
+let charts = {};
+let compareData = null;
+let growthView = 'portfolios';
+
+/* ── Helpers ─────────────────────────────────────────────────────── */
+const ETF_COLORS = {
+    'NiftyBees':  '#60a5fa', 'JuniorBees': '#ef4444',
+    'BankBees':   '#f59e0b', 'GoldBees':   '#fbbf24', 'LiquidBees': '#a78bfa',
+};
+const PORT_COLORS = { maxsharpe: '#fbbf24', minvol: '#60a5fa', equal: '#94a3b8' };
+
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+function darkChartDefaults() {
+    return {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(15,23,42,0.95)',
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderWidth: 1,
+                titleColor: '#94a3b8',
+                bodyColor: '#e2e8f0',
+            }
+        },
+        scales: {
+            x: {
+                ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } },
+                grid:  { color: 'rgba(255,255,255,0.04)' }
+            },
+            y: {
+                ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } },
+                grid:  { color: 'rgba(255,255,255,0.06)' }
+            }
+        }
+    };
+}
+
+/* ── Scorecards ──────────────────────────────────────────────────── */
+function renderScorecards(data) {
+    const keys = ['maxsharpe', 'minvol', 'equal'];
+    const classes = { maxsharpe: 'sc-gold', minvol: 'sc-blue', equal: 'sc-grey' };
+    const badges  = { maxsharpe: 'badge-gold', minvol: 'badge-blue', equal: 'badge-grey' };
+    const subtitles = {
+        maxsharpe: 'Best risk-adjusted returns',
+        minvol:    'Lowest volatility portfolio',
+        equal:     'Naive 20% allocation benchmark',
+    };
+    const tickers = data.tickers;
+    const colors  = data.colors;
+    const etfColorMap = Object.fromEntries(tickers.map((t, i) => [t, colors[i]]));
+
+    const grid = document.getElementById('scorecard-grid');
+    grid.innerHTML = keys.map((key, ki) => {
+        const p = data.portfolios[key];
+        const m = p.metrics;
+        const w = p.weights;
+        const isWinner = key === 'maxsharpe';
+
+        // Build stacked bar segments
+        const segments = tickers.map(t => ({
+            name: t, pct: w[t] || 0, color: etfColorMap[t]
+        })).filter(s => s.pct > 0);
+
+        const segHtml = segments.map(s =>
+            `<div style="width:${s.pct}%; background:${s.color}; height:100%;"></div>`
+        ).join('');
+
+        const legHtml = segments.map(s =>
+            `<div class="sc-leg-item">
+                <div class="sc-leg-dot" style="background:${s.color}"></div>
+                ${s.name} ${s.pct.toFixed(1)}%
+            </div>`
+        ).join('');
+
+        const metricRows = [
+            ['Ann. Return',  `${m.return}%`,  m.return > 0 ? '#4ade80' : '#f87171'],
+            ['Volatility',   `${m.vol}%`,      '#94a3b8'],
+            ['Sharpe Ratio', `${m.sharpe}`,    '#fbbf24'],
+            ['Sortino Ratio',`${m.sortino}`,   '#60a5fa'],
+            ['Max Drawdown', `${m.max_dd}%`,   '#f87171'],
+            ['CVaR 95%',     `${m.cvar_95}%`,  '#f87171'],
+        ];
+
+        return `
+        <div class="scorecard ${classes[key]}">
+            ${isWinner ? '<div class="sc-winner-badge">🏆 Best Sharpe</div>' : ''}
+            <div class="sc-badge ${badges[key]}">${p.label}</div>
+            <div class="sc-title">${p.label.replace(/⭐|🛡️|⚖️/g,'').trim()}</div>
+            <div class="sc-subtitle">${subtitles[key]}</div>
+            <div class="sc-metrics">
+                ${metricRows.map(([label, val, col]) => `
+                <div class="sc-metric">
+                    <div class="sc-metric-label">${label}</div>
+                    <div class="sc-metric-val" style="color:${col}">${val}</div>
+                </div>`).join('')}
+            </div>
+            <div class="sc-weights" style="margin-top:1rem;">
+                <div style="font-size:0.7rem; color:rgba(255,255,255,0.3); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:.06em;">Allocation</div>
+                <div class="sc-w-bar-wrap">${segHtml}</div>
+                <div class="sc-legend">${legHtml}</div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+/* ── Comparison table ────────────────────────────────────────────── */
+function renderCompareTable(data) {
+    const p = data.portfolios;
+    const sh = p.maxsharpe.metrics;
+    const mv = p.minvol.metrics;
+    const eq = p.equal.metrics;
+
+    const rows = [
+        { label: 'Expected Annual Return', fmt: v => `${v}%`, sh: sh.return, mv: mv.return, eq: eq.return, best: 'highest', unit: 'return' },
+        { label: 'Annual Volatility (Risk)',fmt: v => `${v}%`, sh: sh.vol,    mv: mv.vol,    eq: eq.vol,    best: 'lowest'  },
+        { label: 'Sharpe Ratio',            fmt: v => v,       sh: sh.sharpe, mv: mv.sharpe, eq: eq.sharpe, best: 'highest' },
+        { label: 'Sortino Ratio',           fmt: v => v,       sh: sh.sortino,mv: mv.sortino,eq: eq.sortino,best: 'highest' },
+        { label: 'Max Drawdown',            fmt: v => `${v}%`, sh: sh.max_dd, mv: mv.max_dd, eq: eq.max_dd, best: 'highest' },
+        { label: 'Calmar Ratio',            fmt: v => v,       sh: sh.calmar, mv: mv.calmar, eq: eq.calmar, best: 'highest' },
+        { label: 'CVaR 95% (Daily)',        fmt: v => `${v}%`, sh: sh.cvar_95,mv: mv.cvar_95,eq: eq.cvar_95,best: 'highest' },
+    ];
+
+    const tbody = document.getElementById('cmp-tbody');
+    tbody.innerHTML = rows.map(row => {
+        const vals = { sh: row.sh, mv: row.mv, eq: row.eq };
+        const nums = [row.sh, row.mv, row.eq];
+        const bestVal = row.best === 'highest' ? Math.max(...nums) : Math.min(...nums);
+
+        const cell = (v, key) => {
+            const isBest = v === bestVal;
+            const portColor = key === 'sh' ? 'best-gold' : key === 'mv' ? 'best-blue' : '';
+            const numClass = typeof v === 'number' && v < 0 ? 'neg-val' : '';
+            return `<td class="${isBest ? `best-cell ${portColor}` : numClass}">
+                ${row.fmt(v)} ${isBest ? '✓' : ''}
+            </td>`;
+        };
+
+        return `<tr>
+            <td>${row.label}</td>
+            ${cell(row.sh, 'sh')}
+            ${cell(row.mv, 'mv')}
+            ${cell(row.eq, 'eq')}
+        </tr>`;
+    }).join('');
+}
+
+/* ── Growth chart ────────────────────────────────────────────────── */
+function buildGrowthDatasets(data) {
+    const all = [];
+    const portMap = {
+        maxsharpe: { label: '⭐ Max Sharpe',    color: '#fbbf24', width: 2.5, dash: [] },
+        minvol:    { label: '🛡️ Min Volatility', color: '#60a5fa', width: 2.5, dash: [] },
+        equal:     { label: '⚖️ Equal Weight',   color: '#94a3b8', width: 1.8, dash: [4,3] },
+    };
+    const etfKeys = data.tickers;
+
+    if (growthView === 'portfolios' || growthView === 'all') {
+        Object.entries(portMap).forEach(([key, cfg]) => {
+            all.push({
+                label: cfg.label, data: data.growth[key],
+                borderColor: cfg.color, backgroundColor: 'transparent',
+                borderWidth: cfg.width, borderDash: cfg.dash,
+                pointRadius: 0, tension: 0.1,
+            });
+        });
+    }
+    if (growthView === 'etfs' || growthView === 'all') {
+        etfKeys.forEach((t, i) => {
+            all.push({
+                label: t, data: data.growth[t],
+                borderColor: data.colors[i], backgroundColor: 'transparent',
+                borderWidth: 1.5, borderDash: [2,2],
+                pointRadius: 0, tension: 0.1,
+            });
+        });
+    }
+    return all;
+}
+
+function renderGrowthChart(data) {
+    const datasets = buildGrowthDatasets(data);
+    const labels = data.dates;
+
+    // Legend
+    const legendEl = document.getElementById('growth-legend');
+    legendEl.innerHTML = datasets.map(ds => `
+        <div class="legend-item" onclick="toggleDs('growthChart','${ds.label}')">
+            <div class="legend-dot" style="background:${ds.borderColor}"></div>
+            ${ds.label}
+        </div>`).join('');
+
+    destroyChart('growthChart');
+    const opts = darkChartDefaults();
+    opts.interaction = { mode: 'index', intersect: false };
+    opts.plugins.tooltip.callbacks = { label: ctx => ` ${ctx.dataset.label}: ₹${ctx.parsed.y.toFixed(2)}` };
+    opts.scales.y.title = { display: true, text: 'Value (₹100 invested)', color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
+
+    charts['growthChart'] = new Chart(
+        document.getElementById('growthChart').getContext('2d'),
+        { type: 'line', data: { labels, datasets }, options: opts }
+    );
+}
+
+window.setGrowthView = function(v) {
+    growthView = v;
+    document.querySelectorAll('.view-tab').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.view-tab[onclick*="'${v}'"]`).classList.add('active');
+    if (compareData) renderGrowthChart(compareData);
+};
+
+/* ── Drawdown chart ──────────────────────────────────────────────── */
+function renderDrawdownChart(data) {
+    const labels = data.dates;
+    const portMap = {
+        maxsharpe: { label: '⭐ Max Sharpe',    color: '#fbbf24' },
+        minvol:    { label: '🛡️ Min Volatility', color: '#60a5fa' },
+        equal:     { label: '⚖️ Equal Weight',   color: '#94a3b8' },
+    };
+    const datasets = Object.entries(portMap).map(([key, cfg]) => ({
+        label: cfg.label, data: data.drawdown[key],
+        borderColor: cfg.color,
+        backgroundColor: cfg.color + '15',
+        fill: true, borderWidth: 1.5,
+        pointRadius: 0, tension: 0.1,
+    }));
+
+    const legendEl = document.getElementById('dd-legend');
+    legendEl.innerHTML = datasets.map(ds => `
+        <div class="legend-item"><div class="legend-dot" style="background:${ds.borderColor}"></div>${ds.label}</div>`
+    ).join('');
+
+    destroyChart('ddChart');
+    const opts = darkChartDefaults();
+    opts.plugins.tooltip.callbacks = { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%` };
+    opts.scales.y.title = { display: true, text: 'Drawdown (%)', color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
+
+    charts['ddChart'] = new Chart(
+        document.getElementById('ddChart').getContext('2d'),
+        { type: 'line', data: { labels, datasets }, options: opts }
+    );
+}
+
+/* ── Efficient Frontier scatter ──────────────────────────────────── */
+function renderEFChart(data) {
+    const mc = data.monte_carlo;
+    const ports = data.portfolios;
+
+    // Downsample MC to 1000 points for performance
+    const step = Math.ceil(mc.vols.length / 1000);
+    const mcVols = mc.vols.filter((_, i) => i % step === 0);
+    const mcRets = mc.returns.filter((_, i) => i % step === 0);
+    const mcSR   = mc.sharpes.filter((_, i) => i % step === 0);
+    const maxSR  = Math.max(...mcSR);
+    const minSR  = Math.min(...mcSR);
+
+    const mcDataset = {
+        label: 'Monte Carlo Portfolios',
+        data: mcVols.map((v, i) => ({ x: v, y: mcRets[i] })),
+        backgroundColor: mcSR.map(sr => {
+            const t = (sr - minSR) / (maxSR - minSR);
+            const r = Math.round(248 - t * 174);
+            const g = Math.round(113 + t * 95);
+            const b = Math.round(113 - t * 13);
+            return `rgba(${r},${g},${b},0.5)`;
+        }),
+        pointRadius: 2, pointHoverRadius: 4, showLine: false,
+    };
+
+    const portPoints = [
+        { key: 'maxsharpe', label: '⭐ Max Sharpe',    color: '#fbbf24', radius: 10, style: 'star' },
+        { key: 'minvol',    label: '🛡️ Min Vol',        color: '#60a5fa', radius: 9,  style: 'rect' },
+        { key: 'equal',     label: '⚖️ Equal',          color: '#f87171', radius: 8,  style: 'triangle' },
+    ].map(p => ({
+        label: p.label,
+        data: [{ x: ports[p.key].metrics.vol, y: ports[p.key].metrics.return }],
+        backgroundColor: p.color,
+        borderColor: '#fff', borderWidth: 1.5,
+        pointRadius: p.radius, pointStyle: p.style,
+        showLine: false,
+    }));
+
+    destroyChart('efChart');
+    const opts = {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(15,23,42,0.95)',
+                callbacks: {
+                    label: ctx => ` ${ctx.dataset.label}: Vol ${ctx.parsed.x.toFixed(2)}%, Ret ${ctx.parsed.y.toFixed(2)}%`
+                }
+            }
+        },
+        scales: {
+            x: {
+                title: { display: true, text: 'Volatility (%)', color: 'rgba(255,255,255,0.4)', font: { size: 10 } },
+                ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } },
+                grid: { color: 'rgba(255,255,255,0.05)' },
+            },
+            y: {
+                title: { display: true, text: 'Expected Return (%)', color: 'rgba(255,255,255,0.4)', font: { size: 10 } },
+                ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } },
+                grid: { color: 'rgba(255,255,255,0.06)' },
+            }
+        }
+    };
+
+    charts['efChart'] = new Chart(
+        document.getElementById('efChart').getContext('2d'),
+        { type: 'scatter', data: { datasets: [mcDataset, ...portPoints] }, options: opts }
+    );
+}
+
+/* ── Radar chart ──────────────────────────────────────────────────── */
+function renderRadarChart(data) {
+    const ports = data.portfolios;
+
+    function normalise(val, min, max, invertBad = false) {
+        const t = (val - min) / (max - min || 1);
+        return invertBad ? (1 - t) * 10 : t * 10;
+    }
+
+    const ret_vals  = [ports.maxsharpe.metrics.return, ports.minvol.metrics.return, ports.equal.metrics.return];
+    const vol_vals  = [ports.maxsharpe.metrics.vol,    ports.minvol.metrics.vol,    ports.equal.metrics.vol];
+    const sr_vals   = [ports.maxsharpe.metrics.sharpe, ports.minvol.metrics.sharpe, ports.equal.metrics.sharpe];
+    const dd_vals   = [Math.abs(ports.maxsharpe.metrics.max_dd), Math.abs(ports.minvol.metrics.max_dd), Math.abs(ports.equal.metrics.max_dd)];
+    const sor_vals  = [ports.maxsharpe.metrics.sortino,ports.minvol.metrics.sortino,ports.equal.metrics.sortino];
+
+    const mk = (vals, invert=false) => {
+        const mn = Math.min(...vals); const mx = Math.max(...vals);
+        return vals.map(v => normalise(v, mn, mx, invert));
+    };
+
+    const ret_n  = mk(ret_vals);
+    const vol_n  = mk(vol_vals, true); // lower vol = better
+    const sr_n   = mk(sr_vals);
+    const dd_n   = mk(dd_vals, true);  // lower dd = better
+    const sor_n  = mk(sor_vals);
+
+    const labels = ['Return', 'Low Volatility', 'Sharpe', 'Low Drawdown', 'Sortino'];
+
+    const portCfgs = [
+        { key: 'maxsharpe', label: '⭐ Max Sharpe',    color: '#fbbf24', idx: 0 },
+        { key: 'minvol',    label: '🛡️ Min Volatility', color: '#60a5fa', idx: 1 },
+        { key: 'equal',     label: '⚖️ Equal Weight',   color: '#94a3b8', idx: 2 },
+    ];
+
+    const datasets = portCfgs.map(p => ({
+        label: p.label,
+        data: [ret_n[p.idx], vol_n[p.idx], sr_n[p.idx], dd_n[p.idx], sor_n[p.idx]],
+        borderColor: p.color, backgroundColor: p.color + '25',
+        borderWidth: 2, pointRadius: 4, pointBackgroundColor: p.color,
+    }));
+
+    destroyChart('radarChart');
+    charts['radarChart'] = new Chart(
+        document.getElementById('radarChart').getContext('2d'),
+        {
+            type: 'radar',
+            data: { labels, datasets },
+            options: {
+                responsive: true, maintainAspectRatio: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    r: {
+                        min: 0, max: 10,
+                        ticks: { stepSize: 2, color: 'rgba(255,255,255,0.2)', backdropColor: 'transparent', font: { size: 9 } },
+                        grid:  { color: 'rgba(255,255,255,0.08)' },
+                        angleLines: { color: 'rgba(255,255,255,0.08)' },
+                        pointLabels: { color: 'rgba(255,255,255,0.55)', font: { size: 10 } },
+                    }
+                }
+            }
+        }
+    );
+}
+
+/* ── Correlation heatmap ─────────────────────────────────────────── */
+function renderHeatmap(data) {
+    const labels = data.correlation.labels;
+    const matrix = data.correlation.matrix;
+    const n = labels.length;
+    const container = document.getElementById('heatmap-container');
+
+    function valToColor(v) {
+        if (v > 0) {
+            const t = Math.min(v, 1);
+            return `rgba(74,222,128,${0.15 + t * 0.7})`;
+        } else {
+            const t = Math.min(Math.abs(v), 1);
+            return `rgba(248,113,113,${0.15 + t * 0.7})`;
+        }
+    }
+
+    const size = Math.floor(280 / n);
+    const html = `
+        <div style="display:grid; grid-template-columns: auto repeat(${n}, ${size}px); gap:2px; align-items:center; justify-content:start; font-size:0.7rem;">
+            <div></div>
+            ${labels.map(l => `<div style="text-align:center; color:rgba(255,255,255,0.5); font-weight:600; padding:2px 0;">${l.replace('Bees','')}</div>`).join('')}
+            ${matrix.map((row, ri) => `
+                <div style="color:rgba(255,255,255,0.5); font-weight:600; padding:0 6px 0 0; white-space:nowrap;">${labels[ri].replace('Bees','')}</div>
+                ${row.map((v, ci) => `
+                <div class="corr-cell" style="background:${valToColor(v)}; width:${size}px; height:${size}px; color:${Math.abs(v) > 0.5 ? '#fff' : 'rgba(255,255,255,0.7)'};">
+                    ${v.toFixed(2)}
+                </div>`).join('')}
+            `).join('')}
+        </div>
+        <div style="margin-top:0.8rem; font-size:0.72rem; color:rgba(255,255,255,0.3);">
+            Green = positive correlation · Red = negative correlation
+        </div>`;
+    container.innerHTML = html;
+}
+
+/* ── Weight bar chart ────────────────────────────────────────────── */
+function renderWeightChart(data) {
+    const tickers = data.tickers;
+    const colors  = data.colors;
+    const ports   = data.portfolios;
+    const keys    = ['maxsharpe', 'minvol', 'equal'];
+    const labels  = { maxsharpe: '⭐ Max Sharpe', minvol: '🛡️ Min Vol', equal: '⚖️ Equal' };
+
+    const datasets = tickers.map((t, i) => ({
+        label: t,
+        data: keys.map(k => ports[k].weights[t] || 0),
+        backgroundColor: colors[i],
+        borderRadius: 4, borderWidth: 0,
+    }));
+
+    destroyChart('weightChart');
+    const opts = darkChartDefaults();
+    opts.plugins.tooltip.callbacks = { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` };
+    opts.scales.x.stacked = false;
+    opts.scales.y.stacked = false;
+    opts.scales.y.title = { display: true, text: 'Weight (%)', color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
+    opts.scales.y.max = 50;
+    opts.plugins.legend = {
+        display: true,
+        position: 'bottom',
+        labels: { color: 'rgba(255,255,255,0.6)', font: { size: 10 }, boxWidth: 10, padding: 12 }
+    };
+
+    charts['weightChart'] = new Chart(
+        document.getElementById('weightChart').getContext('2d'),
+        {
+            type: 'bar',
+            data: { labels: keys.map(k => labels[k]), datasets },
+            options: opts
+        }
+    );
+}
+
+/* ── ETF stat cards ──────────────────────────────────────────────── */
+function renderETFStats(data) {
+    const grid = document.getElementById('etf-stat-grid');
+    grid.innerHTML = data.asset_stats.map(s => `
+        <div class="etf-stat-card" style="border-color:${s.color}30;">
+            <div class="etf-stat-name" style="color:${s.color};">${s.name}</div>
+            <div class="etf-stat-rows">
+                ${[
+                    ['Ann. Return',  `${s.ann_return}%`,  s.ann_return > 0 ? '#4ade80' : '#f87171'],
+                    ['Ann. Vol.',    `${s.ann_vol}%`,      '#94a3b8'],
+                    ['Sharpe',       `${s.sharpe}`,        '#fbbf24'],
+                    ['Max DD',       `${s.max_dd}%`,       '#f87171'],
+                    ['Total Ret.',   `${s.total_return}%`, s.total_return > 0 ? '#4ade80' : '#f87171'],
+                    ['Best Day',    `+${s.best_day}%`,    '#4ade80'],
+                    ['Worst Day',   `${s.worst_day}%`,    '#f87171'],
+                ].map(([lbl, val, col]) => `
+                <div class="etf-stat-row">
+                    <span class="etf-stat-lbl">${lbl}</span>
+                    <span style="font-weight:600; color:${col};">${val}</span>
+                </div>`).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+/* ── Dataset toggle ──────────────────────────────────────────────── */
+window.toggleDs = function(chartId, label) {
+    const chart = charts[chartId];
+    if (!chart) return;
+    const ds = chart.data.datasets.find(d => d.label === label);
+    if (ds) { ds.hidden = !ds.hidden; chart.update(); }
+};
+
+/* ── Load & render all ───────────────────────────────────────────── */
+async function loadCompareData(force = false) {
+    document.getElementById('cmp-loading').style.display = 'flex';
+    document.getElementById('cmp-content').style.display = 'none';
+    document.getElementById('data-status').textContent = 'Loading live data…';
+
+    const url = force ? '/api/compare?force=1' : '/api/compare';
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        compareData = data;
+
+        renderScorecards(data);
+        renderCompareTable(data);
+        renderGrowthChart(data);
+        renderDrawdownChart(data);
+        renderEFChart(data);
+        renderRadarChart(data);
+        renderHeatmap(data);
+        renderWeightChart(data);
+        renderETFStats(data);
+
+        const meta = data.meta;
+        document.getElementById('data-status').textContent =
+            `Data: ${meta.start} → ${meta.end} · ${meta.n_days} trading days`;
+
+        document.getElementById('cmp-loading').style.display = 'none';
+        document.getElementById('cmp-content').style.display = 'block';
+
+    } catch (err) {
+        document.getElementById('cmp-loading').innerHTML = `
+            <div style="text-align:center; color:#f87171;">
+                <div style="font-size:2.5rem; margin-bottom:0.75rem;">⚠️</div>
+                <p style="font-weight:600; margin-bottom:0.5rem;">Analysis failed: ${err.message}</p>
+                <p style="font-size:0.8rem; color:rgba(255,255,255,0.4); margin-bottom:1.5rem;">
+                    The API may be starting up cold. Please wait 30 seconds and retry.
+                </p>
+                <button onclick="loadCompareData()" style="padding:0.6rem 1.5rem;
+                    background:#3b82f6; color:white; border:none; border-radius:8px;
+                    cursor:pointer; font-weight:600; font-size:0.9rem;">
+                    🔄 Retry
+                </button>
+            </div>`;
+        document.getElementById('data-status').textContent = 'Load failed';
+    }
+}
+
+window.loadCompareData = loadCompareData;
+loadCompareData();
+</script>
+</body>
+</html>
