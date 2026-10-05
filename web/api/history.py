@@ -25,7 +25,7 @@ class handler(BaseHTTPRequestHandler):
 
             tickers = [
                 'NIFTYBEES.NS', 'JUNIORBEES.NS', 'BANKBEES.NS', 'MID150BEES.NS', 
-                'MON100.NS', 'GOLDBEES.NS', 'SILVERBEES.NS', 'GSEC10IETF.NS', 'LIQUIDBEES.NS'
+                'MON100.NS', 'GOLDBEES.NS', 'SILVERBEES.NS', 'SETF10GILT.NS', 'LIQUIDBEES.NS'
             ]
             names = {
                 'NIFTYBEES.NS':  'Nifty 50 BeES',
@@ -35,7 +35,7 @@ class handler(BaseHTTPRequestHandler):
                 'MON100.NS':     'Motilal Nasdaq 100',
                 'GOLDBEES.NS':   'Gold BeES',
                 'SILVERBEES.NS': 'Silver BeES',
-                'GSEC10IETF.NS': '10-Yr G-Sec ETF',
+                'SETF10GILT.NS': '10-Yr G-Sec ETF',
                 'LIQUIDBEES.NS': 'Liquid BeES',
             }
             colors = {
@@ -46,7 +46,7 @@ class handler(BaseHTTPRequestHandler):
                 'MON100.NS':     '#8b5cf6',
                 'GOLDBEES.NS':   '#fbbf24',
                 'SILVERBEES.NS': '#94a3b8',
-                'GSEC10IETF.NS': '#ec4899',
+                'SETF10GILT.NS': '#ec4899',
                 'LIQUIDBEES.NS': '#a78bfa',
             }
 

@@ -36,17 +36,17 @@ TRADING_DAYS    = 252
 
 TICKERS  = [
     'NIFTYBEES.NS','JUNIORBEES.NS','BANKBEES.NS','MID150BEES.NS',
-    'MON100.NS','GOLDBEES.NS','SILVERBEES.NS','GSEC10IETF.NS','LIQUIDBEES.NS'
+    'MON100.NS','GOLDBEES.NS','SILVERBEES.NS','SETF10GILT.NS','LIQUIDBEES.NS'
 ]
 SHORT    = {
     'NIFTYBEES.NS':'NiftyBees', 'JUNIORBEES.NS':'JuniorBees', 'BANKBEES.NS':'BankBees',
     'MID150BEES.NS':'Mid150Bees', 'MON100.NS':'Nasdaq100', 'GOLDBEES.NS':'GoldBees',
-    'SILVERBEES.NS':'SilverBees', 'GSEC10IETF.NS':'GSec10Yr', 'LIQUIDBEES.NS':'LiquidBees'
+    'SILVERBEES.NS':'SilverBees', 'SETF10GILT.NS':'GSec10Yr', 'LIQUIDBEES.NS':'LiquidBees'
 }
 FULL     = {
     'NIFTYBEES.NS':'Nifty 50 BeES', 'JUNIORBEES.NS':'Junior BeES (Nifty Next 50)',
     'BANKBEES.NS':'Bank BeES', 'MID150BEES.NS':'Midcap 150 BeES', 'MON100.NS':'Motilal Nasdaq 100',
-    'GOLDBEES.NS':'Gold BeES', 'SILVERBEES.NS':'Silver BeES', 'GSEC10IETF.NS':'10-Yr G-Sec ETF',
+    'GOLDBEES.NS':'Gold BeES', 'SILVERBEES.NS':'Silver BeES', 'SETF10GILT.NS':'10-Yr G-Sec ETF',
     'LIQUIDBEES.NS':'Liquid BeES'
 }
 DESC     = {
@@ -57,7 +57,7 @@ DESC     = {
     'MON100.NS'    : 'Tracks Nasdaq 100 — US Tech exposure + USD currency hedge',
     'GOLDBEES.NS'  : 'Physical gold ETF — tracks domestic gold spot price',
     'SILVERBEES.NS': 'Physical silver ETF — industrial commodity exposure',
-    'GSEC10IETF.NS': 'Tracks 10-Yr Sovereign Govt Bonds — long-duration fixed income',
+    'SETF10GILT.NS': 'Tracks 10-Yr Sovereign Govt Bonds — long-duration fixed income',
     'LIQUIDBEES.NS': 'Overnight liquid fund — near-zero risk, money-market returns',
 }
 
@@ -371,7 +371,7 @@ def generate_report():
             'NIFTYBEES.NS': 'Equity — Large Cap', 'JUNIORBEES.NS': 'Equity — Mid-Large Cap',
             'BANKBEES.NS': 'Equity — Banking', 'MID150BEES.NS': 'Equity — Midcap',
             'MON100.NS': 'Equity — US Tech (Hedged)', 'GOLDBEES.NS': 'Commodity — Gold',
-            'SILVERBEES.NS': 'Commodity — Silver', 'GSEC10IETF.NS': 'Fixed Income — Govt Bonds',
+            'SILVERBEES.NS': 'Commodity — Silver', 'SETF10GILT.NS': 'Fixed Income — Govt Bonds',
             'LIQUIDBEES.NS': 'Cash — Liquid Fund'
         }
         for hx,h in zip(col_positions,hdrs2):
@@ -547,7 +547,7 @@ def generate_report():
         hist_top = tbl_bottom - 0.045
     
         # Histogram grid for each ETF (wrap after 5)
-        hist_h = 0.15; hist_w = 0.165; gap_x = 0.02; gap_y = 0.05
+        hist_h = 0.13; hist_w = 0.165; gap_x = 0.02; gap_y = 0.09
         for i, t in enumerate(available):
             row = i // 5
             col = i % 5
