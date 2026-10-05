@@ -1,0 +1,148 @@
+#!/usr/bin/env python3
+"""
+generate_v2_docs.py — Generates a comprehensive HTML/PDF-ready Manual for v2.0
+Explains the new Time Series, Econometrics, and Stress Testing additions with a diagram.
+"""
+
+import os
+import pathlib
+
+OUTPUT_DIR = pathlib.Path(__file__).parent / "output"
+OUTPUT_DIR.mkdir(exist_ok=True)
+DOC_PATH = OUTPUT_DIR / "ETF_Quant_v2_Architecture_Manual.html"
+
+HTML_CONTENT = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian ETF Quant Engine v2.0 - My Architecture Manual</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --primary: #2563eb;
+            --border: #e5e7eb;
+            --code-bg: #f3f4f6;
+            --code-text: #111827;
+            --accent: #f59e0b;
+        }
+        @media print {
+            body { background: white; color: black; font-size: 11pt; }
+            .no-print { display: none; }
+            .page-break { page-break-before: always; }
+            pre { border: 1px solid #ccc; page-break-inside: avoid; }
+            h2, h3 { page-break-after: avoid; }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: var(--text); background: var(--bg); padding: 40px 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .cover { text-align: center; padding: 100px 20px; border-bottom: 2px solid var(--border); margin-bottom: 40px; }
+        .cover h1 { font-size: 42px; font-weight: 800; color: #111827; margin-bottom: 16px; letter-spacing: -0.5px; }
+        .cover p { font-size: 18px; color: var(--muted); max-width: 600px; margin: 0 auto; }
+        .cover .version { display: inline-block; background: #f59e0b; color: white; padding: 4px 12px; border-radius: 99px; font-weight: 600; font-size: 14px; margin-bottom: 16px; }
+        
+        h2 { font-size: 28px; font-weight: 700; color: #111827; margin: 40px 0 20px 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+        h3 { font-size: 20px; font-weight: 600; color: #374151; margin: 24px 0 12px 0; }
+        p { margin-bottom: 16px; }
+        ul, ol { margin-bottom: 16px; padding-left: 24px; }
+        li { margin-bottom: 8px; }
+        
+        .box { background: #f8fafc; border-left: 4px solid var(--primary); padding: 16px 20px; margin: 24px 0; border-radius: 0 8px 8px 0; }
+        .box h4 { font-size: 16px; margin-bottom: 8px; color: #0f172a; }
+        
+        pre { background: var(--code-bg); color: var(--code-text); padding: 16px; border-radius: 8px; overflow-x: auto; font-family: 'Fira Code', monospace; font-size: 13px; margin-bottom: 20px; border: 1px solid var(--border); }
+        code { font-family: 'Fira Code', monospace; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: #b91c1c; }
+        
+        .mermaid { background: #f8fafc; padding: 20px; border: 1px solid var(--border); border-radius: 8px; margin: 24px 0; text-align: center; }
+        .math { font-family: "Times New Roman", serif; font-size: 18px; font-style: italic; text-align: center; margin: 24px 0; padding: 16px; background: #f9fafb; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="no-print" style="text-align: right; margin-bottom: 20px;">
+            <button onclick="window.print()" style="background: #f59e0b; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;">🖨️ Print to PDF</button>
+        </div>
+
+        <div class="cover">
+            <span class="version">VERSION 2.0 ADVANCED</span>
+            <h1>My Indian ETF Portfolio Quant Engine</h1>
+            <p>v2.0 Structural Code Explanation & Time Series Architecture</p>
+            <p style="font-size: 14px; margin-top: 24px; color: #9ca3af;">Documenting my Phase 2 & Phase 3 Time-Series Econometrics additions.</p>
+        </div>
+
+        <h2>1. Executive Summary</h2>
+        <p>I built this v2.0 architecture manual to document the advanced quantitative additions I made to my engine. After completing the static Markowitz MPT model in v1.0, I successfully expanded the universe to 8+ ETFs (including Midcaps, Nasdaq 100, Silver, and G-Secs) and integrated dynamic time-series analysis.</p>
+
+        <h2>2. My New v2.0 Structural Diagram</h2>
+        <p>This flowchart illustrates how I structured the data flow in my updated <code>mpt_core.py</code> engine:</p>
+        
+        <div class="mermaid">
+        flowchart TD
+            A[Yahoo Finance Data Ingestion] --> B[Data Cleaning & Split Healing]
+            B --> C{Select Basket}
+            C -->|CLASSIC_5| D[5-ETF DataFrame]
+            C -->|ALL_WEATHER_8| D2[8-ETF DataFrame]
+            
+            D2 --> E(Static MPT Optimisation)
+            D2 --> F(Time Series & Econometrics)
+            
+            E --> E1[Covariance Matrix]
+            E --> E2[SLSQP Max Sharpe Solver]
+            E --> E3[Dirichlet Monte Carlo]
+            
+            F --> F1[Rolling Metrics window=252]
+            F --> F2[RiskMetrics EWMA Volatility λ=0.94]
+            F --> F3[Walk-Forward Backtesting]
+            F --> F4[Historical Stress Tester]
+            
+            E2 --> G[Final Portfolio Weights]
+            F3 --> G
+            G --> H[Web UI / Vercel Serverless]
+        </div>
+
+        <div class="page-break"></div>
+
+        <h2>3. Phase 2: Time Series & Econometrics</h2>
+        
+        <h3>3.1 EWMA Volatility (RiskMetrics)</h3>
+        <p>Static standard deviation assumes volatility is constant over time. In reality, financial markets exhibit <strong>Volatility Clustering</strong> (ARCH effects). To capture this, I implemented the J.P. Morgan RiskMetrics™ Exponentially Weighted Moving Average (EWMA) model.</p>
+        <p>I used the standard institutional decay factor of <code>lambda = 0.94</code> for daily returns, assigning higher weight to recent shocks.</p>
+        
+        <pre><code># My EWMA Volatility Implementation
+def compute_ewma_volatility(daily_returns, lambda_decay=0.94):
+    ewma_var = daily_returns.ewm(alpha=(1 - lambda_decay)).var()
+    ewma_vol = np.sqrt(ewma_var) * np.sqrt(TRADING_DAYS)
+    return ewma_vol</code></pre>
+
+        <h3>3.2 Walk-Forward Backtesting (Systematic Rebalancing)</h3>
+        <p>In v1.0, the portfolio growth assumed static weights drifting over time. I built a dynamic walk-forward backtester that simulates exactly what an asset manager does: Quarterly Rebalancing.</p>
+        <p>My algorithm loops through the daily returns, updating the portfolio EOD value, and on the last trading day of the quarter (<code>frequency='QE'</code>), it systematically resets the asset buckets back to the target optimal weights.</p>
+        
+        <h2>4. Phase 3: Stress Testing</h2>
+        <p>I added a dedicated <code>stress_test_drawdowns()</code> function to evaluate how my optimal portfolios perform during known structural breaks and historical crises. I hardcoded three major events:</p>
+        <ul>
+            <li><strong>COVID-19 Crash</strong> (Feb-Apr 2020)</li>
+            <li><strong>Rate Hike Tech Shock</strong> (Jan-Oct 2022)</li>
+            <li><strong>Election Volatility</strong> (Jun 2024)</li>
+        </ul>
+        <p>My code slices the timezone-naive cumulative growth series across these dates and dynamically calculates the maximum drawdown peak-to-trough (<code>drawdown.min()</code>).</p>
+
+        <p style="text-align: center; margin-top: 60px; color: #9ca3af; font-size: 14px;">End of My v2.0 Architecture Manual</p>
+    </div>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>
+"""
+
+with open(DOC_PATH, "w", encoding="utf-8") as f:
+    f.write(HTML_CONTENT)
+print(f"Generated v2.0 Manual: {DOC_PATH}")
+
+if __name__ == "__main__":
+    pass # Expose as module, or run if explicitly told to

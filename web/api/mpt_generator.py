@@ -34,20 +34,34 @@ MAX_WEIGHT      = 0.45
 N_MC            = 10_000
 TRADING_DAYS    = 252
 
-TICKERS  = ['NIFTYBEES.NS','JUNIORBEES.NS','BANKBEES.NS','GOLDBEES.NS','LIQUIDBEES.NS']
-SHORT    = {'NIFTYBEES.NS':'NiftyBees','JUNIORBEES.NS':'JuniorBees',
-            'BANKBEES.NS':'BankBees','GOLDBEES.NS':'GoldBees','LIQUIDBEES.NS':'LiquidBees'}
-FULL     = {'NIFTYBEES.NS':'Nifty 50 BeES','JUNIORBEES.NS':'Junior BeES (Nifty Next 50)',
-            'BANKBEES.NS':'Bank BeES','GOLDBEES.NS':'Gold BeES','LIQUIDBEES.NS':'Liquid BeES'}
+TICKERS  = [
+    'NIFTYBEES.NS','JUNIORBEES.NS','BANKBEES.NS','MID150BEES.NS',
+    'MON100.NS','GOLDBEES.NS','SILVERBEES.NS','GSEC10IETF.NS','LIQUIDBEES.NS'
+]
+SHORT    = {
+    'NIFTYBEES.NS':'NiftyBees', 'JUNIORBEES.NS':'JuniorBees', 'BANKBEES.NS':'BankBees',
+    'MID150BEES.NS':'Mid150Bees', 'MON100.NS':'Nasdaq100', 'GOLDBEES.NS':'GoldBees',
+    'SILVERBEES.NS':'SilverBees', 'GSEC10IETF.NS':'GSec10Yr', 'LIQUIDBEES.NS':'LiquidBees'
+}
+FULL     = {
+    'NIFTYBEES.NS':'Nifty 50 BeES', 'JUNIORBEES.NS':'Junior BeES (Nifty Next 50)',
+    'BANKBEES.NS':'Bank BeES', 'MID150BEES.NS':'Midcap 150 BeES', 'MON100.NS':'Motilal Nasdaq 100',
+    'GOLDBEES.NS':'Gold BeES', 'SILVERBEES.NS':'Silver BeES', 'GSEC10IETF.NS':'10-Yr G-Sec ETF',
+    'LIQUIDBEES.NS':'Liquid BeES'
+}
 DESC     = {
-    'NIFTYBEES.NS' : 'Tracks Nifty 50 — India\'s benchmark large-cap index (50 stocks)',
+    'NIFTYBEES.NS' : "Tracks Nifty 50 — India's benchmark large-cap index (50 stocks)",
     'JUNIORBEES.NS': 'Tracks Nifty Next 50 — mid-to-large cap segment (50 stocks)',
     'BANKBEES.NS'  : 'Tracks Nifty Bank — top 12 liquid banking stocks',
+    'MID150BEES.NS': 'Tracks Nifty Midcap 150 — high growth midcap segment',
+    'MON100.NS'    : 'Tracks Nasdaq 100 — US Tech exposure + USD currency hedge',
     'GOLDBEES.NS'  : 'Physical gold ETF — tracks domestic gold spot price',
+    'SILVERBEES.NS': 'Physical silver ETF — industrial commodity exposure',
+    'GSEC10IETF.NS': 'Tracks 10-Yr Sovereign Govt Bonds — long-duration fixed income',
     'LIQUIDBEES.NS': 'Overnight liquid fund — near-zero risk, money-market returns',
 }
 
-PALETTE  = ['#1565C0','#E53935','#F9A825','#2E7D32','#6A1B9A']
+PALETTE  = ['#1565C0','#E53935','#F9A825','#2E7D32','#6A1B9A', '#009688', '#9E9E9E', '#795548', '#607D8B']
 DARK     = '#1A1A2E'
 GREY     = '#555555'
 LGREY    = '#888888'
@@ -353,16 +367,21 @@ def generate_report():
     
         col_positions = [0.05, 0.17, 0.38, 0.80]
         hdrs2 = ['Ticker', 'Full Name', 'Description', 'Category']
-        cats  = ['Equity — Large Cap','Equity — Mid-Large Cap',
-                 'Equity — Banking','Commodity','Fixed Income / Liquid']
+        cats_dict = {
+            'NIFTYBEES.NS': 'Equity — Large Cap', 'JUNIORBEES.NS': 'Equity — Mid-Large Cap',
+            'BANKBEES.NS': 'Equity — Banking', 'MID150BEES.NS': 'Equity — Midcap',
+            'MON100.NS': 'Equity — US Tech (Hedged)', 'GOLDBEES.NS': 'Commodity — Gold',
+            'SILVERBEES.NS': 'Commodity — Silver', 'GSEC10IETF.NS': 'Fixed Income — Govt Bonds',
+            'LIQUIDBEES.NS': 'Cash — Liquid Fund'
+        }
         for hx,h in zip(col_positions,hdrs2):
             fig.text(hx, 0.415, h, fontsize=9, fontweight='bold', color=BLUE, va='top')
         for ri,t in enumerate(available):
-            ry  = 0.380 - ri*0.032  # Lowered from 0.395 to 0.380
+            ry  = 0.380 - ri*0.024  # Squeezed spacing for more ETFs
             bg  = ALT if ri%2==0 else WH
-            axr = fig.add_axes([0.04, ry-0.004, 0.92, 0.030])
+            axr = fig.add_axes([0.04, ry-0.004, 0.92, 0.022])
             axr.set_facecolor(bg); axr.axis('off')
-            row = [SHORT[t], FULL[t], DESC[t], cats[ri]]
+            row = [SHORT[t], FULL[t], DESC[t], cats_dict.get(t, 'Other')]
             for hx,cell in zip(col_positions,row):
                 fig.text(hx, ry+0.012, cell, fontsize=8.5, color=DARK, va='center')
     
@@ -410,6 +429,10 @@ def generate_report():
         section_title(fig, '2. Key Findings at a Glance', y_txt - 0.015)
         y_txt -= 0.065
     
+        # Sort weights dynamically to show top holdings
+        sh_holdings = sorted([(snames[i], w_sh[i]) for i in range(n)], key=lambda x: x[1], reverse=True)[:5]
+        mv_holdings = sorted([(snames[i], w_mv[i]) for i in range(n)], key=lambda x: x[1], reverse=True)[:5]
+
         # 3 result cards side by side
         result_cards = [
             ('★ MAX SHARPE PORTFOLIO', GOLD, [
@@ -417,29 +440,21 @@ def generate_report():
                 f'Volatility:           {v_sh:.2%} p.a.',
                 f'Sharpe Ratio:      {sr_sh:.4f}',
                 '─────────────────────',
-                f'GoldBees:     45.00%',
-                f'JuniorBees:  {w_sh[1]:.2%}',
-                f'NiftyBees:    {w_sh[0]:.2%}',
-                f'BankBees:     {w_sh[2]:.2%}',
-                f'LiquidBees:   {w_sh[4]:.2%}',
-            ]),
+            ] + [f'{name:<12}: {wt:.2%}' for name, wt in sh_holdings]),
+            
             ('■ MIN VOLATILITY PORTFOLIO', BLUE, [
                 f'Expected Return: {r_mv:.2%} p.a.',
                 f'Volatility:           {v_mv:.2%} p.a.',
                 f'Sharpe Ratio:      {sr_mv:.4f}',
                 '─────────────────────',
-                f'LiquidBees:  {w_mv[4]:.2%}',
-                f'NiftyBees:   {w_mv[0]:.2%}',
-                f'GoldBees:    {w_mv[3]:.2%}',
-                f'JuniorBees: {w_mv[1]:.2%}',
-                f'BankBees:    {w_mv[2]:.2%}',
-            ]),
+            ] + [f'{name:<12}: {wt:.2%}' for name, wt in mv_holdings]),
+            
             ('▲ EQUAL-WEIGHT (BENCHMARK)', GREY, [
                 f'Expected Return: {r_eq:.2%} p.a.',
                 f'Volatility:           {v_eq:.2%} p.a.',
                 f'Sharpe Ratio:      {sr_eq:.4f}',
                 '─────────────────────',
-                f'All assets:  20.00% each',
+                f'All assets: {1/n:.2%} each',
                 '', '', '', '',
             ]),
         ]
@@ -531,11 +546,14 @@ def generate_report():
         section_title(fig, '5. Asset Return Distribution (Histograms)', tbl_bottom)
         hist_top = tbl_bottom - 0.045
     
-        # Histogram row for each ETF
-        hist_h = 0.22; hist_w = 0.165; gap = 0.01
+        # Histogram grid for each ETF (wrap after 5)
+        hist_h = 0.15; hist_w = 0.165; gap_x = 0.02; gap_y = 0.05
         for i, t in enumerate(available):
-            hx = 0.04 + i*(hist_w+gap)
-            ax_h = fig.add_axes([hx, hist_top-hist_h, hist_w, hist_h])
+            row = i // 5
+            col = i % 5
+            hx = 0.04 + col * (hist_w + gap_x)
+            hy = hist_top - hist_h - row * (hist_h + gap_y)
+            ax_h = fig.add_axes([hx, hy, hist_w, hist_h])
             dr = daily[t]*100
             ax_h.hist(dr, bins=60, color=PALETTE[i], alpha=0.8, edgecolor='white', linewidth=0.3)
             ax_h.axvline(0, color=DARK, linewidth=0.8, linestyle='--')

@@ -39,8 +39,23 @@ TICKERS = [
     'NIFTYBEES.NS',
     'JUNIORBEES.NS',
     'BANKBEES.NS',
+    'MID150BEES.NS',
+    'MON100.NS',
     'GOLDBEES.NS',
+    'SILVERBEES.NS',
+    'GSEC10IETF.NS',
     'LIQUIDBEES.NS',
+]
+
+BASKET_CLASSIC_5 = [
+    'NIFTYBEES.NS', 'JUNIORBEES.NS', 'BANKBEES.NS', 'GOLDBEES.NS', 'LIQUIDBEES.NS'
+]
+BASKET_ALL_WEATHER_8 = [
+    'NIFTYBEES.NS', 'MID150BEES.NS', 'MON100.NS', 'GOLDBEES.NS', 
+    'SILVERBEES.NS', 'GSEC10IETF.NS', 'LIQUIDBEES.NS', 'JUNIORBEES.NS'
+]
+BASKET_EQUITY_ALPHA = [
+    'NIFTYBEES.NS', 'JUNIORBEES.NS', 'MID150BEES.NS', 'MON100.NS'
 ]
 
 BENCHMARK_TICKER = '^NSEI'   # Nifty 50 Total Return proxy
@@ -49,21 +64,33 @@ TICKER_NAMES = {
     'NIFTYBEES.NS' : 'Nifty 50 BeES',
     'JUNIORBEES.NS': 'Junior BeES (Next 50)',
     'BANKBEES.NS'  : 'Bank BeES',
+    'MID150BEES.NS': 'Midcap 150 BeES',
+    'MON100.NS'    : 'Motilal Nasdaq 100',
     'GOLDBEES.NS'  : 'Gold BeES',
+    'SILVERBEES.NS': 'Silver BeES',
+    'GSEC10IETF.NS': '10-Yr G-Sec ETF',
     'LIQUIDBEES.NS': 'Liquid BeES',
 }
 SHORT_NAMES = {
     'NIFTYBEES.NS' : 'NiftyBees',
     'JUNIORBEES.NS': 'JuniorBees',
     'BANKBEES.NS'  : 'BankBees',
+    'MID150BEES.NS': 'Mid150Bees',
+    'MON100.NS'    : 'Nasdaq100',
     'GOLDBEES.NS'  : 'GoldBees',
+    'SILVERBEES.NS': 'SilverBees',
+    'GSEC10IETF.NS': 'GSec10Yr',
     'LIQUIDBEES.NS': 'LiquidBees',
 }
 DESC = {
     'NIFTYBEES.NS' : "Tracks Nifty 50 — India's benchmark large-cap index (50 stocks)",
     'JUNIORBEES.NS': 'Tracks Nifty Next 50 — mid-to-large cap segment (50 stocks)',
     'BANKBEES.NS'  : 'Tracks Nifty Bank — top 12 liquid banking stocks',
+    'MID150BEES.NS': 'Tracks Nifty Midcap 150 — high growth midcap segment',
+    'MON100.NS'    : 'Tracks Nasdaq 100 — US Tech exposure + USD currency hedge',
     'GOLDBEES.NS'  : 'Physical gold ETF — tracks domestic gold spot price',
+    'SILVERBEES.NS': 'Physical silver ETF — industrial commodity exposure',
+    'GSEC10IETF.NS': 'Tracks 10-Yr Sovereign Govt Bonds — long-duration fixed income',
     'LIQUIDBEES.NS': 'Overnight liquid fund — near-zero risk, money-market returns',
 }
 
@@ -499,7 +526,88 @@ def compute_asset_stats(prices, daily_returns, mu_s, cov_s, rf=RISK_FREE_RATE):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STEP 7 — PORTFOLIO PERFORMANCE SUMMARY
+# STEP 7 — TIME SERIES & ECONOMETRICS (v2.0)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def compute_rolling_metrics(daily_returns, window=252):
+    """
+    Computes rolling annualized return and volatility for regime shift analysis.
+    """
+    roll_ret = daily_returns.rolling(window).mean() * TRADING_DAYS
+    roll_vol = daily_returns.rolling(window).std() * np.sqrt(TRADING_DAYS)
+    return roll_ret, roll_vol
+
+def compute_ewma_volatility(daily_returns, lambda_decay=0.94):
+    """
+    Computes RiskMetrics™ EWMA (Exponentially Weighted Moving Average) Volatility.
+    Captures volatility clustering (ARCH effect) common in financial time series.
+    """
+    ewma_var = daily_returns.ewm(alpha=(1 - lambda_decay)).var()
+    ewma_vol = np.sqrt(ewma_var) * np.sqrt(TRADING_DAYS)
+    return ewma_vol
+
+def run_backtest_rebalancing(daily_returns, target_weights, tickers, frequency='QE'):
+    """
+    Simulates a walk-forward portfolio that rebalances to target_weights 
+    at the specified frequency (e.g., 'QE' for Quarter-End).
+    """
+    w = pd.Series(target_weights, index=tickers)
+    
+    # Identify rebalance dates (last trading day of the frequency period)
+    rebal_dates = set(daily_returns.resample(frequency).last().dropna(how='all').index)
+    
+    port_vals = []
+    current_buckets = 100.0 * w
+    
+    for date, ret in daily_returns[tickers].iterrows():
+        # EOD bucket values
+        current_buckets = current_buckets * (1 + ret)
+        eod_value = current_buckets.sum()
+        port_vals.append(eod_value)
+        
+        # If today is a rebalance date, redistribute the EOD value across target weights
+        if date in rebal_dates:
+            current_buckets = eod_value * w
+            
+    return pd.Series(port_vals, index=daily_returns.index)
+
+def stress_test_drawdowns(portfolio_growth_series):
+    """
+    Evaluates portfolio performance during known historical crisis windows.
+    Returns a dict with max drawdowns and returns during those specific periods.
+    """
+    crises = {
+        'COVID-19 Crash (Feb-Apr 2020)': ('2020-02-19', '2020-04-15'),
+        'Rate Hike Tech Shock (Jan-Oct 2022)': ('2022-01-03', '2022-10-21'),
+        'Election Volatility (Jun 2024)': ('2024-06-03', '2024-06-05')
+    }
+    
+    results = {}
+    # Convert index to timezone-naive for safe string slicing if it's tz-aware
+    idx = portfolio_growth_series.index
+    if idx.tz is not None:
+        safe_series = portfolio_growth_series.copy()
+        safe_series.index = safe_series.index.tz_localize(None)
+    else:
+        safe_series = portfolio_growth_series
+
+    for name, (start, end) in crises.items():
+        try:
+            window = safe_series.loc[start:end]
+            if len(window) > 2:
+                peak = window.cummax()
+                drawdown = (window - peak) / peak
+                max_dd = drawdown.min()
+                total_ret = (window.iloc[-1] / window.iloc[0]) - 1
+                results[name] = {'max_drawdown': float(max_dd), 'total_return': float(total_ret)}
+        except Exception:
+            pass # Data might not cover this period
+            
+    return results
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 8 — PORTFOLIO PERFORMANCE SUMMARY
 # ─────────────────────────────────────────────────────────────────────────────
 
 def portfolio_metrics(w, mu, Sigma, daily_returns, tickers, rf=RISK_FREE_RATE):

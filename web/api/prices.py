@@ -7,12 +7,16 @@ class handler(BaseHTTPRequestHandler):
             import yfinance as yf
             import pandas as pd
 
-            tickers = ['NIFTYBEES.NS', 'JUNIORBEES.NS', 'BANKBEES.NS', 'GOLDBEES.NS', 'LIQUIDBEES.NS']
+            tickers = ['NIFTYBEES.NS', 'JUNIORBEES.NS', 'BANKBEES.NS', 'MID150BEES.NS', 'MON100.NS', 'GOLDBEES.NS', 'SILVERBEES.NS', 'GSEC10IETF.NS', 'LIQUIDBEES.NS']
             names = {
                 'NIFTYBEES.NS':  'Nifty 50 BeES',
                 'JUNIORBEES.NS': 'Junior BeES',
                 'BANKBEES.NS':   'Bank BeES',
+                'MID150BEES.NS': 'Midcap 150 BeES',
+                'MON100.NS':     'Motilal Nasdaq 100',
                 'GOLDBEES.NS':   'Gold BeES',
+                'SILVERBEES.NS': 'Silver BeES',
+                'GSEC10IETF.NS': '10-Yr G-Sec ETF',
                 'LIQUIDBEES.NS': 'Liquid BeES',
             }
 

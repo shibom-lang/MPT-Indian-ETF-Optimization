@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indian ETF Quant Engine v2.0 — Strategic Roadmap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090e17;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --emerald: #10b981;
+      --cyan: #0ea5e9;
+      --amber: #f59e0b;
+      --purple: #8b5cf6;
+      --red: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 32px 24px;
+      line-height: 1.5;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .badges { display: flex; gap: 8px; margin-bottom: 12px; }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-cyan { background: rgba(14, 165, 233, 0.2); color: var(--cyan); border: 1px solid rgba(14, 165, 233, 0.4); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.2); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.4); }
+    h1 { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .subtitle { color: var(--muted); font-size: 14px; }
+    
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      border-left: 4px solid var(--emerald);
+    }
+    .kpi-card:nth-child(2) { border-left-color: var(--cyan); }
+    .kpi-card:nth-child(3) { border-left-color: var(--amber); }
+    .kpi-card:nth-child(4) { border-left-color: var(--purple); }
+    .kpi-tag { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+    .kpi-val { font-size: 20px; font-weight: 700; color: #fff; }
+    .kpi-sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .phase-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .phase-head {
+      background: #1a2234;
+      padding: 16px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .phase-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .phase-num {
+      background: var(--emerald);
+      color: #000;
+      font-weight: 800;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .phase-card:nth-child(2) .phase-num { background: var(--cyan); }
+    .phase-card:nth-child(3) .phase-num { background: var(--amber); }
+    .phase-card:nth-child(4) .phase-num { background: var(--purple); color: #fff; }
+    .phase-pill { font-size: 11px; font-weight: 600; color: var(--muted); }
+    .phase-title { font-size: 16px; font-weight: 700; color: #fff; }
+    .phase-sub { font-size: 12px; color: var(--muted); }
+    .phase-body { padding: 16px; flex-grow: 1; }
+    .item-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .item-title { font-size: 13px; font-weight: 600; color: #e5e7eb; }
+    .item-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .phase-foot {
+      background: #0d131f;
+      padding: 10px 16px;
+      font-size: 11px;
+      color: #6b7280;
+      font-family: 'JetBrains Mono', monospace;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .table-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .table-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: var(--emerald); }
+    .table-sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 10px 12px; background: #1a2234; color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; }
+    td { padding: 12px; border-bottom: 1px solid var(--card-border); }
+    tr:hover { background: rgba(255,255,255,0.02); }
+    .badge-new { background: rgba(16, 185, 129, 0.15); color: var(--emerald); padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+    .code { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #93c5fd; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-card">
+      <div class="badges">
+        <span class="badge badge-cyan">Strategic Execution Roadmap</span>
+        <span class="badge badge-emerald">Version 2.0</span>
+      </div>
+      <h1>Indian ETF Quantitative Engine & Time Series Platform</h1>
+      <p class="subtitle">From Static Modern Portfolio Theory to Multi-Asset, Rolling Econometrics & Institutional Risk Management</p>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-tag">Universe Expansion</div>
+        <div class="kpi-val">8+ Curated ETFs</div>
+        <div class="kpi-sub">Midcap, Nasdaq, Silver, G-Sec</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-tag">Time Series Modeling</div>
+        <div class="kpi-val">Rolling Sharpe & Vol</div>
+        <div class="kpi-sub">EWMA Volatility Clustering</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-tag">Stress Testing</div>
+        <div class="kpi-val">3 Crisis Windows</div>
+        <div class="kpi-sub">COVID, 2022 Hikes, 2024 Shock</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-tag">Architecture</div>
+        <div class="kpi-val">100% Automated</div>
+        <div class="kpi-sub">Vercel Serverless + PDF Engine</div>
+      </div>
+    </div>
+
+    <div class="phases-grid">
+      <div class="phase-card">
+        <div class="phase-head">
+          <div class="phase-top">
+            <span class="phase-num">01</span>
+            <span class="phase-pill">FOUNDATION</span>
+          </div>
+          <div class="phase-title">Multi-Asset Universe</div>
+          <div class="phase-sub">Eliminate Redundancy & Add Alpha</div>
+        </div>
+        <div class="phase-body">
+          <ul class="item-list">
+            <li>
+              <div class="item-title">Add MID150BEES</div>
+              <div class="item-desc">Captures high-growth Indian midcap alpha beyond large-caps.</div>
+            </li>
+            <li>
+              <div class="item-title">Add MON100 (Nasdaq)</div>
+              <div class="item-desc">Global tech exposure + natural USD currency depreciation hedge.</div>
+            </li>
+            <li>
+              <div class="item-title">Add SILVERBEES</div>
+              <div class="item-desc">Dual commodity hedge alongside Gold; industrial demand beta.</div>
+            </li>
+            <li>
+              <div class="item-title">Add GSEC10IETF</div>
+              <div class="item-desc">10-Yr Sovereign G-Sec; real bond yield vs low-return LiquidBees.</div>
+            </li>
+          </ul>
+        </div>
+        <div class="phase-foot">Tech: yfinance, pandas, split-healer</div>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-head">
+          <div class="phase-top">
+            <span class="phase-num">02</span>
+            <span class="phase-pill">ECONOMETRICS</span>
+          </div>
+          <div class="phase-title">Time Series Modeling</div>
+          <div class="phase-sub">Dynamic Risk & Regime Shifts</div>
+        </div>
+        <div class="phase-body">
+          <ul class="item-list">
+            <li>
+              <div class="item-title">Rolling Sharpe & Sortino</div>
+              <div class="item-desc">180d & 365d rolling windows reveal regime-dependent decay.</div>
+            </li>
+            <li>
+              <div class="item-title">Rolling Volatility Curve</div>
+              <div class="item-desc">Visualizes volatility divergence between equities & gold.</div>
+            </li>
+            <li>
+              <div class="item-title">EWMA Volatility Clustering</div>
+              <div class="item-desc">RiskMetrics decay (lambda=0.94) tracks dynamic variance shocks.</div>
+            </li>
+            <li>
+              <div class="item-title">Dynamic Beta Tracking</div>
+              <div class="item-desc">Measures shifting correlation of Midcap & Bank vs Nifty 50.</div>
+            </li>
+          </ul>
+        </div>
+        <div class="phase-foot">Tech: scipy.stats, numpy, EWMA engine</div>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-head">
+          <div class="phase-top">
+            <span class="phase-num">03</span>
+            <span class="phase-pill">VALIDATION</span>
+          </div>
+          <div class="phase-title">Backtests & Stress Tests</div>
+          <div class="phase-sub">Real-World Performance Proof</div>
+        </div>
+        <div class="phase-body">
+          <ul class="item-list">
+            <li>
+              <div class="item-title">Walk-Forward Rebalancing</div>
+              <div class="item-desc">Quarterly & annual rebalancing vs static buy-and-hold.</div>
+            </li>
+            <li>
+              <div class="item-title">COVID-19 Crash Test</div>
+              <div class="item-desc">Stress testing drawdown & recovery during Feb-Apr 2020.</div>
+            </li>
+            <li>
+              <div class="item-title">2022 Inflation Shock</div>
+              <div class="item-desc">Performance through RBI/Fed rate hikes & tech correction.</div>
+            </li>
+            <li>
+              <div class="item-title">Tail Risk & CVaR (95%)</div>
+              <div class="item-desc">Quantifies conditional value at risk during the worst 5% days.</div>
+            </li>
+          </ul>
+        </div>
+        <div class="phase-foot">Tech: SLSQP, Dirichlet Monte Carlo</div>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-head">
+          <div class="phase-top">
+            <span class="phase-num">04</span>
+            <span class="phase-pill">DEPLOYMENT</span>
+          </div>
+          <div class="phase-title">Web Simulator & Reports</div>
+          <div class="phase-sub">Interactive Tool & PDF Export</div>
+        </div>
+        <div class="phase-body">
+          <ul class="item-list">
+            <li>
+              <div class="item-title">Custom Preset Baskets</div>
+              <div class="item-desc">Toggle Classic 5, All-Weather 7, or Pure Equity Alpha.</div>
+            </li>
+            <li>
+              <div class="item-title">Head-to-Head Compare UI</div>
+              <div class="item-desc">Side-by-side radar metrics comparing any two ETFs directly.</div>
+            </li>
+            <li>
+              <div class="item-title">Interactive Stress Simulator</div>
+              <div class="item-desc">Sliders to test portfolio survival in a 20% equity crash.</div>
+            </li>
+            <li>
+              <div class="item-title">Institutional 12-Page PDF</div>
+              <div class="item-desc">Auto-compiled executive brief with clean print typography.</div>
+            </li>
+          </ul>
+        </div>
+        <div class="phase-foot">Tech: Vanilla JS, Chart.js, Vercel Serverless</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-title">ETF Basket Upgrade: v1.0 (Classic) vs v2.0 (All-Weather)</div>
+      <div class="table-sub">Strategic shift from bank-heavy equity to true non-correlated multi-asset allocation</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Asset Class</th>
+            <th>Role in Portfolio</th>
+            <th>v1.0 Issue / v2.0 Benefit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="code">NIFTYBEES.NS</td>
+            <td>Large-Cap Equity</td>
+            <td>Core India Growth Anchor</td>
+            <td>Baseline market return; high liquidity</td>
+          </tr>
+          <tr>
+            <td class="code">JUNIORBEES.NS</td>
+            <td>Large/Mid Next 50</td>
+            <td>Growth & Beta Booster</td>
+            <td>Higher CAGR; complements Nifty 50</td>
+          </tr>
+          <tr>
+            <td class="code">BANKBEES.NS</td>
+            <td>Banking Sector</td>
+            <td>Financial Sector Alpha</td>
+            <td><span style="color:#ef4444">OVERLAPS: 82% corr with Nifty; 0% weight</span></td>
+          </tr>
+          <tr>
+            <td class="code">MID150BEES.NS <span class="badge-new">NEW</span></td>
+            <td>Mid-Cap 150</td>
+            <td>Alpha & Factor Premium</td>
+            <td><strong style="color:#10b981">REPLACES BANK: Real midcap diversification</strong></td>
+          </tr>
+          <tr>
+            <td class="code">MON100.NS <span class="badge-new">NEW</span></td>
+            <td>US Nasdaq 100</td>
+            <td>Global Tech + Currency Hedge</td>
+            <td><strong style="color:#10b981">PROTECTS INR: Low correlation to Nifty</strong></td>
+          </tr>
+          <tr>
+            <td class="code">GOLDBEES.NS</td>
+            <td>Precious Metal</td>
+            <td>Crisis Ballast & Safe Haven</td>
+            <td>Zero correlation to stocks; proven hedge</td>
+          </tr>
+          <tr>
+            <td class="code">SILVERBEES.NS <span class="badge-new">NEW</span></td>
+            <td>Precious Metal</td>
+            <td>Industrial Commodity Beta</td>
+            <td>High volatility commodity upside kicker</td>
+          </tr>
+          <tr>
+            <td class="code">GSEC10IETF.NS <span class="badge-new">NEW</span></td>
+            <td>10-Yr Sovereign Bond</td>
+            <td>Long-Duration Bond Yield</td>
+            <td><strong style="color:#10b981">REPLACES LIQUID: 7.0% yield + capital gain</strong></td>
+          </tr>
+          <tr>
+            <td class="code">LIQUIDBEES.NS</td>
+            <td>Cash Equivalent</td>
+            <td>Dry Powder & Rebalance Pool</td>
+            <td>Zero vol, but acts as a long-term return drag</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

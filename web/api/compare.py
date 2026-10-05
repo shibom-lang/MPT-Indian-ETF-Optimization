@@ -47,18 +47,20 @@ def _build_data() -> str:
     import datetime
 
     TICKERS = [
-        'NIFTYBEES.NS', 'JUNIORBEES.NS', 'BANKBEES.NS',
-        'GOLDBEES.NS', 'LIQUIDBEES.NS'
+        'NIFTYBEES.NS', 'JUNIORBEES.NS', 'BANKBEES.NS', 'MID150BEES.NS',
+        'MON100.NS', 'GOLDBEES.NS', 'SILVERBEES.NS', 'GSEC10IETF.NS', 'LIQUIDBEES.NS'
     ]
     SHORT = {
-        'NIFTYBEES.NS': 'NiftyBees', 'JUNIORBEES.NS': 'JuniorBees',
-        'BANKBEES.NS': 'BankBees',   'GOLDBEES.NS': 'GoldBees',
-        'LIQUIDBEES.NS': 'LiquidBees',
+        'NIFTYBEES.NS': 'NiftyBees', 'JUNIORBEES.NS': 'JuniorBees', 'BANKBEES.NS': 'BankBees',
+        'MID150BEES.NS': 'Mid150Bees', 'MON100.NS': 'Nasdaq100', 'GOLDBEES.NS': 'GoldBees',
+        'SILVERBEES.NS': 'SilverBees', 'GSEC10IETF.NS': 'GSec10Yr', 'LIQUIDBEES.NS': 'LiquidBees'
     }
     COLORS = {
         'NIFTYBEES.NS': '#60a5fa', 'JUNIORBEES.NS': '#ef4444',
         'BANKBEES.NS': '#f59e0b',  'GOLDBEES.NS': '#fbbf24',
-        'LIQUIDBEES.NS': '#a78bfa',
+        'LIQUIDBEES.NS': '#a78bfa', 'MID150BEES.NS': '#14b8a6',
+        'MON100.NS': '#8b5cf6', 'SILVERBEES.NS': '#94a3b8',
+        'GSEC10IETF.NS': '#ec4899'
     }
     RF = 0.068
     MAX_W = 0.45
