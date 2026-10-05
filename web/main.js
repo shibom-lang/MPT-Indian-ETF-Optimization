@@ -299,3 +299,4 @@ function downloadExcel(e) {
         }, 5000);
     }, 500);
 }
+window.downloadExcel = downloadExcel;
