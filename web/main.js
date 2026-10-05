@@ -272,3 +272,30 @@ document.addEventListener('DOMContentLoaded', () => {
 window.setAmount      = setAmount;
 window.switchTab      = switchTab;
 window.showGenerating = showGenerating;
+
+function downloadExcel(e) {
+    e.preventDefault();
+    const amount = document.getElementById('invest-amount').value || 100000;
+    
+    // Find active strategy tab
+    let strategy = 'maxsharpe';
+    if (document.getElementById('tab-minvol').classList.contains('active')) {
+        strategy = 'minvol';
+    } else if (document.getElementById('tab-equal').classList.contains('active')) {
+        strategy = 'equal';
+    }
+    
+    const btn = document.getElementById('excel-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:10px;"></div> Generating...';
+    btn.style.pointerEvents = 'none';
+    
+    // Simulate loading to let vercel warm up, then redirect
+    setTimeout(() => {
+        window.location.href = `/api/excel?amount=${amount}&strategy=${strategy}`;
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.pointerEvents = 'auto';
+        }, 5000);
+    }, 500);
+}
