@@ -902,7 +902,7 @@ def generate_report():
             fig.text(hx+0.005, tbl_top+0.012, h, fontsize=9, fontweight='bold',
                      color=WH, va='center')
     
-        m_row_h = 0.033
+        m_row_h = 0.026
         for ri, row in enumerate(all_rows):
             ry  = tbl_top - (ri+1)*m_row_h
             is_div = '──' in str(row[0])
