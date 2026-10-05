@@ -1,6 +1,6 @@
 # 📊 Indian ETF Portfolio Optimization — MPT Analysis
 
-🚀 **Live Dashboard:** [https://web-six-zeta-72.vercel.app](https://web-six-zeta-72.vercel.app)
+ **Live Dashboard:** [https://web-six-zeta-72.vercel.app](https://web-six-zeta-72.vercel.app)
 *(Live NSE ETF prices · On-demand PDF generation via Vercel Serverless Python API)*
 
 An end-to-end quantitative finance project in Python that applies **Modern Portfolio Theory (MPT)** to 5 major NSE-listed ETFs. Covers live data ingestion, automated data quality engineering, constrained portfolio optimization, Monte Carlo simulation, and institutional-grade PDF reporting — deployed as a full-stack web application.
@@ -9,7 +9,7 @@ An end-to-end quantitative finance project in Python that applies **Modern Portf
 
 ---
 
-## 🏆 Key Results
+##  Key Results
 
 | Portfolio | Ann. Return | Volatility | Sharpe Ratio | End Value (₹100) |
 |---|---|---|---|---|
@@ -90,7 +90,7 @@ Output files are written to `./output/` (created automatically — no hardcoded 
 
 ---
 
-## 🧰 Skills Demonstrated
+##  Skills Demonstrated
 
 `Python` · `NumPy` · `Pandas` · `SciPy` · `Matplotlib` · `yfinance` · `Quantitative Finance` · `Modern Portfolio Theory` · `Monte Carlo Simulation` · `Portfolio Optimization` · `Risk Management` · `Data Quality Engineering` · `PDF Automation` · `REST API` · `Vercel Serverless` · `JavaScript` · `NISM RA Series 15`
 
