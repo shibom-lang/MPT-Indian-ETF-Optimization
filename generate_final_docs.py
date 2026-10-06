@@ -73,7 +73,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             C1 --> D{yfinance API}
             C2 --> D
             
-            D -->|5Y Live Market Data| E[Data Cleaning & Alignment]
+            D -->|Live Market Data (Since 2019)| E[Data Cleaning & Alignment]
             
             E --> F(SciPy MPT Optimizer)
             F -->|Covariance Matrix| G1[SLSQP Max Sharpe Solver]
