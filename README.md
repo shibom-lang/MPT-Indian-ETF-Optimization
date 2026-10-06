@@ -1,39 +1,60 @@
-# 📊 Indian ETF Portfolio Optimization — MPT Analysis
+# 📊 Indian ETF Robo-Advisor & Portfolio Optimization (v3.0)
 
- **Live Dashboard:** [https://web-six-zeta-72.vercel.app](https://web-six-zeta-72.vercel.app)
-*(Live NSE ETF prices · On-demand PDF generation via Vercel Serverless Python API)*
+**Live Dashboard:** [https://web-six-zeta-72.vercel.app](https://web-six-zeta-72.vercel.app)
+*(Live NSE ETF prices · On-demand PDF & Excel Generation via Vercel Serverless API)*
 
-An end-to-end quantitative finance project in Python that applies **Modern Portfolio Theory (MPT)** to 5 major NSE-listed ETFs. Covers live data ingestion, automated data quality engineering, constrained portfolio optimization, Monte Carlo simulation, and institutional-grade PDF reporting — deployed as a full-stack web application.
+An end-to-end quantitative finance Robo-Advisor built in Python. This platform applies **Modern Portfolio Theory (MPT)** to a diversified 9-ETF universe covering Indian Equities, US Equities, Gold, Silver, and Government Securities. It features live data ingestion, constrained portfolio optimization, and institutional-grade dynamic reporting — all deployed as a full-stack serverless web application.
 
 > Built as part of preparation for the **NISM Research Analyst (RA Series 15)** examination.
 
 ---
 
-##  Key Results
+## 🏗 End-to-End System Architecture
 
-| Portfolio | Ann. Return | Volatility | Sharpe Ratio | End Value (₹100) |
-|---|---|---|---|---|
-| **Max Sharpe (Optimized)** | — | — | — | — |
-| Min Volatility | — | — | — | — |
-| Equal Weight (Benchmark) | — | — | — | — |
-| Nifty 50 Index | — | — | — | — |
+This flowchart illustrates the end-to-end data pipeline from user input to final report delivery:
 
-> *Run `python mpt_detailed_report.py` to generate a live report with current values.*
+```mermaid
+flowchart TD
+    A[User Browser UI] -->|Selects Strategy & Amount| B(Vercel Serverless Backend)
+    
+    B -->|GET /api/generate| C1[Matplotlib PDF Engine]
+    B -->|GET /api/excel| C2[OpenPyxl Excel Engine]
+    
+    C1 --> D{yfinance API}
+    C2 --> D
+    
+    D -->|5Y Live Market Data| E[Data Cleaning & Alignment]
+    
+    E --> F(SciPy MPT Optimizer)
+    F -->|Covariance Matrix| G1[SLSQP Max Sharpe Solver]
+    F -->|Volatility Penalty| G2[Min Volatility Solver]
+    
+    G1 --> H[Optimal 9-ETF Weights]
+    G2 --> H
+    
+    H --> C1
+    H --> C2
+    
+    C1 -->|Yields PDF Stream| A
+    C2 -->|Yields XLSX Stream| A
+```
 
 ---
 
-## ⚙️ Technical Highlights
+## ⚙️ Core Engineering Highlights
 
-| Area | Implementation |
-|---|---|
-| **Optimization** | Max Sharpe & Min Volatility via `scipy.optimize.minimize` (SLSQP), 45% weight cap |
-| **Monte Carlo** | 10,000 Dirichlet-sampled portfolios to map the Efficient Frontier |
-| **Risk Metrics** | Sharpe, **Sortino**, **Calmar**, **CVaR (95%)**, Max Drawdown, Skewness, Excess Kurtosis |
-| **Data Quality** | Auto-detection and linear interpolation of Dec 2019 1:10 stock split artifacts |
-| **Benchmark** | Nifty 50 Index comparison on all cumulative growth charts |
-| **Reporting** | 10-page white-background institutional PDF via `matplotlib.backends.backend_pdf` |
-| **Deployment** | Vercel serverless Python API + Vanilla JS frontend with live ETF prices |
-| **Architecture** | Modular `mpt_core.py` shared engine — zero code duplication across scripts |
+### 1. The 9-ETF MPT Optimizer
+At the core of the backend is the `scipy.optimize.minimize` algorithm. It ingests 5 years of daily returns across a highly diversified 9-ETF universe (NIFTYBEES, JUNIORBEES, MID150BEES, MON100, GOLDBEES, SILVERBEES, SETF10GILT, BANKBEES, LIQUIDBEES). 
+The optimizer uses the **SLSQP (Sequential Least SQuares Programming)** method to maximize the Sharpe ratio, strictly enforcing boundaries so no single asset exceeds a 45% weight and the weights sum perfectly to 1.
+
+### 2. Serverless Matplotlib PDF Engine
+Instead of relying on third-party SaaS services for reporting, the backend uses a bespoke PDF generator (`matplotlib.backends.backend_pdf`). It plots the Efficient Frontier, Correlation Heatmaps, and 12-Month Rolling Return charts completely in memory (headless), streaming them directly to a PDF buffer.
+
+### 3. Automated Excel Portfolio Wealth Model
+For financial modeling, the API integrates `openpyxl` to dynamically construct an Excel workbook based on the user's investment amount and strategy. It generates a three-statement model:
+*   **Portfolio Beta Calculator:** Calculates live Weighted Beta against the Nifty 50.
+*   **10-Year Projection Schedule:** Forecasts compounding wealth based on expected returns.
+*   **Cash Flow Schedule:** Models expected annual dividend yields for the basket.
 
 ---
 
@@ -41,61 +62,50 @@ An end-to-end quantitative finance project in Python that applies **Modern Portf
 
 ```
 .
-├── mpt_core.py               # Shared engine: data, optimization, all metrics
-├── mpt_detailed_report.py    # Generates 10-page institutional PDF report
-├── mpt_indian_etf_analysis.py # Generates dark-mode dashboard charts
-├── mpt_white_pdf.py          # Alternative white PDF layouts
-├── requirements.txt          # Pinned Python dependencies
-├── tests/
-│   └── test_optimizer.py     # 21 unit tests (pytest-compatible)
 ├── notebooks/
-│   └── 01_exploratory_analysis.ipynb  # Exploratory scratch analysis
-├── web/                      # Vercel serverless full-stack app
-│   ├── index.html / style.css / main.js
+│   ├── 01_exploratory_analysis.ipynb
+│   └── v-02_exploratory_analysis.ipynb   # v3 Final 9-ETF MPT source code
+├── web/                                  # Vercel serverless full-stack app
+│   ├── index.html / style.css / main.js  # Glassmorphism Frontend UI
 │   └── api/
-│       ├── generate.py       # PDF generation endpoint
-│       ├── mpt_generator.py  # Core computation for web API
-│       └── prices.py         # Live price fetching
-└── output/                   # Generated charts and PDFs (auto-created)
+│       ├── generate.py                   # Vercel API: PDF Endpoint
+│       ├── mpt_generator.py              # PDF Matplotlib drawing logic
+│       ├── excel.py                      # Vercel API: Excel Endpoint
+│       ├── excel_generator.py            # Excel Openpyxl generation logic
+│       └── prices.py                     # Live price fetching API
+├── generate_final_docs.py                # Generates the Architecture HTML Manual
+└── requirements.txt                      # Pinned Python dependencies
 ```
 
 ---
 
 ## 🔬 Strategic Insight
 
-The analysis demonstrates that **naive equal-weighting is provably sub-optimal**. By exploiting the low correlation between broad equity ETFs (Nifty 50, Next 50) and physical Gold, the optimized portfolio achieves a significantly higher Sharpe ratio while keeping volatility in check. BankBees is excluded by the optimizer due to its high redundancy with NiftyBees (ρ > 0.80).
-
-**Actionable recommendation**: Cap banking sector exposure and maintain a 25–35% strategic allocation to Gold ETFs as a portfolio ballast.
+The analysis demonstrates that naive equal-weighting is sub-optimal. By exploiting the low correlation between Indian Equities, US Equities (Nasdaq 100), and Commodities (Gold/Silver), the optimizer achieves a significantly higher Sharpe ratio while keeping volatility in check.
 
 ---
 
 ## ▶️ Setup & Execution
 
 ```bash
-# 1. Install pinned dependencies
+# 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Generate the 10-page institutional PDF report
-python mpt_detailed_report.py
+# 2. Run the development server locally (requires Vercel CLI)
+cd web && npx vercel dev
 
-# 3. Generate dark-mode dashboard charts + PDF
-python mpt_indian_etf_analysis.py
-
-# 4. Run unit tests
-python tests/test_optimizer.py
-# or: python -m pytest tests/ -v
+# 3. View the Architecture Manual
+python generate_final_docs.py
+# (Outputs to ./output/ETF_Quant_Final_Architecture_Manual.html)
 ```
-
-Output files are written to `./output/` (created automatically — no hardcoded paths).
 
 ---
 
 ##  Skills Demonstrated
 
-`Python` · `NumPy` · `Pandas` · `SciPy` · `Matplotlib` · `yfinance` · `Quantitative Finance` · `Modern Portfolio Theory` · `Monte Carlo Simulation` · `Portfolio Optimization` · `Risk Management` · `Data Quality Engineering` · `PDF Automation` · `REST API` · `Vercel Serverless` · `JavaScript` · `NISM RA Series 15`
+`Python` · `NumPy` · `Pandas` · `SciPy` · `Matplotlib` · `OpenPyxl` · `yfinance` · `Modern Portfolio Theory` · `Portfolio Optimization` · `REST API` · `Vercel Serverless` · `JavaScript` · `HTML/CSS` · `NISM RA Series 15`
 
 ---
 
 ## ⚠️ Disclaimer
-
 This project is for **educational and research purposes only**. It does not constitute investment advice. Past performance is not indicative of future results. Please consult a SEBI-registered investment advisor before making investment decisions.
