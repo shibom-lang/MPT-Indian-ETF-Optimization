@@ -739,3 +739,39 @@ def run_full_pipeline(verbose=True):
         'cum_g'        : cum_g,
         'meta'         : meta,
     }
+
+if __name__ == "__main__":
+    print("🚀 MPT Core Engine Local Execution (Research Mode)")
+    print("==================================================")
+    
+    # 1. Run the pipeline to get the optimized weights and daily returns
+    data = run_full_pipeline(verbose=True)
+    daily_returns = data['daily']
+    tickers = data['available']
+    w_sh = data['opts']['w_sharpe']
+    
+    print("\n📊 Optimal Max Sharpe Weights:")
+    for t, w in zip(tickers, w_sh):
+        if w > 0.01:
+            print(f"  {t}: {w:.1%}")
+    
+    print("\n💥 Running Historical Stress Tests (COVID & 2022 Inflation)...")
+    # Generate cumulative growth series for the Sharpe portfolio
+    # (Assuming daily_returns * w_sh)
+    port_daily = (daily_returns * w_sh).sum(axis=1)
+    cum_growth = (1 + port_daily).cumprod() * 100
+    
+    stress_results = stress_test_drawdowns(cum_growth)
+    
+    for crisis_name, metrics in stress_results.items():
+        print(f"\n{crisis_name}:")
+        print(f"  Max Drawdown: {metrics['max_drawdown']:.2%}")
+        print(f"  Total Return: {metrics['total_return']:.2%}")
+        
+    print("\n🔄 Running Walk-Forward Backtest (Quarterly Rebalancing)...")
+    wf_growth = run_backtest_rebalancing(daily_returns, w_sh, tickers, frequency='QE')
+    wf_cagr = (wf_growth.iloc[-1] / wf_growth.iloc[0]) ** (252 / len(wf_growth)) - 1
+    print(f"  Walk-Forward CAGR: {wf_cagr:.2%}")
+    print(f"  Static Buy-and-Hold CAGR: {(cum_growth.iloc[-1] / 100) ** (252 / len(cum_growth)) - 1:.2%}")
+    
+    print("\n✅ Execution Complete.")
