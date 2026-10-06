@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indian ETF Quant Engine v2.0 - My Architecture Manual</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700andfamily=Fira+Code:wght@400;500anddisplay=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
         :root {
@@ -57,8 +57,8 @@
         <div class="cover">
             <span class="version">VERSION 2.0 ADVANCED</span>
             <h1>My Indian ETF Portfolio Quant Engine</h1>
-            <p>v2.0 Structural Code Explanation & Time Series Architecture</p>
-            <p style="font-size: 14px; margin-top: 24px; color: #9ca3af;">Documenting my Phase 2 & Phase 3 Time-Series Econometrics additions.</p>
+            <p>v2.0 Structural Code Explanation and Time Series Architecture</p>
+            <p style="font-size: 14px; margin-top: 24px; color: #9ca3af;">Documenting my Phase 2 and Phase 3 Time-Series Econometrics additions.</p>
         </div>
 
         <h2>1. Executive Summary</h2>
@@ -69,13 +69,13 @@
         
         <div class="mermaid">
         flowchart TD
-            A[Yahoo Finance Data Ingestion] --> B[Data Cleaning & Split Healing]
+            A[Yahoo Finance Data Ingestion] --> B[Data Cleaning and Split Healing]
             B --> C{Select Basket}
             C -->|CLASSIC_5| D[5-ETF DataFrame]
             C -->|ALL_WEATHER_8| D2[8-ETF DataFrame]
             
             D2 --> E(Static MPT Optimisation)
-            D2 --> F(Time Series & Econometrics)
+            D2 --> F(Time Series and Econometrics)
             
             E --> E1[Covariance Matrix]
             E --> E2[SLSQP Max Sharpe Solver]
@@ -93,7 +93,7 @@
 
         <div class="page-break"></div>
 
-        <h2>3. Phase 2: Time Series & Econometrics</h2>
+        <h2>3. Phase 2: Time Series and Econometrics</h2>
         
         <h3>3.1 EWMA Volatility (RiskMetrics)</h3>
         <p>Static standard deviation assumes volatility is constant over time. In reality, financial markets exhibit <strong>Volatility Clustering</strong> (ARCH effects). To capture this, I implemented the J.P. Morgan RiskMetrics™ Exponentially Weighted Moving Average (EWMA) model.</p>

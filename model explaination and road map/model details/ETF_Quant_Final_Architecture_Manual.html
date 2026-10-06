@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indian ETF Quant Engine v3.0 - Final Architecture Manual</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700andfamily=Fira+Code:wght@400;500anddisplay=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
         :root {
@@ -46,7 +46,7 @@
         <div class="cover">
             <span class="version">FINAL VERSION 3.0</span>
             <h1>My Indian ETF Robo-Advisor</h1>
-            <p>End-to-End System Architecture & Workflow Manual</p>
+            <p>End-to-End System Architecture and Workflow Manual</p>
             <p style="font-size: 14px; margin-top: 24px; color: #9ca3af;">Documenting the full-stack integration: Vercel, SciPy, Matplotlib, and OpenPyxl.</p>
         </div>
 
@@ -58,7 +58,7 @@
         
         <div class="mermaid">
         flowchart TD
-            A[User Browser UI] -->|Selects Strategy & Amount| B(Vercel Serverless Backend)
+            A[User Browser UI] -->|Selects Strategy and Amount| B[Vercel Serverless Backend]
             
             B -->|GET /api/generate| C1[Matplotlib PDF Engine]
             B -->|GET /api/excel| C2[OpenPyxl Excel Engine]
@@ -66,9 +66,9 @@
             C1 --> D{yfinance API}
             C2 --> D
             
-            D -->|5Y Live Market Data| E[Data Cleaning & Alignment]
+            D -->|Live Market Data Since 2019| E[Data Cleaning and Alignment]
             
-            E --> F(SciPy MPT Optimizer)
+            E --> F[SciPy MPT Optimizer]
             F -->|Covariance Matrix| G1[SLSQP Max Sharpe Solver]
             F -->|Volatility Penalty| G2[Min Volatility Solver]
             
@@ -84,7 +84,7 @@
 
         <div class="page-break"></div>
 
-        <h2>3. Serverless Backend & Dynamic Reporting</h2>
+        <h2>3. Serverless Backend and Dynamic Reporting</h2>
         
         <h3>3.1 Matplotlib PDF Generation</h3>
         <p>Instead of relying on third-party SaaS services for reporting, I built a bespoke PDF generator using <code>matplotlib.backends.backend_pdf</code>. The backend plots the Efficient Frontier, Correlation Heatmaps, and 12-Month Rolling Return charts completely in memory (headless), streams them directly to a PDF buffer, and serves it back to the client.</p>

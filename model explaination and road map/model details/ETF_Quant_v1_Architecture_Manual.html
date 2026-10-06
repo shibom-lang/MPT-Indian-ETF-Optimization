@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indian ETF Quant Engine v1.0 - My Architecture Manual</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700andfamily=Fira+Code:wght@400;500anddisplay=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #ffffff;
@@ -59,7 +59,7 @@
         <div class="cover">
             <span class="version">VERSION 1.0 STABLE</span>
             <h1>My Indian ETF Portfolio Quant Engine</h1>
-            <p>Comprehensive Architecture & Codebase Documentation</p>
+            <p>Comprehensive Architecture and Codebase Documentation</p>
             <p style="font-size: 14px; margin-top: 24px; color: #9ca3af;">Created as my backup reference before initiating v2.0 upgrades.</p>
         </div>
 
@@ -67,7 +67,7 @@
         <p>I built this document to serve as the permanent technical record of my <strong>v1.0 codebase</strong>. It details the mathematical foundations I implemented, my core Python architecture, the Vercel serverless deployment I configured, and the exact steps I took to calculate the Modern Portfolio Theory (MPT) metrics.</p>
         <p>If my v2.0 upgrade encounters issues, this document (along with the physical <code>v1_0_backup.zip</code> file I created) guarantees I have a 100% reliable rollback to my stable state.</p>
 
-        <h2>2. System Architecture & Modules I Used</h2>
+        <h2>2. System Architecture and Modules I Used</h2>
         <p>I built the project on a modular Python and JavaScript stack. I isolated the core logic in a shared engine to prevent code duplication across my scripts.</p>
         
         <table>
@@ -93,12 +93,12 @@
         <h2>3. How My Mathematical Model Works</h2>
         <p>I built the core of v1.0 around Harry Markowitz's Modern Portfolio Theory (MPT). My goal was to find the exact percentage weighting of 5 ETFs that maximizes returns for a given level of risk.</p>
 
-        <h3>Step 3.1: Log Returns & Covariance</h3>
+        <h3>Step 3.1: Log Returns and Covariance</h3>
         <p>Instead of simple percentage changes, I designed the model to calculate continuous <strong>logarithmic returns</strong> because they are time-additive:</p>
         <div class="math">R_t = ln(P_t / P_{t-1})</div>
         <p>I then compute the <strong>Covariance Matrix (Σ)</strong>, which measures how the 5 ETFs move relative to each other. When I find a negative covariance (like Gold vs Nifty), it means they move in opposite directions, providing my portfolio with a natural hedge.</p>
 
-        <h3>Step 3.2: Portfolio Variance & Return</h3>
+        <h3>Step 3.2: Portfolio Variance and Return</h3>
         <p>For any given set of weights (W), I calculate my portfolio's expected return and volatility (risk) using matrix algebra:</p>
         <div class="math">Return (μ) = W^T \cdot R_{annual}</div>
         <div class="math">Volatility (σ) = \sqrt{W^T \cdot Σ \cdot W}</div>
@@ -159,9 +159,9 @@ def optimize_portfolio(mean_returns, cov_matrix, risk_free_rate, objective='shar
         <h3>4.3 <code>web/</code> (My Full-Stack App)</h3>
         <p>I deployed the web directory as a Vercel-ready serverless application:</p>
         <ul>
-            <li><strong><code>index.html</code> & <code>dashboard.html</code>:</strong> The frontend UI I built with HTML/CSS and Chart.js.</li>
+            <li><strong><code>index.html</code> and <code>dashboard.html</code>:</strong> The frontend UI I built with HTML/CSS and Chart.js.</li>
             <li><strong><code>api/mpt_generator.py</code>:</strong> A serverless function (extending <code>BaseHTTPRequestHandler</code>) where I run the MPT optimization on Vercel's servers and return the results as JSON.</li>
-            <li><strong><code>api/prices.py</code> & <code>api/history.py</code>:</strong> The endpoints I created to fetch live and historical prices via yfinance, formatting them for my frontend sparkline charts.</li>
+            <li><strong><code>api/prices.py</code> and <code>api/history.py</code>:</strong> The endpoints I created to fetch live and historical prices via yfinance, formatting them for my frontend sparkline charts.</li>
         </ul>
 
         <h2>5. My Rollback Protocol (How to reverse from v2.0)</h2>
