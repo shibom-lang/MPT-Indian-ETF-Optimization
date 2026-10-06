@@ -1,7 +1,7 @@
-# 📊 Indian ETF Robo-Advisor and Portfolio Optimization (v3.0)
+# 📊 Indian ETF Robo-Advisor & Portfolio Optimization (v3.0)
 
 **Live Dashboard:** [https://web-six-zeta-72.vercel.app](https://web-six-zeta-72.vercel.app)
-*(Live NSE ETF prices · On-demand PDF and Excel Generation via Vercel Serverless API)*
+*(Live NSE ETF prices · On-demand PDF & Excel Generation via Vercel Serverless API)*
 
 An end-to-end quantitative finance Robo-Advisor built in Python. This platform applies **Modern Portfolio Theory (MPT)** to a diversified 9-ETF universe covering Indian Equities, US Equities, Gold, Silver, and Government Securities. It features live data ingestion, constrained portfolio optimization, and institutional-grade dynamic reporting — all deployed as a full-stack serverless web application.
 
@@ -44,7 +44,7 @@ flowchart TD
 ## ⚙️ Core Engineering Highlights
 
 ### 1. The 9-ETF MPT Optimizer
-At the core of the backend is the `scipy.optimize.minimize` algorithm. It ingests 5 years of daily returns across a highly diversified 9-ETF universe (NIFTYBEES, JUNIORBEES, MID150BEES, MON100, GOLDBEES, SILVERBEES, SETF10GILT, BANKBEES, LIQUIDBEES). 
+At the core of the backend is the `scipy.optimize.minimize` algorithm. It ingests historical daily returns across a highly diversified 9-ETF universe (NIFTYBEES, JUNIORBEES, MID150BEES, MON100, GOLDBEES, SILVERBEES, SETF10GILT, BANKBEES, LIQUIDBEES). 
 The optimizer uses the **SLSQP (Sequential Least SQuares Programming)** method to maximize the Sharpe ratio, strictly enforcing boundaries so no single asset exceeds a 45% weight and the weights sum perfectly to 1.
 
 ### 2. Serverless Matplotlib PDF Engine
@@ -62,9 +62,10 @@ For financial modeling, the API integrates `openpyxl` to dynamically construct a
 
 ```
 .
-├── notebooks/
-│   ├── 01_exploratory_analysis.ipynb
-│   └── v-02_exploratory_analysis.ipynb   # v3 Final 9-ETF MPT source code
+├── src/                                  # Core Mathematical Engine
+│   ├── mpt_core.py                       # Optimization & Metrics library
+│   ├── mpt_detailed_report.py            # Local PDF Generator
+│   └── mpt_indian_etf_analysis.py        # Local Dashboard charts
 ├── web/                                  # Vercel serverless full-stack app
 │   ├── index.html / style.css / main.js  # Glassmorphism Frontend UI
 │   └── api/
@@ -73,7 +74,12 @@ For financial modeling, the API integrates `openpyxl` to dynamically construct a
 │       ├── excel.py                      # Vercel API: Excel Endpoint
 │       ├── excel_generator.py            # Excel Openpyxl generation logic
 │       └── prices.py                     # Live price fetching API
-├── generate_final_docs.py                # Generates the Architecture HTML Manual
+├── notebooks/
+│   └── v-02_exploratory_analysis.ipynb   # Interactive Research Lab
+├── docs/
+│   └── generate_docs.py                  # Generates the Architecture HTML Manual
+├── tests/
+│   └── test_optimizer.py                 # Pytest Unit Testing
 └── requirements.txt                      # Pinned Python dependencies
 ```
 
@@ -85,18 +91,17 @@ The analysis demonstrates that naive equal-weighting is sub-optimal. By exploiti
 
 ---
 
-## ▶️ Setup and Execution
+## ▶️ Setup & Execution
 
 ```bash
 # 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Run the development server locally (requires Vercel CLI)
-cd web andand npx vercel dev
+# 2. Run the Local Research Engine (Stress Tests & Walk-Forward)
+python src/mpt_core.py
 
-# 3. View the Architecture Manual
-python generate_final_docs.py
-# (Outputs to ./output/ETF_Quant_Final_Architecture_Manual.html)
+# 3. View the Architecture Manuals
+python docs/generate_docs.py --version all
 ```
 
 ---

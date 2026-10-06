@@ -16,7 +16,7 @@ import pandas as pd
 # Allow running from any directory
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
 
-from mpt_core import (
+from src.mpt_core import (
     port_return, port_vol, port_sharpe, port_sortino,
     port_calmar, max_drawdown, cvar_95,
     optimize_portfolios, run_monte_carlo,
