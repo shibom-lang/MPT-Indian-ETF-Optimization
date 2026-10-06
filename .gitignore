@@ -1,0 +1,22 @@
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Backups
+*.zip
+*.bak
+
+# Output/Scratch
+output/
+scratch/
+test_*.py
+patch_*.py
