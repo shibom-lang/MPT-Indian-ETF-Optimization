@@ -23,7 +23,7 @@ flowchart TD
     C1 --> D{yfinance API}
     C2 --> D
     
-    D -->|Live Market Data (Since 2019)| E[Data Cleaning & Alignment]
+    D -->|Live Market Data Since 2019| E[Data Cleaning & Alignment]
     
     E --> F(SciPy MPT Optimizer)
     F -->|Covariance Matrix| G1[SLSQP Max Sharpe Solver]
