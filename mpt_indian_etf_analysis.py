@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 Portfolio Optimization with Modern Portfolio Theory (MPT)
@@ -18,6 +19,7 @@ import matplotlib.gridspec as gridspec
 from matplotlib.colors import LinearSegmentedColormap
 import seaborn as sns
 import datetime
+import os
 
 # ── Import shared engine (DRY — all data/optimization logic lives in mpt_core)
 from mpt_core import (

@@ -151,12 +151,12 @@ def info_box(fig, x, y, w, h, title, lines, bg='#EEF4FF', title_color=BLUE):
 # DATA DOWNLOAD & CLEAN
 # ─────────────────────────────────────────────────────────────────────────────
 def generate_report():
-    global raw, prices, prices_c, cleaned_dates, returns, mu, Sigma, snames, available, n, risk_free
+    global raw, prices, prices_c, cleaned_dates, mu, Sigma, snames, available, n
     global END_DATE, REPORT_DATE
     import datetime
     END_DATE = datetime.date.today().strftime("%Y-%m-%d")
     REPORT_DATE = datetime.date.today().strftime("%d %B %Y")
-    global w_eq, r_eq, v_eq, sr_eq, N_MC, mc_w, mc_r, mc_v, mc_sr, max_sr_idx, min_v_idx, res_sh, res_mv, w_sh, w_mv, r_sh, v_sh, sr_sh, r_mv, v_mv, sr_mv
+    global w_eq, r_eq, v_eq, sr_eq, mc_w, mc_r, mc_v, mc_sr, res_sh, res_mv, w_sh, w_mv, r_sh, v_sh, sr_sh, r_mv, v_mv, sr_mv
     print("📥  Downloading live data from Yahoo Finance …")
     raw    = yf.download(TICKERS, start=START_DATE, end=END_DATE,
                          auto_adjust=True, progress=True, group_by='column')

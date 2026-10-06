@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 MPT Indian ETF — Detailed Multi-Page PDF Report
