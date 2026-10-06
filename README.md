@@ -1,7 +1,7 @@
-# 📊 Indian ETF Robo-Advisor & Portfolio Optimization (v3.0)
+# 📊 Indian ETF Robo-Advisor and Portfolio Optimization (v3.0)
 
 **Live Dashboard:** [https://web-six-zeta-72.vercel.app](https://web-six-zeta-72.vercel.app)
-*(Live NSE ETF prices · On-demand PDF & Excel Generation via Vercel Serverless API)*
+*(Live NSE ETF prices · On-demand PDF and Excel Generation via Vercel Serverless API)*
 
 An end-to-end quantitative finance Robo-Advisor built in Python. This platform applies **Modern Portfolio Theory (MPT)** to a diversified 9-ETF universe covering Indian Equities, US Equities, Gold, Silver, and Government Securities. It features live data ingestion, constrained portfolio optimization, and institutional-grade dynamic reporting — all deployed as a full-stack serverless web application.
 
@@ -15,7 +15,7 @@ This flowchart illustrates the end-to-end data pipeline from user input to final
 
 ```mermaid
 flowchart TD
-    A[User Browser UI] -->|Selects Strategy & Amount| B(Vercel Serverless Backend)
+    A[User Browser UI] -->|Selects Strategy and Amount| B[Vercel Serverless Backend]
     
     B -->|GET /api/generate| C1[Matplotlib PDF Engine]
     B -->|GET /api/excel| C2[OpenPyxl Excel Engine]
@@ -23,9 +23,9 @@ flowchart TD
     C1 --> D{yfinance API}
     C2 --> D
     
-    D -->|Live Market Data Since 2019| E[Data Cleaning & Alignment]
+    D -->|Live Market Data Since 2019| E[Data Cleaning and Alignment]
     
-    E --> F(SciPy MPT Optimizer)
+    E --> F[SciPy MPT Optimizer]
     F -->|Covariance Matrix| G1[SLSQP Max Sharpe Solver]
     F -->|Volatility Penalty| G2[Min Volatility Solver]
     
@@ -85,14 +85,14 @@ The analysis demonstrates that naive equal-weighting is sub-optimal. By exploiti
 
 ---
 
-## ▶️ Setup & Execution
+## ▶️ Setup and Execution
 
 ```bash
 # 1. Install dependencies
 pip install -r requirements.txt
 
 # 2. Run the development server locally (requires Vercel CLI)
-cd web && npx vercel dev
+cd web andand npx vercel dev
 
 # 3. View the Architecture Manual
 python generate_final_docs.py
