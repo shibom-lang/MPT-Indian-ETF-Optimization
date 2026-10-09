@@ -1,11 +1,11 @@
 # MPT Indian ETF Portfolio Optimizer — Python Dependencies
-# Pin versions to ensure reproducibility
-# Install: pip install -r requirements.txt
+# Relaxed versions for Vercel Serverless (AL2 / uv compatibility)
 
-numpy==2.2.6
-pandas==2.2.3
-matplotlib==3.9.4
-scipy==1.14.1
-yfinance==1.5.1
-seaborn==0.13.2
+numpy>=1.26.0,<2.3.0
+pandas>=2.0.0
+matplotlib>=3.8.0
+scipy>=1.11.0,<1.15.0
+yfinance>=0.2.40
+seaborn>=0.13.0
 cffi>=1.0.0
+openpyxl>=3.1.0
