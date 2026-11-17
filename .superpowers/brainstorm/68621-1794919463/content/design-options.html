@@ -1,0 +1,346 @@
+<style>
+  .design-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    margin-top: 16px;
+  }
+  .design-card {
+    border: 2px solid #334155;
+    border-radius: 12px;
+    background: #0f172a;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .design-card:hover {
+    border-color: #38bdf8;
+    transform: translateY(-2px);
+  }
+  .design-card.selected {
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.4);
+  }
+  .design-header {
+    padding: 16px 20px;
+    background: #1e293b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #334155;
+  }
+  .design-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+  .design-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 9999px;
+    font-weight: 600;
+  }
+  .tag-terminal { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b44; }
+  .tag-modern { background: #38bdf822; color: #38bdf8; border: 1px solid #38bdf844; }
+  .tag-institutional { background: #10b98122; color: #10b981; border: 1px solid #10b98144; }
+  .preview-stage {
+    padding: 20px;
+  }
+  
+  /* Mockup Components */
+  .mock-window {
+    border-radius: 8px;
+    padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .mock-nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+  }
+  .mock-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .mock-metric-box {
+    padding: 10px 12px;
+    border-radius: 6px;
+  }
+  .mock-metric-val {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .mock-alloc-bar {
+    display: flex;
+    height: 18px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+  .mock-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-top: 10px;
+  }
+  .mock-table th, .mock-table td {
+    padding: 6px 8px;
+    text-align: left;
+  }
+</style>
+
+<h2>Select Your Financial UI/UX Design Direction</h2>
+<p class="subtitle">
+  Eliminate the slow, generic "AI glassmorphism" look. Choose between three authentic, battle-tested financial design systems tailored for your ETF Portfolio Optimizer.
+</p>
+
+<div class="design-container">
+
+  <!-- OPTION A: Linear / Modern FinTech Slate -->
+  <div class="design-card" data-choice="modern-slate" onclick="toggleSelect(this)">
+    <div class="design-header">
+      <div>
+        <div class="design-title">Option A: Modern FinTech Slate (Linear & Stripe Style) — Recommended ⭐</div>
+        <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
+          Clean dark slate (#090D16), crisp 1px borders, Inter typography, snappy micro-interactions. Zero lag or blurry orbs.
+        </div>
+      </div>
+      <span class="design-tag tag-modern">MODERN FINTECH</span>
+    </div>
+
+    <div class="preview-stage" style="background: #06090e;">
+      <div class="mock-window" style="background: #0d121d; border: 1px solid #1e293b; color: #e2e8f0;">
+        <!-- Nav -->
+        <div class="mock-nav-row" style="border-bottom: 1px solid #1e293b;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 12px; height: 12px; border-radius: 3px; background: #0284c7;"></div>
+            <span style="font-weight: 700; font-size: 13px; letter-spacing: 0.5px;">ETF OPTIMA</span>
+            <span style="font-size: 9px; padding: 2px 6px; background: #1e293b; border-radius: 4px; color: #38bdf8;">PRO QUANT</span>
+          </div>
+          <div style="display: flex; gap: 14px; font-size: 11px; color: #94a3b8;">
+            <span style="color: #38bdf8; font-weight: 600;">📊 Optimizer</span>
+            <span>⚡ Live Tickers</span>
+            <span>🔬 Compare Studio</span>
+            <span>📂 My Portfolios</span>
+          </div>
+          <button style="background: #0284c7; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 600;">Sign In</button>
+        </div>
+
+        <!-- Ticker Strip -->
+        <div style="display: flex; gap: 12px; font-size: 10px; padding: 6px 10px; background: #0a0f18; border-radius: 4px; margin-bottom: 12px; border: 1px solid #1e293b;">
+          <span>NIFTYBEES: <b style="color: #10b981;">₹278.40 (+0.4%)</b></span>
+          <span>GOLDBEES: <b style="color: #10b981;">₹68.10 (+0.8%)</b></span>
+          <span>MON100: <b style="color: #ef4444;">₹172.50 (-0.3%)</b></span>
+          <span>MID150BEES: <b style="color: #10b981;">₹184.20 (+1.1%)</b></span>
+        </div>
+
+        <!-- Metric Grid -->
+        <div class="mock-metric-grid">
+          <div class="mock-metric-box" style="background: #111827; border: 1px solid #1f2937;">
+            <div style="font-size: 10px; color: #94a3b8;">EXP. ANNUAL RETURN</div>
+            <div class="mock-metric-val" style="color: #10b981;">19.44%</div>
+            <div style="font-size: 9px; color: #6b7280;">Nifty 50 + 5.2% alpha</div>
+          </div>
+          <div class="mock-metric-box" style="background: #111827; border: 1px solid #1f2937;">
+            <div style="font-size: 10px; color: #94a3b8;">ANNUAL VOLATILITY</div>
+            <div class="mock-metric-val" style="color: #f59e0b;">13.02%</div>
+            <div style="font-size: 9px; color: #6b7280;">Low risk tier</div>
+          </div>
+          <div class="mock-metric-box" style="background: #111827; border: 1px solid #1f2937;">
+            <div style="font-size: 10px; color: #94a3b8;">SHARPE RATIO</div>
+            <div class="mock-metric-val" style="color: #38bdf8;">0.963</div>
+            <div style="font-size: 9px; color: #6b7280;">Rf = 6.85% (10Y G-Sec)</div>
+          </div>
+          <div class="mock-metric-box" style="background: #111827; border: 1px solid #1f2937;">
+            <div style="font-size: 10px; color: #94a3b8;">SORTINO RATIO</div>
+            <div class="mock-metric-val" style="color: #a78bfa;">1.482</div>
+            <div style="font-size: 9px; color: #6b7280;">Downside deviation: 8.5%</div>
+          </div>
+        </div>
+
+        <!-- Stacked Bar (The feature you liked) -->
+        <div style="font-size: 11px; font-weight: 600; margin-bottom: 4px;">Optimal Asset Allocation: Max Sharpe Model</div>
+        <div class="mock-alloc-bar">
+          <div style="width: 25%; background: #fbbf24;" title="GoldBees 25%"></div>
+          <div style="width: 25%; background: #14b8a6;" title="Mid150Bees 25%"></div>
+          <div style="width: 25%; background: #8b5cf6;" title="Nasdaq100 25%"></div>
+          <div style="width: 15%; background: #ef4444;" title="JuniorBees 15%"></div>
+          <div style="width: 10%; background: #60a5fa;" title="NiftyBees 10%"></div>
+        </div>
+        <div style="display: flex; gap: 10px; font-size: 9px; color: #94a3b8;">
+          <span>🟡 Gold: 25%</span>
+          <span>🟢 MidCap: 25%</span>
+          <span>🟣 Nasdaq: 25%</span>
+          <span>🔴 Next50: 15%</span>
+          <span>🔵 LargeCap: 10%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION B: Bloomberg / High-Density Quantitative Terminal -->
+  <div class="design-card" data-choice="bloomberg-terminal" onclick="toggleSelect(this)">
+    <div class="design-header">
+      <div>
+        <div class="design-title">Option B: Bloomberg / Quant Terminal (TradingView & Koyfin Style)</div>
+        <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
+          Jet-black background (#080808), monospaced figures (JetBrains/Roboto Mono), amber/cyan high-contrast accents, compact data tables.
+        </div>
+      </div>
+      <span class="design-tag tag-terminal">WALL STREET TERMINAL</span>
+    </div>
+
+    <div class="preview-stage" style="background: #000000;">
+      <div class="mock-window" style="background: #080808; border: 1px solid #262626; color: #d4d4d4; font-family: monospace;">
+        <!-- Nav -->
+        <div class="mock-nav-row" style="border-bottom: 1px solid #262626;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="background: #f59e0b; color: #000; font-weight: 900; padding: 2px 5px; font-size: 11px;">BBG</span>
+            <span style="font-weight: 700; font-size: 12px; color: #f59e0b;">ETF_OPTIMA // TERMINAL v3.2</span>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 10px; color: #737373;">
+            <span style="color: #f59e0b;">[1] OPTIMIZER</span>
+            <span>[2] LIVE_PRICES</span>
+            <span>[3] CORR_MATRIX</span>
+            <span>[4] USER_SAVED</span>
+          </div>
+          <span style="font-size: 10px; color: #10b981;">CONNECTED: NSE_LIVE ●</span>
+        </div>
+
+        <!-- Terminal Table -->
+        <table class="mock-table" style="color: #d4d4d4; border-top: 1px solid #262626;">
+          <thead>
+            <tr style="background: #141414; color: #a3a3a3;">
+              <th>TICKER</th>
+              <th>NAME</th>
+              <th>PRICE</th>
+              <th>CHG%</th>
+              <th>OPTIMAL WEIGHT</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #1c1c1c;">
+              <td style="color: #f59e0b; font-weight: bold;">GOLDBEES.NS</td>
+              <td>Nippon Gold ETF</td>
+              <td>₹68.10</td>
+              <td style="color: #10b981;">+0.82%</td>
+              <td style="color: #38bdf8; font-weight: bold;">25.00% [████████]</td>
+              <td>LONG_CORE</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #1c1c1c;">
+              <td style="color: #f59e0b; font-weight: bold;">MON100.NS</td>
+              <td>Motilal Nasdaq 100</td>
+              <td>₹172.50</td>
+              <td style="color: #ef4444;">-0.31%</td>
+              <td style="color: #38bdf8; font-weight: bold;">25.00% [████████]</td>
+              <td>TECH_GROWTH</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #1c1c1c;">
+              <td style="color: #f59e0b; font-weight: bold;">MID150BEES.NS</td>
+              <td>Nippon Nifty Midcap</td>
+              <td>₹184.20</td>
+              <td style="color: #10b981;">+1.12%</td>
+              <td style="color: #38bdf8; font-weight: bold;">25.00% [████████]</td>
+              <td>HIGH_BETA</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 10px; display: flex; justify-content: space-between; font-size: 10px; background: #141414; padding: 6px 10px;">
+          <span>SLSQP_STATUS: <b style="color: #10b981;">CONVERGED (tol=1e-7)</b></span>
+          <span>SHARPE: <b style="color: #f59e0b;">0.9631</b></span>
+          <span>PORTFOLIO_VOL: <b style="color: #d4d4d4;">13.02%</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION C: Financial Times / Morningstar Light Institutional -->
+  <div class="design-card" data-choice="morningstar-light" onclick="toggleSelect(this)">
+    <div class="design-header">
+      <div>
+        <div class="design-title">Option C: Morningstar / Financial Times (Clean Institutional Light)</div>
+        <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
+          Porcelain off-white (#F8FAFC), crisp navy typography (#0F172A), high-contrast tabular clarity, print-friendly asset management styling.
+        </div>
+      </div>
+      <span class="design-tag tag-institutional">INSTITUTIONAL ASSET MGT</span>
+    </div>
+
+    <div class="preview-stage" style="background: #e2e8f0;">
+      <div class="mock-window" style="background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a;">
+        <!-- Nav -->
+        <div class="mock-nav-row" style="border-bottom: 2px solid #0f172a;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-family: serif; font-weight: 900; font-size: 16px; color: #0f172a;">ETF OPTIMA</span>
+            <span style="font-size: 9px; padding: 2px 6px; background: #f1f5f9; border-radius: 2px; color: #475569; font-weight: 600;">RESEARCH LAB</span>
+          </div>
+          <div style="display: flex; gap: 14px; font-size: 11px; font-weight: 600; color: #475569;">
+            <span style="color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 4px;">Portfolio Optimizer</span>
+            <span>Live ETF Monitor</span>
+            <span>Comparative Analytics</span>
+            <span>Client Portfolios</span>
+          </div>
+          <button style="background: #0f172a; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 600;">Client Login</button>
+        </div>
+
+        <!-- Metrics -->
+        <div class="mock-metric-grid" style="margin-top: 10px;">
+          <div class="mock-metric-box" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            <div style="font-size: 9px; font-weight: 700; color: #64748b; letter-spacing: 0.5px;">EXPECTED 5Y CAGR</div>
+            <div class="mock-metric-val" style="color: #0f172a;">19.44%</div>
+            <div style="font-size: 9px; color: #059669; font-weight: 600;">Outperforms Nifty by +4.8%</div>
+          </div>
+          <div class="mock-metric-box" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            <div style="font-size: 9px; font-weight: 700; color: #64748b; letter-spacing: 0.5px;">PORTFOLIO VOLATILITY</div>
+            <div class="mock-metric-val" style="color: #0f172a;">13.02%</div>
+            <div style="font-size: 9px; color: #64748b;">Annualized std. dev.</div>
+          </div>
+          <div class="mock-metric-box" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            <div style="font-size: 9px; font-weight: 700; color: #64748b; letter-spacing: 0.5px;">SHARPE RATIO (Rf=6.85%)</div>
+            <div class="mock-metric-val" style="color: #0284c7;">0.963</div>
+            <div style="font-size: 9px; color: #0284c7; font-weight: 600;">Top 5% efficiency</div>
+          </div>
+          <div class="mock-metric-box" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            <div style="font-size: 9px; font-weight: 700; color: #64748b; letter-spacing: 0.5px;">MAX DRAWDOWN (COVID)</div>
+            <div class="mock-metric-val" style="color: #dc2626;">-18.4%</div>
+            <div style="font-size: 9px; color: #64748b;">vs Nifty -38.4%</div>
+          </div>
+        </div>
+
+        <!-- Allocation Row -->
+        <div style="margin-top: 10px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;">
+          <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 4px;">
+            <span>EFFICIENT ALLOCATION SPREAD</span>
+            <span>TOTAL: 100.0%</span>
+          </div>
+          <div class="mock-alloc-bar" style="height: 14px;">
+            <div style="width: 25%; background: #d97706;"></div>
+            <div style="width: 25%; background: #0d9488;"></div>
+            <div style="width: 25%; background: #6366f1;"></div>
+            <div style="width: 15%; background: #e11d48;"></div>
+            <div style="width: 10%; background: #2563eb;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleSelect(el) {
+    document.querySelectorAll('.design-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const choice = el.getAttribute('data-choice');
+    if (window.recordChoice) {
+      window.recordChoice(choice, el.querySelector('.design-title').innerText);
+    }
+  }
+</script>

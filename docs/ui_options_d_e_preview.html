@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETF Optima — Option D (Hybrid Institutional) & Option E (Minimalist) Previews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #060911;
+      color: #f1f5f9;
+      padding: 32px 24px;
+      line-height: 1.5;
+    }
+    .tabular { font-variant-numeric: tabular-nums; }
+    .mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+
+    .top-banner {
+      max-width: 1200px;
+      margin: 0 auto 32px auto;
+      background: #0d131f;
+      border: 1px solid #1e293b;
+      padding: 24px;
+      border-radius: 10px;
+    }
+    .top-banner h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #f8fafc;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+    .top-banner p {
+      color: #94a3b8;
+      font-size: 13.5px;
+    }
+    .view-toggles {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: #161f30;
+      color: #cbd5e1;
+      border: 1px solid #2a374d;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tab-btn:hover { background: #222f47; color: #ffffff; }
+    .tab-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+    }
+
+    .preview-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 44px;
+    }
+
+    .option-wrapper {
+      border: 1px solid #283548;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    }
+    .option-header {
+      padding: 16px 22px;
+      background: #131c2e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #283548;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .option-title {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .option-desc {
+      font-size: 12.5px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+    .badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    /* ============================================================
+       OPTION D: HYBRID INSTITUTIONAL (SLATE + QUANT DRAWER)
+       ============================================================ */
+    .stage-d {
+      background: #080c14;
+      color: #f1f5f9;
+      padding: 24px;
+    }
+    .d-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .d-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .d-logo-mark {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .d-nav-links {
+      display: flex;
+      gap: 20px;
+      font-size: 12.5px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .d-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding-bottom: 4px;
+    }
+    .d-nav-link.active {
+      color: #38bdf8;
+      font-weight: 600;
+      border-bottom: 2px solid #38bdf8;
+    }
+    .d-ticker-strip {
+      display: flex;
+      gap: 18px;
+      font-size: 11.5px;
+      padding: 8px 14px;
+      background: #0d1320;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .d-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .d-pill-group {
+      display: flex;
+      gap: 6px;
+      background: #0f172a;
+      padding: 4px;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+    }
+    .d-pill {
+      background: transparent;
+      color: #94a3b8;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .d-pill.active {
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .d-capital-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .d-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .d-card {
+      background: #0d1320;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 14px 16px;
+    }
+    .d-card-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #94a3b8;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .d-card-val {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 4px 0;
+    }
+    .d-card-sub {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* Stacked bar + Execution Table */
+    .d-panel {
+      background: #0d1320;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .d-stack-bar {
+      display: flex;
+      height: 14px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 10px 0 16px 0;
+      gap: 2px;
+    }
+    .d-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .d-table th {
+      text-align: left;
+      padding: 8px 10px;
+      color: #64748b;
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #1e293b;
+    }
+    .d-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #141d2f;
+      color: #e2e8f0;
+    }
+    .d-table tr:last-child td { border-bottom: none; }
+    .d-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      margin-right: 6px;
+    }
+
+    /* Collapsible Quant Diagnostics Drawer */
+    .quant-drawer {
+      background: #05070c;
+      border: 1px solid #262626;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .quant-drawer-header {
+      padding: 10px 14px;
+      background: #0c0f17;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border-bottom: 1px solid #1e293b;
+    }
+    .quant-drawer-body {
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 16px;
+      font-size: 11.5px;
+    }
+    .q-box {
+      background: #0a0a0a;
+      border: 1px solid #262626;
+      padding: 10px 12px;
+      border-radius: 4px;
+    }
+
+    /* ============================================================
+       OPTION E: ULTRA-CLEAN RETAIL FINTECH (ZERODHA / GROWW INSPIRED)
+       ============================================================ */
+    .stage-e {
+      background: #f9fafb;
+      color: #111827;
+      padding: 24px;
+    }
+    .e-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px 18px;
+      margin-bottom: 18px;
+    }
+    .e-stepper {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .e-step {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .e-step.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+    .e-step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .e-step.active .e-step-num {
+      background: #2563eb;
+      color: #ffffff;
+    }
+    .e-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 16px;
+    }
+    .e-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .e-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    .e-table th {
+      text-align: left;
+      padding: 8px 6px;
+      color: #6b7280;
+      font-size: 11px;
+      font-weight: 600;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .e-table td {
+      padding: 9px 6px;
+      border-bottom: 1px solid #f3f4f6;
+      color: #111827;
+    }
+
+    @media (max-width: 768px) {
+      .d-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .quant-drawer-body, .e-grid, .e-stepper { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-banner">
+    <h1>ETF Optima — Upgraded Architectural UI/UX Drafts (Options D &amp; E)</h1>
+    <p>Eliminates UI emojis in favor of crisp vector SVG icons, enforces tabular monospace figures for zero price jitter, pairs allocation bars with an actionable share-quantity execution table, and embeds a collapsible SLSQP solver drawer.</p>
+    
+    <div class="view-toggles">
+      <button class="tab-btn active" onclick="filterOption('all', this)">Compare Both New Drafts</button>
+      <button class="tab-btn" onclick="filterOption('opt-d', this)">Option D: Hybrid Institutional (Recommended)</button>
+      <button class="tab-btn" onclick="filterOption('opt-e', this)">Option E: Minimalist Guided FinTech (Light)</button>
+    </div>
+  </div>
+
+  <div class="preview-container">
+
+    <!-- ============================================================
+         OPTION D: HYBRID INSTITUTIONAL (SLATE + QUANT DRAWER)
+         ============================================================ -->
+    <div class="option-wrapper" id="opt-d">
+      <div class="option-header">
+        <div>
+          <div class="option-title">Option D: Hybrid Institutional (Slate Canvas + Actionable Table + Quant Drawer)</div>
+          <div class="option-desc">Combines Option A's crisp dark slate hierarchy with an exact share-execution table and a collapsible SLSQP solver telemetry panel.</div>
+        </div>
+        <span class="badge" style="background: #0284c722; color: #38bdf8; border: 1px solid #0284c755;">RECOMMENDED PRODUCTION ARCHITECTURE</span>
+      </div>
+
+      <div class="stage-d">
+        <!-- Top Navigation -->
+        <div class="d-nav">
+          <div class="d-brand">
+            <div class="d-logo-mark">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+            </div>
+            <span style="font-weight: 800; font-size: 14.5px; letter-spacing: 0.4px; color: #f8fafc;">ETF OPTIMA</span>
+            <span class="mono" style="font-size: 10px; padding: 2px 7px; background: #1e293b; border-radius: 4px; color: #38bdf8; font-weight: 600;">MPT v3.2</span>
+          </div>
+
+          <div class="d-nav-links">
+            <span class="d-nav-link active">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              Optimizer
+            </span>
+            <span class="d-nav-link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              NSE Live Feed
+            </span>
+            <span class="d-nav-link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              Stress Tests
+            </span>
+          </div>
+
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button title="Switch to Institutional Light Theme" style="background: #0f172a; color: #94a3b8; border: 1px solid #1e293b; padding: 5px 9px; border-radius: 5px; font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line></svg>
+              Light Mode
+            </button>
+            <button style="background: #0284c7; color: #ffffff; border: none; padding: 6px 12px; border-radius: 5px; font-size: 11.5px; font-weight: 600; cursor: pointer;">Save Portfolio</button>
+          </div>
+        </div>
+
+        <!-- Live NSE Ticker Ribbon with Tabular Figures -->
+        <div class="d-ticker-strip mono">
+          <span>NIFTYBEES <b style="color: #10b981;">278.40 (+0.42%)</b></span>
+          <span style="color: #334155;">|</span>
+          <span>GOLDBEES <b style="color: #10b981;">68.10 (+0.85%)</b></span>
+          <span style="color: #334155;">|</span>
+          <span>MON100 <b style="color: #f43f5e;">172.50 (-0.31%)</b></span>
+          <span style="color: #334155;">|</span>
+          <span>MID150BEES <b style="color: #10b981;">184.20 (+1.12%)</b></span>
+          <span style="color: #334155;">|</span>
+          <span>JUNIORBEES <b style="color: #10b981;">742.80 (+0.64%)</b></span>
+          <span style="color: #334155;">|</span>
+          <span>LIQUIDBEES <b style="color: #94a3b8;">1000.01 (+0.02%)</b></span>
+        </div>
+
+        <!-- Objective Selector & Capital Input -->
+        <div class="d-controls">
+          <div class="d-pill-group">
+            <button class="d-pill active">Max Sharpe (Tangency)</button>
+            <button class="d-pill">Min Volatility</button>
+            <button class="d-pill">Risk Parity</button>
+            <button class="d-pill">Equal Weight (1/N)</button>
+          </div>
+          <div class="d-capital-box">
+            <span>Capital Allocation:</span>
+            <span class="mono" style="color: #ffffff; font-weight: 700; font-size: 13px;">₹5,00,000</span>
+            <span style="font-size: 10px; color: #38bdf8; background: #0284c722; padding: 2px 6px; border-radius: 3px;">25% Max Cap</span>
+          </div>
+        </div>
+
+        <!-- 4 Core KPI Cards -->
+        <div class="d-metrics-grid">
+          <div class="d-card">
+            <div class="d-card-label">Expected Annual Return</div>
+            <div class="d-card-val mono" style="color: #10b981;">19.44%</div>
+            <div class="d-card-sub tabular">+5.24% alpha vs Nifty 50</div>
+          </div>
+          <div class="d-card">
+            <div class="d-card-label">Annualized Volatility</div>
+            <div class="d-card-val mono" style="color: #f59e0b;">13.02%</div>
+            <div class="d-card-sub tabular">Downside deviation: 8.51%</div>
+          </div>
+          <div class="d-card">
+            <div class="d-card-label">Sharpe Ratio (Rf 6.85%)</div>
+            <div class="d-card-val mono" style="color: #38bdf8;">0.963</div>
+            <div class="d-card-sub tabular">Sortino Ratio: 1.478</div>
+          </div>
+          <div class="d-card">
+            <div class="d-card-label">Max Historical Drawdown</div>
+            <div class="d-card-val mono" style="color: #f43f5e;">-18.40%</div>
+            <div class="d-card-sub tabular">COVID-19 (Nifty: -38.4%)</div>
+          </div>
+        </div>
+
+        <!-- Target Allocation Bar + Actionable Execution Table -->
+        <div class="d-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12.5px; font-weight: 700; color: #f8fafc;">Optimal Portfolio Weights &amp; Share Execution Schedule</span>
+            <span class="mono" style="font-size: 11px; color: #94a3b8;">Deployed: ₹4,99,517.70 | Uninvested Cash: ₹482.30</span>
+          </div>
+
+          <div class="d-stack-bar">
+            <div style="width: 25%; background: #fbbf24;" title="GOLDBEES: 25%"></div>
+            <div style="width: 25%; background: #14b8a6;" title="MID150BEES: 25%"></div>
+            <div style="width: 25%; background: #8b5cf6;" title="MON100: 25%"></div>
+            <div style="width: 15%; background: #f43f5e;" title="JUNIORBEES: 15%"></div>
+            <div style="width: 10%; background: #38bdf8;" title="NIFTYBEES: 10%"></div>
+          </div>
+
+          <table class="d-table">
+            <thead>
+              <tr>
+                <th>ETF Ticker</th>
+                <th>Asset Class</th>
+                <th style="text-align: right;">NSE LTP (₹)</th>
+                <th style="text-align: right;">Target Wt</th>
+                <th style="text-align: right;">Exact Qty</th>
+                <th style="text-align: right;">Actual Value (₹)</th>
+              </tr>
+            </thead>
+            <tbody class="mono">
+              <tr>
+                <td style="font-family: 'Inter', sans-serif; font-weight: 600;"><span class="d-dot" style="background: #fbbf24;"></span>GOLDBEES.NS</td>
+                <td style="font-family: 'Inter', sans-serif; color: #94a3b8;">Sovereign Gold</td>
+                <td style="text-align: right;">68.10</td>
+                <td style="text-align: right; color: #38bdf8;">25.00%</td>
+                <td style="text-align: right; font-weight: 700;">1,835</td>
+                <td style="text-align: right;">1,24,963.50</td>
+              </tr>
+              <tr>
+                <td style="font-family: 'Inter', sans-serif; font-weight: 600;"><span class="d-dot" style="background: #14b8a6;"></span>MID150BEES.NS</td>
+                <td style="font-family: 'Inter', sans-serif; color: #94a3b8;">Nifty Midcap 150</td>
+                <td style="text-align: right;">184.20</td>
+                <td style="text-align: right; color: #38bdf8;">25.00%</td>
+                <td style="text-align: right; font-weight: 700;">678</td>
+                <td style="text-align: right;">1,24,887.60</td>
+              </tr>
+              <tr>
+                <td style="font-family: 'Inter', sans-serif; font-weight: 600;"><span class="d-dot" style="background: #8b5cf6;"></span>MON100.NS</td>
+                <td style="font-family: 'Inter', sans-serif; color: #94a3b8;">US Nasdaq 100</td>
+                <td style="text-align: right;">172.50</td>
+                <td style="text-align: right; color: #38bdf8;">25.00%</td>
+                <td style="text-align: right; font-weight: 700;">724</td>
+                <td style="text-align: right;">1,24,890.00</td>
+              </tr>
+              <tr>
+                <td style="font-family: 'Inter', sans-serif; font-weight: 600;"><span class="d-dot" style="background: #f43f5e;"></span>JUNIORBEES.NS</td>
+                <td style="font-family: 'Inter', sans-serif; color: #94a3b8;">Nifty Next 50</td>
+                <td style="text-align: right;">742.80</td>
+                <td style="text-align: right; color: #38bdf8;">15.00%</td>
+                <td style="text-align: right; font-weight: 700;">100</td>
+                <td style="text-align: right;">74,280.00</td>
+              </tr>
+              <tr>
+                <td style="font-family: 'Inter', sans-serif; font-weight: 600;"><span class="d-dot" style="background: #38bdf8;"></span>NIFTYBEES.NS</td>
+                <td style="font-family: 'Inter', sans-serif; color: #94a3b8;">Nifty 50 Core</td>
+                <td style="text-align: right;">278.40</td>
+                <td style="text-align: right; color: #38bdf8;">10.00%</td>
+                <td style="text-align: right; font-weight: 700;">179</td>
+                <td style="text-align: right;">49,833.60</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Collapsible Quant & Solver Diagnostics Drawer (Option B DNA) -->
+        <div class="quant-drawer">
+          <div class="quant-drawer-header" onclick="toggleQuantDrawer()">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="mono" style="background: #f59e0b; color: #000; font-weight: 800; font-size: 10px; padding: 1px 5px; border-radius: 2px;">QUANT</span>
+              <span style="font-size: 12px; font-weight: 600; color: #e2e8f0;">SLSQP Solver Telemetry, Tail Risk &amp; Walk-Forward Diagnostics</span>
+            </div>
+            <span id="drawer-toggle-label" class="mono" style="font-size: 11px; color: #38bdf8;">[HIDE DIAGNOSTICS ▲]</span>
+          </div>
+          <div class="quant-drawer-body mono" id="quant-drawer-content">
+            <div class="q-box">
+              <div style="color: #f59e0b; font-weight: 700; margin-bottom: 6px;">STRESS_TEST_REGIMES (PORTFOLIO VS NIFTY 50)</div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: #94a3b8;">COVID-19 Crash (Feb–Mar 2020):</span>
+                <span><b style="color: #10b981;">-18.40%</b> <span style="color: #64748b;">(vs -38.44%)</span></span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: #94a3b8;">2022 Global Rate Hike Cycle:</span>
+                <span><b style="color: #10b981;">-4.12%</b> <span style="color: #64748b;">(vs -15.20%)</span></span>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: #94a3b8;">Daily Parametric CVaR (95%):</span>
+                <span style="color: #f43f5e; font-weight: 700;">-1.84% (₹9,200)</span>
+              </div>
+            </div>
+            <div class="q-box">
+              <div style="color: #38bdf8; font-weight: 700; margin-bottom: 6px;">SCIPY.OPTIMIZE.MINIMIZE (SLSQP)</div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: #94a3b8;">Status:</span>
+                <span style="color: #10b981;">CONVERGED (0.011s)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <span style="color: #94a3b8;">Iterations / Func Evals:</span>
+                <span>Nit = 14 | Feval = 162</span>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: #94a3b8;">Out-of-Sample Walk-Forward:</span>
+                <span style="color: #10b981;">Sharpe 0.89 (2021–2026)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export Actions -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div style="display: flex; gap: 10px;">
+            <button style="background: #1e293b; color: #f8fafc; border: 1px solid #334155; padding: 8px 14px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              Generate 10-Page PDF Tear Sheet
+            </button>
+            <button style="background: #1e293b; color: #f8fafc; border: 1px solid #334155; padding: 8px 14px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+              Download OpenPyxl Model (.xlsx)
+            </button>
+          </div>
+          <span style="font-size: 11px; color: #64748b;">Data Source: NSE India / Yahoo Finance Adjusted Close (5Y Daily)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         OPTION E: MINIMALIST GUIDED RETAIL FINTECH (ZERODHA / GROWW)
+         ============================================================ -->
+    <div class="option-wrapper" id="opt-e">
+      <div class="option-header">
+        <div>
+          <div class="option-title">Option E: Minimalist Guided FinTech (Zerodha Kite / Groww Clean Aesthetic)</div>
+          <div class="option-desc">High-trust daytime off-white canvas with a 3-step progressive workflow, clean hairlines, and approachable investor clarity.</div>
+        </div>
+        <span class="badge" style="background: #10b98122; color: #34d399; border: 1px solid #10b98144;">INDIAN RETAIL / WEALTH ADVISOR</span>
+      </div>
+
+      <div class="stage-e">
+        <div class="e-nav">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-weight: 800; font-size: 16px; color: #111827; letter-spacing: -0.02em;">ETF Optima</span>
+            <span style="font-size: 11px; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 999px; font-weight: 600;">India Index Robo-Advisor</span>
+          </div>
+          <div style="display: flex; gap: 18px; font-size: 12.5px; font-weight: 500; color: #4b5563;">
+            <span style="color: #2563eb; font-weight: 600;">Build Portfolio</span>
+            <span>ETF Screener</span>
+            <span>Backtest Lab</span>
+          </div>
+          <button style="background: #111827; color: #ffffff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Export Report</button>
+        </div>
+
+        <!-- 3-Step Guided Workflow -->
+        <div class="e-stepper">
+          <div class="e-step">
+            <div class="e-step-num">1</div>
+            <div>
+              <div style="font-size: 12px; font-weight: 700; color: #111827;">Universe &amp; Capital</div>
+              <div style="font-size: 11px; color: #6b7280;">9 NSE ETFs • ₹5,00,000</div>
+            </div>
+          </div>
+          <div class="e-step">
+            <div class="e-step-num">2</div>
+            <div>
+              <div style="font-size: 12px; font-weight: 700; color: #111827;">Risk Objective</div>
+              <div style="font-size: 11px; color: #6b7280;">Max Sharpe (Max 25% / ETF)</div>
+            </div>
+          </div>
+          <div class="e-step active">
+            <div class="e-step-num">3</div>
+            <div>
+              <div style="font-size: 12px; font-weight: 700; color: #1e40af;">Optimized Allocation</div>
+              <div style="font-size: 11px; color: #3b82f6;">Ready to Execute &amp; Export</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="e-grid">
+          <div class="e-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 13px; font-weight: 700; color: #111827;">Recommended ETF Basket</span>
+              <span style="font-size: 11px; color: #059669; font-weight: 600; background: #ecfdf5; padding: 2px 8px; border-radius: 4px;">0.96 Sharpe Ratio</span>
+            </div>
+            <table class="e-table">
+              <thead>
+                <tr>
+                  <th>ETF</th>
+                  <th style="text-align: right;">Weight</th>
+                  <th style="text-align: right;">Units</th>
+                  <th style="text-align: right;">Amount (₹)</th>
+                </tr>
+              </thead>
+              <tbody class="tabular">
+                <tr>
+                  <td><b>GOLDBEES</b> <span style="color: #6b7280; font-size: 11px;">Gold</span></td>
+                  <td style="text-align: right; font-weight: 600; color: #2563eb;">25.0%</td>
+                  <td style="text-align: right;">1,835</td>
+                  <td style="text-align: right; font-weight: 600;">₹1,24,964</td>
+                </tr>
+                <tr>
+                  <td><b>MID150BEES</b> <span style="color: #6b7280; font-size: 11px;">Midcap 150</span></td>
+                  <td style="text-align: right; font-weight: 600; color: #2563eb;">25.0%</td>
+                  <td style="text-align: right;">678</td>
+                  <td style="text-align: right; font-weight: 600;">₹1,24,888</td>
+                </tr>
+                <tr>
+                  <td><b>MON100</b> <span style="color: #6b7280; font-size: 11px;">Nasdaq 100</span></td>
+                  <td style="text-align: right; font-weight: 600; color: #2563eb;">25.0%</td>
+                  <td style="text-align: right;">724</td>
+                  <td style="text-align: right; font-weight: 600;">₹1,24,890</td>
+                </tr>
+                <tr>
+                  <td><b>JUNIORBEES</b> <span style="color: #6b7280; font-size: 11px;">Next 50</span></td>
+                  <td style="text-align: right; font-weight: 600; color: #2563eb;">15.0%</td>
+                  <td style="text-align: right;">100</td>
+                  <td style="text-align: right; font-weight: 600;">₹74,280</td>
+                </tr>
+                <tr>
+                  <td><b>NIFTYBEES</b> <span style="color: #6b7280; font-size: 11px;">Nifty 50</span></td>
+                  <td style="text-align: right; font-weight: 600; color: #2563eb;">10.0%</td>
+                  <td style="text-align: right;">179</td>
+                  <td style="text-align: right; font-weight: 600;">₹49,834</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="e-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 12px;">Projected 5-Year Performance</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                <div style="background: #f9fafb; padding: 10px; border-radius: 6px; border: 1px solid #f3f4f6;">
+                  <div style="font-size: 11px; color: #6b7280;">Expected CAGR</div>
+                  <div class="tabular" style="font-size: 18px; font-weight: 800; color: #059669;">19.44%</div>
+                </div>
+                <div style="background: #f9fafb; padding: 10px; border-radius: 6px; border: 1px solid #f3f4f6;">
+                  <div style="font-size: 11px; color: #6b7280;">Volatility</div>
+                  <div class="tabular" style="font-size: 18px; font-weight: 800; color: #111827;">13.02%</div>
+                </div>
+                <div style="background: #f9fafb; padding: 10px; border-radius: 6px; border: 1px solid #f3f4f6;">
+                  <div style="font-size: 11px; color: #6b7280;">Max Drawdown</div>
+                  <div class="tabular" style="font-size: 18px; font-weight: 800; color: #dc2626;">-18.4%</div>
+                </div>
+                <div style="background: #f9fafb; padding: 10px; border-radius: 6px; border: 1px solid #f3f4f6;">
+                  <div style="font-size: 11px; color: #6b7280;">Est. 5Y Corpus</div>
+                  <div class="tabular" style="font-size: 18px; font-weight: 800; color: #2563eb;">₹12.15L</div>
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button style="width: 100%; background: #2563eb; color: #ffffff; border: none; padding: 9px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Download Institutional PDF Report</button>
+              <button style="width: 100%; background: #ffffff; color: #374151; border: 1px solid #d1d5db; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">Export Excel Wealth Model (.xlsx)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function filterOption(optId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const ids = ['opt-d', 'opt-e'];
+      ids.forEach(id => {
+        document.getElementById(id).style.display = (optId === 'all' || id === optId) ? 'block' : 'none';
+      });
+    }
+
+    function toggleQuantDrawer() {
+      const body = document.getElementById('quant-drawer-content');
+      const label = document.getElementById('drawer-toggle-label');
+      if (body.style.display === 'none') {
+        body.style.display = 'grid';
+        label.textContent = '[HIDE DIAGNOSTICS ▲]';
+      } else {
+        body.style.display = 'none';
+        label.textContent = '[SHOW DIAGNOSTICS ▼]';
+      }
+    }
+  </script>
+</body>
+</html>

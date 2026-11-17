@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETF Optima — Financial Times Editorial &amp; Institutional Quant Hybrid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F3E5D8; /* Deeper FT border environment */
+      color: #1A1A1A;
+      padding: 32px 20px 60px 20px;
+      line-height: 1.5;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+    .serif { font-family: 'Newsreader', Georgia, serif; }
+    .tabular { font-variant-numeric: tabular-nums; }
+
+    .paper-sheet {
+      max-width: 1180px;
+      margin: 0 auto;
+      background: #FFF1E5; /* Iconic Financial Times Classic Newsprint */
+      border: 1px solid #D8C7B5;
+      box-shadow: 0 10px 30px rgba(60, 40, 20, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    /* Top Masthead */
+    .ft-masthead {
+      padding: 24px 32px 16px 32px;
+      border-bottom: 2px solid #0C2340;
+    }
+    .ft-top-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #665C54;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #E9D5C3;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ft-brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .ft-title {
+      font-family: 'Newsreader', serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: #0C2340; /* Oxford Navy */
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .ft-subtitle {
+      font-family: 'Newsreader', serif;
+      font-style: italic;
+      font-size: 14.5px;
+      color: #4D443D;
+      margin-top: 4px;
+    }
+
+    .ft-nav {
+      display: flex;
+      gap: 22px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #4D443D;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      align-items: center;
+    }
+    .ft-nav-item {
+      cursor: pointer;
+      padding-bottom: 2px;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s ease;
+    }
+    .ft-nav-item:hover, .ft-nav-item.active {
+      color: #0C2340;
+      border-bottom-color: #0C2340;
+    }
+    .ft-btn-primary {
+      background: #0C2340;
+      color: #FFF1E5;
+      border: 1px solid #0C2340;
+      padding: 6px 14px;
+      border-radius: 2px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+    }
+    .ft-btn-secondary {
+      background: #FAF0E6;
+      color: #0C2340;
+      border: 1px solid #D8C7B5;
+      padding: 6px 14px;
+      border-radius: 2px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Newsprint Ticker Strip */
+    .ft-ticker-strip {
+      display: flex;
+      gap: 18px;
+      font-size: 11.5px;
+      padding: 8px 32px;
+      background: #FAF0E6;
+      border-bottom: 1px solid #E9D5C3;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .ft-ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Main Content */
+    .ft-body {
+      padding: 24px 32px 32px 32px;
+    }
+
+    /* Controls Bar */
+    .ft-controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .ft-pill-group {
+      display: flex;
+      gap: 4px;
+      background: #FAF0E6;
+      padding: 3px;
+      border: 1px solid #D8C7B5;
+      border-radius: 3px;
+    }
+    .ft-pill {
+      background: transparent;
+      color: #4D443D;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 2px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .ft-pill.active {
+      background: #0C2340;
+      color: #FFF1E5;
+    }
+    .ft-capital-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #FAF0E6;
+      border: 1px solid #D8C7B5;
+      padding: 6px 14px;
+      border-radius: 3px;
+      font-size: 12px;
+      color: #4D443D;
+    }
+
+    /* 4 Metric Cards (Option D power + FT beauty) */
+    .ft-metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .ft-card {
+      background: #FAF0E6;
+      border: 1px solid #D8C7B5;
+      border-top: 3px solid #0C2340;
+      padding: 14px 16px;
+      border-radius: 2px;
+    }
+    .ft-card-label {
+      font-family: 'Newsreader', serif;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #0C2340;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+    }
+    .ft-card-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0C2340;
+      margin: 4px 0 2px 0;
+      line-height: 1.1;
+    }
+    .ft-card-sub {
+      font-size: 11px;
+      color: #665C54;
+    }
+
+    /* Asset Allocation & Execution Table (Option D in FT skin) */
+    .ft-table-panel {
+      background: #FAF0E6;
+      border: 1px solid #D8C7B5;
+      border-radius: 2px;
+      padding: 18px 20px;
+      margin-bottom: 22px;
+    }
+    .ft-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ft-panel-title {
+      font-family: 'Newsreader', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0C2340;
+    }
+    .ft-stack-bar {
+      display: flex;
+      height: 14px;
+      background: #E9D5C3;
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 10px 0 16px 0;
+      gap: 1px;
+    }
+
+    .ft-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .ft-table th {
+      text-align: left;
+      padding: 8px 10px;
+      font-family: 'Newsreader', serif;
+      font-weight: 700;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #0C2340;
+      border-bottom: 2px solid #0C2340;
+    }
+    .ft-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #E9D5C3;
+      color: #1A1A1A;
+    }
+    .ft-table tr:last-child td { border-bottom: none; }
+    .ft-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      margin-right: 6px;
+    }
+
+    /* Collapsible FT Quant & SLSQP Solver Drawer */
+    .ft-quant-drawer {
+      background: #FAF0E6;
+      border: 1px solid #D8C7B5;
+      border-radius: 2px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .ft-drawer-header {
+      padding: 10px 16px;
+      background: #F3E5D8;
+      border-bottom: 1px solid #D8C7B5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .ft-drawer-body {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+      font-size: 11.5px;
+    }
+    .ft-quant-box {
+      background: #FFF1E5;
+      border: 1px solid #E9D5C3;
+      padding: 12px;
+      border-radius: 2px;
+    }
+
+    /* Export Row */
+    .ft-actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #D8C7B5;
+      padding-top: 18px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .ft-metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .ft-drawer-body { grid-template-columns: 1fr; }
+      .paper-sheet { border-radius: 0; }
+      body { padding: 8px; }
+      .ft-masthead, .ft-body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="paper-sheet">
+
+    <!-- Masthead -->
+    <header class="ft-masthead">
+      <div class="ft-top-meta">
+        <span>National Stock Exchange of India (NSE) • Live Quantitative Feed</span>
+        <span>SEBI / NISM Research Analyst Series 15 Aligned</span>
+        <span>Updated: Live Session</span>
+      </div>
+
+      <div class="ft-brand-row">
+        <div>
+          <h1 class="ft-title">ETF OPTIMA</h1>
+          <div class="ft-subtitle">Modern Portfolio Theory &amp; Multi-Asset Quant Engine</div>
+        </div>
+
+        <div class="ft-nav">
+          <span class="ft-nav-item active">Portfolio Optimizer</span>
+          <span class="ft-nav-item">Market Monitor</span>
+          <span class="ft-nav-item">Correlation Studio</span>
+          <span class="ft-nav-item">Client Portfolios</span>
+        </div>
+
+        <div>
+          <button class="ft-btn-primary">Save to Account</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Newsprint Ticker Strip -->
+    <div class="ft-ticker-strip mono">
+      <div class="ft-ticker-item">
+        <span>NIFTYBEES.NS</span>
+        <span style="font-weight: 700; color: #00665E;">₹278.40 (+0.42%)</span>
+      </div>
+      <span style="color: #D8C7B5;">•</span>
+      <div class="ft-ticker-item">
+        <span>GOLDBEES.NS</span>
+        <span style="font-weight: 700; color: #00665E;">₹68.10 (+0.85%)</span>
+      </div>
+      <span style="color: #D8C7B5;">•</span>
+      <div class="ft-ticker-item">
+        <span>MON100.NS</span>
+        <span style="font-weight: 700; color: #990F3D;">₹172.50 (-0.31%)</span>
+      </div>
+      <span style="color: #D8C7B5;">•</span>
+      <div class="ft-ticker-item">
+        <span>MID150BEES.NS</span>
+        <span style="font-weight: 700; color: #00665E;">₹184.20 (+1.12%)</span>
+      </div>
+      <span style="color: #D8C7B5;">•</span>
+      <div class="ft-ticker-item">
+        <span>SETF10GILT.NS</span>
+        <span style="font-weight: 700; color: #665C54;">₹104.30 (+0.05%)</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="ft-body">
+      <!-- Strategy Selector & Capital -->
+      <div class="ft-controls-bar">
+        <div class="ft-pill-group">
+          <button class="ft-pill active">Max Sharpe (Tangency)</button>
+          <button class="ft-pill">Min Volatility</button>
+          <button class="ft-pill">Risk Parity</button>
+          <button class="ft-pill">Equal Weight (1/N)</button>
+        </div>
+
+        <div class="ft-capital-card">
+          <span>Capital Allocation:</span>
+          <span class="mono" style="font-weight: 700; color: #0C2340; font-size: 13px;">₹5,00,000</span>
+          <span style="font-size: 10px; color: #0C2340; background: #E9D5C3; padding: 2px 6px; border-radius: 2px;">Max 25% Cap</span>
+        </div>
+      </div>
+
+      <!-- 4 Core MPT Cards (Option D in FT styling) -->
+      <div class="ft-metric-grid">
+        <div class="ft-card">
+          <div class="ft-card-label">Expected Annual Return</div>
+          <div class="ft-card-value tabular" style="color: #00665E;">19.44%</div>
+          <div class="ft-card-sub tabular">+5.24% alpha over Nifty 50 Core</div>
+        </div>
+
+        <div class="ft-card">
+          <div class="ft-card-label">Annualized Volatility</div>
+          <div class="ft-card-value tabular" style="color: #B38600;">13.02%</div>
+          <div class="ft-card-sub tabular">Downside deviation: 8.51%</div>
+        </div>
+
+        <div class="ft-card">
+          <div class="ft-card-label">Sharpe Ratio (Rf=6.85%)</div>
+          <div class="ft-card-value tabular" style="color: #0C2340;">0.963</div>
+          <div class="ft-card-sub tabular">Sortino Ratio: 1.478</div>
+        </div>
+
+        <div class="ft-card">
+          <div class="ft-card-label">Max Historical Drawdown</div>
+          <div class="ft-card-value tabular" style="color: #990F3D;">-18.40%</div>
+          <div class="ft-card-sub tabular">COVID Crash (vs Nifty: -38.4%)</div>
+        </div>
+      </div>
+
+      <!-- Actionable Execution Schedule Table (From Option D) -->
+      <div class="ft-table-panel">
+        <div class="ft-panel-header">
+          <span class="ft-panel-title">Asset Allocation &amp; Exact Share Execution Schedule</span>
+          <span class="mono" style="font-size: 11px; color: #665C54;">Deployed: ₹4,99,517.70 | Uninvested Cash: ₹482.30</span>
+        </div>
+
+        <!-- Allocation Stacked Bar -->
+        <div class="ft-stack-bar">
+          <div style="width: 25%; background: #B38600;" title="GOLDBEES 25%"></div>
+          <div style="width: 25%; background: #00665E;" title="MID150BEES 25%"></div>
+          <div style="width: 25%; background: #4D3380;" title="MON100 25%"></div>
+          <div style="width: 15%; background: #990F3D;" title="JUNIORBEES 15%"></div>
+          <div style="width: 10%; background: #0C2340;" title="NIFTYBEES 10%"></div>
+        </div>
+
+        <!-- Actionable Shares Table -->
+        <table class="ft-table">
+          <thead>
+            <tr>
+              <th>ETF Instrument</th>
+              <th>Asset Class</th>
+              <th style="text-align: right;">NSE LTP (₹)</th>
+              <th style="text-align: right;">Target Weight</th>
+              <th style="text-align: right;">Units to Buy</th>
+              <th style="text-align: right;">Invested Capital (₹)</th>
+            </tr>
+          </thead>
+          <tbody class="mono">
+            <tr>
+              <td style="font-family: 'Inter', sans-serif; font-weight: 600;"><span class="ft-dot" style="background: #B38600;"></span>GOLDBEES.NS</td>
+              <td style="font-family: 'Newsreader', serif; font-style: italic; color: #4D443D;">Sovereign Gold Hedge</td>
+              <td style="text-align: right;">68.10</td>
+              <td style="text-align: right; color: #0C2340; font-weight: 700;">25.00%</td>
+              <td style="text-align: right; font-weight: 700; color: #0C2340;">1,835</td>
+              <td style="text-align: right;">1,24,963.50</td>
+            </tr>
+            <tr>
+              <td style="font-family: 'Inter', sans-serif; font-weight: 600;"><span class="ft-dot" style="background: #00665E;"></span>MID150BEES.NS</td>
+              <td style="font-family: 'Newsreader', serif; font-style: italic; color: #4D443D;">Nifty Midcap 150</td>
+              <td style="text-align: right;">184.20</td>
+              <td style="text-align: right; color: #0C2340; font-weight: 700;">25.00%</td>
+              <td style="text-align: right; font-weight: 700; color: #0C2340;">678</td>
+              <td style="text-align: right;">1,24,887.60</td>
+            </tr>
+            <tr>
+              <td style="font-family: 'Inter', sans-serif; font-weight: 600;"><span class="ft-dot" style="background: #4D3380;"></span>MON100.NS</td>
+              <td style="font-family: 'Newsreader', serif; font-style: italic; color: #4D443D;">US Nasdaq 100</td>
+              <td style="text-align: right;">172.50</td>
+              <td style="text-align: right; color: #0C2340; font-weight: 700;">25.00%</td>
+              <td style="text-align: right; font-weight: 700; color: #0C2340;">724</td>
+              <td style="text-align: right;">1,24,890.00</td>
+            </tr>
+            <tr>
+              <td style="font-family: 'Inter', sans-serif; font-weight: 600;"><span class="ft-dot" style="background: #990F3D;"></span>JUNIORBEES.NS</td>
+              <td style="font-family: 'Newsreader', serif; font-style: italic; color: #4D443D;">Nifty Next 50</td>
+              <td style="text-align: right;">742.80</td>
+              <td style="text-align: right; color: #0C2340; font-weight: 700;">15.00%</td>
+              <td style="text-align: right; font-weight: 700; color: #0C2340;">100</td>
+              <td style="text-align: right;">74,280.00</td>
+            </tr>
+            <tr>
+              <td style="font-family: 'Inter', sans-serif; font-weight: 600;"><span class="ft-dot" style="background: #0C2340;"></span>NIFTYBEES.NS</td>
+              <td style="font-family: 'Newsreader', serif; font-style: italic; color: #4D443D;">Nifty 50 Core Largecap</td>
+              <td style="text-align: right;">278.40</td>
+              <td style="text-align: right; color: #0C2340; font-weight: 700;">10.00%</td>
+              <td style="text-align: right; font-weight: 700; color: #0C2340;">179</td>
+              <td style="text-align: right;">49,833.60</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Collapsible FT Quant & SLSQP Solver Drawer (Option D in FT styling) -->
+      <div class="ft-quant-drawer">
+        <div class="ft-drawer-header" onclick="toggleFtDrawer()">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="mono" style="background: #0C2340; color: #FFF1E5; font-weight: 800; font-size: 10px; padding: 2px 6px; border-radius: 2px;">QUANT</span>
+            <span style="font-family: 'Newsreader', serif; font-size: 13.5px; font-weight: 700; color: #0C2340;">
+              SLSQP Numerical Solver Telemetry, Historical Crash Stress Tests &amp; Tail Risk
+            </span>
+          </div>
+          <span id="ft-drawer-label" class="mono" style="font-size: 11px; color: #0C2340; font-weight: 700;">[HIDE TELEMETRY ▲]</span>
+        </div>
+
+        <div class="ft-drawer-body mono" id="ft-drawer-content">
+          <div class="ft-quant-box">
+            <div style="color: #0C2340; font-family: 'Newsreader', serif; font-weight: 700; font-size: 12px; margin-bottom: 6px;">HISTORICAL STRESS TESTS VS BENCHMARK</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #665C54;">COVID-19 Crash (Feb–Mar 2020):</span>
+              <span><b style="color: #00665E;">-18.40%</b> <span style="color: #8C827A;">(Nifty: -38.44%)</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #665C54;">2022 Central Bank Rate Cycle:</span>
+              <span><b style="color: #00665E;">-4.12%</b> <span style="color: #8C827A;">(Nifty: -15.20%)</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #665C54;">Daily Parametric CVaR (95%):</span>
+              <span style="color: #990F3D; font-weight: 700;">-1.84% (₹9,200)</span>
+            </div>
+          </div>
+
+          <div class="ft-quant-box">
+            <div style="color: #0C2340; font-family: 'Newsreader', serif; font-weight: 700; font-size: 12px; margin-bottom: 6px;">SCIPY.OPTIMIZE (CONSTRAINED SLSQP)</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #665C54;">Convergence Status:</span>
+              <span style="color: #00665E; font-weight: 700;">CONVERGED (0.011s)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="color: #665C54;">Iterations / Function Evals:</span>
+              <span>Nit = 14 | Feval = 162</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: #665C54;">Walk-Forward Realized Sharpe:</span>
+              <span style="color: #00665E; font-weight: 700;">0.89 (Out-of-sample)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Institutional Export Actions -->
+      <footer class="ft-actions-row">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="ft-btn-primary">Generate 10-Page Institutional PDF Report</button>
+          <button class="ft-btn-secondary">Download OpenPyxl Wealth Model (.xlsx)</button>
+        </div>
+        <span style="font-size: 11px; color: #665C54; font-style: italic;">
+          National Stock Exchange of India • Modern Portfolio Theory
+        </span>
+      </footer>
+    </main>
+
+  </div>
+
+  <script>
+    function toggleFtDrawer() {
+      const content = document.getElementById('ft-drawer-content');
+      const label = document.getElementById('ft-drawer-label');
+      if (content.style.display === 'none') {
+        content.style.display = 'grid';
+        label.textContent = '[HIDE TELEMETRY ▲]';
+      } else {
+        content.style.display = 'none';
+        label.textContent = '[SHOW TELEMETRY ▼]';
+      }
+    }
+  </script>
+</body>
+</html>
