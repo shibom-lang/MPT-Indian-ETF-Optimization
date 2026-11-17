@@ -18,5 +18,12 @@ __pycache__/
 # Output/Scratch
 output/
 scratch/
-test_*.py
-patch_*.py
+/test_*.py
+/patch_*.py
+
+.conda/
+.pytest_cache/
+crop_test*.jpg
+shibom_*.jpg
+crop_hd.jpg
+
