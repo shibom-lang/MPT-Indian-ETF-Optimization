@@ -3,125 +3,173 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ETF Optima — UI/UX Redesign Direction Previews</title>
+  <title>ETF Optima — Authentic Financial Design Systems (Zero AI-Slop)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #090d16;
-      color: #f1f5f9;
-      padding: 32px 24px;
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #090B10;
+      color: #E2E8F0;
+      padding: 36px 24px 60px 24px;
       line-height: 1.5;
+      font-feature-settings: "tnum" 1;
     }
-    .top-banner {
-      max-width: 1200px;
-      margin: 0 auto 32px auto;
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      padding: 24px;
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+    
+    /* Top Header Bar */
+    .hero-header {
+      background: #0F131D;
+      border: 1px solid #1E2538;
       border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 28px;
     }
-    .top-banner h1 {
+    .hero-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #38BDF8;
+      background: #0284C720;
+      border: 1px solid #0284C740;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .hero-header h1 {
       font-size: 24px;
       font-weight: 800;
-      color: #38bdf8;
+      color: #F8FAFC;
+      letter-spacing: -0.3px;
       margin-bottom: 6px;
     }
-    .top-banner p {
-      color: #94a3b8;
-      font-size: 14px;
+    .hero-header p {
+      font-size: 13.5px;
+      color: #94A3B8;
+      max-width: 860px;
     }
-    .view-toggles {
+    
+    /* Segmented Navigation Switcher */
+    .filter-tabs {
       display: flex;
-      gap: 10px;
-      margin-top: 18px;
+      gap: 8px;
+      margin-top: 20px;
       flex-wrap: wrap;
+      background: #090C14;
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid #1E2538;
+      width: fit-content;
     }
     .tab-btn {
-      background: #1e293b;
-      color: #cbd5e1;
-      border: 1px solid #334155;
-      padding: 8px 16px;
+      background: transparent;
+      color: #94A3B8;
+      border: none;
+      padding: 7px 14px;
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s ease;
+      font-family: inherit;
     }
-    .tab-btn:hover { background: #334155; color: white; }
+    .tab-btn:hover {
+      color: #F8FAFC;
+      background: #171E2F;
+    }
     .tab-btn.active {
-      background: #0284c7;
-      color: white;
-      border-color: #38bdf8;
+      background: #1E293B;
+      color: #F8FAFC;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     }
 
-    .preview-container {
-      max-width: 1200px;
-      margin: 0 auto;
+    /* Cards */
+    .cards-stack {
       display: flex;
       flex-direction: column;
-      gap: 40px;
+      gap: 36px;
+      margin-top: 10px;
     }
-
-    .option-wrapper {
-      border: 1px solid #334155;
+    .design-card {
+      border: 1px solid #1E2538;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      background: #0D111A;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     }
-    .option-header {
-      padding: 16px 20px;
-      background: #1e293b;
+    .design-card-header {
+      padding: 16px 22px;
+      background: #131926;
+      border-bottom: 1px solid #1E2538;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #334155;
     }
-    .option-title {
+    .card-title-group h2 {
       font-size: 16px;
       font-weight: 700;
-      color: #f8fafc;
+      color: #F8FAFC;
     }
-    .option-desc {
+    .card-title-group p {
       font-size: 12px;
-      color: #94a3b8;
+      color: #94A3B8;
       margin-top: 2px;
     }
     .badge {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 9999px;
+      font-size: 10.5px;
       font-weight: 700;
       letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 9999px;
     }
 
-    /* Common Mockup Elements */
-    .mock-stage {
+    /* Common Stage elements */
+    .stage {
       padding: 24px;
     }
-    .mock-topbar {
+    .nav-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding-bottom: 14px;
       margin-bottom: 16px;
     }
-    .mock-metrics {
+    .metric-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
-    .mock-metric-card {
+    .metric-card {
       padding: 12px 14px;
       border-radius: 6px;
     }
-    .mock-bar {
+    .metric-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .metric-value {
+      font-size: 21px;
+      font-weight: 800;
+      margin: 4px 0 2px 0;
+      font-family: 'Geist Mono', monospace;
+    }
+    .metric-sub {
+      font-size: 10px;
+    }
+    .alloc-bar {
       display: flex;
-      height: 20px;
+      height: 18px;
       border-radius: 4px;
       overflow: hidden;
       margin: 10px 0 14px 0;
@@ -131,337 +179,557 @@
       gap: 14px;
       flex-wrap: wrap;
       font-size: 11px;
-      margin-bottom: 18px;
     }
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
-    .legend-dot {
-      width: 10px;
-      height: 10px;
+    .dot {
+      width: 9px;
+      height: 9px;
       border-radius: 2px;
     }
 
-    /* OPTION A: Modern FinTech Slate */
+    /* =========================================================================
+       THEME 1: Modern FinTech Slate (Linear / Stripe)
+       ========================================================================= */
     .theme-slate {
-      background: #080c14;
-      color: #f1f5f9;
+      background: #080C14;
+      color: #E2E8F0;
+    }
+    .theme-slate .nav-bar { border-bottom: 1px solid #1E2538; }
+    .theme-slate .metric-card {
+      background: #0E1420;
+      border: 1px solid #1E2538;
+    }
+    .theme-slate .metric-label { color: #94A3B8; }
+    .theme-slate .metric-sub { color: #64748B; }
+
+    /* =========================================================================
+       THEME 2: Swiss Monochrome Grid (MSCI Barra / FactSet / ReadCV)
+       Pure clean white, razor micro-borders, zero neon, supreme data density
+       ========================================================================= */
+    .theme-swiss {
+      background: #FDFDFC;
+      color: #0F172A;
       font-family: 'Inter', sans-serif;
     }
-    .theme-slate .mock-topbar { border-bottom: 1px solid #1e293b; }
-    .theme-slate .mock-metric-card {
-      background: #0f172a;
-      border: 1px solid #1e293b;
+    .theme-swiss .nav-bar {
+      border-bottom: 1px solid #E2E8F0;
     }
+    .theme-swiss .metric-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .theme-swiss .metric-label { color: #64748B; }
+    .theme-swiss .metric-value {
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #0F172A;
+    }
+    .theme-swiss .metric-sub { color: #64748B; }
 
-    /* OPTION B: Bloomberg Terminal */
-    .theme-terminal {
-      background: #000000;
-      color: #e5e5e5;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .theme-terminal .mock-topbar { border-bottom: 1px solid #262626; }
-    .theme-terminal .mock-metric-card {
-      background: #0a0a0a;
-      border: 1px solid #262626;
-    }
-
-    /* OPTION C: Morningstar Institutional Light */
-    .theme-light {
-      background: #f8fafc;
-      color: #0f172a;
+    /* =========================================================================
+       THEME 3: Financial Times Editorial (Newsprint & Oxford Navy)
+       Timeless London Financial Times aesthetic, serif headers, zero AI feel
+       ========================================================================= */
+    .theme-ft {
+      background: #FFF1E5; /* FT Classic Newsprint */
+      color: #1A1A1A;
       font-family: 'Inter', sans-serif;
     }
-    .theme-light .mock-topbar { border-bottom: 2px solid #0f172a; }
-    .theme-light .mock-metric-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    .theme-ft .brand-logo {
+      font-family: 'Newsreader', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #0C2340; /* Oxford Navy */
     }
+    .theme-ft .nav-bar {
+      border-bottom: 2px solid #0C2340;
+    }
+    .theme-ft .metric-card {
+      background: #FAF0E6;
+      border: 1px solid #E9D5C3;
+    }
+    .theme-ft .metric-label {
+      font-family: 'Newsreader', serif;
+      color: #0C2340;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .theme-ft .metric-value {
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      color: #0C2340;
+    }
+    .theme-ft .metric-sub { color: #665C54; }
+
+    /* =========================================================================
+       THEME 4: Raycast / Supabase Matte Charcoal (Dark Minimalist)
+       Tactile, dark matte finish, no glowing orbs, high contrast
+       ========================================================================= */
+    .theme-matte {
+      background: #111318;
+      color: #EDEDED;
+      font-family: 'Geist', sans-serif;
+    }
+    .theme-matte .nav-bar { border-bottom: 1px solid #232733; }
+    .theme-matte .metric-card {
+      background: #161922;
+      border: 1px solid #282C3A;
+    }
+    .theme-matte .metric-label { color: #8F96A3; }
+    .theme-matte .metric-value { color: #FFFFFF; }
+    .theme-matte .metric-sub { color: #5F6675; }
+
+    /* =========================================================================
+       THEME 5: Morningstar Institutional Light (BlackRock Aladdin)
+       Corporate porcelain, navy contrast, executive presentation
+       ========================================================================= */
+    .theme-morningstar {
+      background: #F8FAFC;
+      color: #0F172A;
+      font-family: 'Inter', sans-serif;
+    }
+    .theme-morningstar .nav-bar { border-bottom: 2px solid #0F172A; }
+    .theme-morningstar .metric-card {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .theme-morningstar .metric-label { color: #475569; font-weight: 700; }
+    .theme-morningstar .metric-value { color: #0F172A; }
+    .theme-morningstar .metric-sub { color: #64748B; }
   </style>
 </head>
 <body>
 
-  <div class="top-banner">
-    <h1>🏛️ ETF Optima — Production UI/UX Design System Options</h1>
-    <p>Rebuilding our UI from the slow, generic "AI glassmorphism" into a clean, lightning-fast institutional financial dashboard.</p>
-    
-    <div class="view-toggles">
-      <button class="tab-btn active" onclick="showOption('all')">Show All 3 Options</button>
-      <button class="tab-btn" onclick="showOption('opt-a')">Option A: Modern FinTech (Linear / Stripe)</button>
-      <button class="tab-btn" onclick="showOption('opt-b')">Option B: Bloomberg Quant Terminal</button>
-      <button class="tab-btn" onclick="showOption('opt-c')">Option C: Morningstar Institutional Light</button>
+  <div class="container">
+
+    <!-- Hero Header -->
+    <header class="hero-header">
+      <span class="hero-tag">Design System Evaluation</span>
+      <h1>ETF Optima — 5 Professional Financial UI/UX Directions</h1>
+      <p>
+        Strictly zero "AI neon/glassmorphism" slop. Below are 5 authentic, battle-tested financial interfaces modeled after real institutional systems (Stripe, Financial Times, FactSet, Supabase, and Morningstar).
+      </p>
+
+      <div class="filter-tabs">
+        <button class="tab-btn active" onclick="filterDesign('all')">View All 5 Styles</button>
+        <button class="tab-btn" onclick="filterDesign('design-1')">1. FinTech Slate (Stripe / Linear)</button>
+        <button class="tab-btn" onclick="filterDesign('design-2')">2. Swiss Grid (MSCI Barra / FactSet)</button>
+        <button class="tab-btn" onclick="filterDesign('design-3')">3. Financial Times (Editorial Newsprint)</button>
+        <button class="tab-btn" onclick="filterDesign('design-4')">4. Matte Charcoal (Raycast / Supabase)</button>
+        <button class="tab-btn" onclick="filterDesign('design-5')">5. Institutional Light (Morningstar / Aladdin)</button>
+      </div>
+    </header>
+
+    <div class="cards-stack">
+
+      <!-- =====================================================================
+           DESIGN 1: Modern FinTech Slate (Linear / Stripe)
+           ===================================================================== -->
+      <section class="design-card" id="design-1">
+        <div class="design-card-header">
+          <div class="card-title-group">
+            <h2>Direction 1: Modern FinTech Slate (Linear & Stripe Style)</h2>
+            <p>Deep charcoal slate (#080C14), crisp 1px borders, Geist/Inter font, emerald profit accents. Zero lag.</p>
+          </div>
+          <span class="badge" style="background: #0284C720; color: #38BDF8; border: 1px solid #0284C740;">MODERN TECH FINTECH</span>
+        </div>
+
+        <div class="stage theme-slate">
+          <!-- Nav -->
+          <div class="nav-bar">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 14px; height: 14px; border-radius: 3px; background: #0284C7;"></div>
+              <span style="font-weight: 800; font-size: 15px; letter-spacing: 0.5px;">ETF OPTIMA</span>
+              <span style="font-size: 10px; padding: 2px 8px; background: #1E2538; border-radius: 4px; color: #38BDF8; font-weight: 600;">QUANT v3.2</span>
+            </div>
+            <div style="display: flex; gap: 20px; font-size: 12.5px; color: #94A3B8; font-weight: 500;">
+              <span style="color: #38BDF8; font-weight: 600; border-bottom: 2px solid #38BDF8; padding-bottom: 3px;">📊 MPT Optimizer</span>
+              <span>⚡ Live NSE Prices</span>
+              <span>🔬 Compare & Research</span>
+              <span>📂 Saved Portfolios</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button style="background: transparent; color: #CBD5E1; border: 1px solid #334155; padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer;">Docs</button>
+              <button style="background: #0284C7; color: white; border: none; padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer;">Sign In</button>
+            </div>
+          </div>
+
+          <!-- Ticker Ribbon -->
+          <div style="display: flex; gap: 18px; font-size: 11px; padding: 7px 12px; background: #0E1420; border-radius: 6px; margin-bottom: 16px; border: 1px solid #1E2538;">
+            <span>NIFTYBEES: <b style="color: #10B981;">₹278.40 (+0.42%)</b></span>
+            <span>GOLDBEES: <b style="color: #10B981;">₹68.10 (+0.85%)</b></span>
+            <span>MON100: <b style="color: #EF4444;">₹172.50 (-0.31%)</b></span>
+            <span>MID150BEES: <b style="color: #10B981;">₹184.20 (+1.12%)</b></span>
+            <span>SETF10GILT: <b style="color: #94A3B8;">₹104.30 (+0.05%)</b></span>
+          </div>
+
+          <!-- Metrics -->
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-label">EXPECTED RETURN (5Y)</div>
+              <div class="metric-value" style="color: #10B981;">19.44%</div>
+              <div class="metric-sub">+5.24% over Nifty 50</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">ANNUAL VOLATILITY</div>
+              <div class="metric-value" style="color: #F59E0B;">13.02%</div>
+              <div class="metric-sub">Downside deviation: 8.51%</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">SHARPE RATIO (Rf=6.85%)</div>
+              <div class="metric-value" style="color: #38BDF8;">0.963</div>
+              <div class="metric-sub">Top decile risk efficiency</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">MAX DRAWDOWN</div>
+              <div class="metric-value" style="color: #F43F5E;">-18.4%</div>
+              <div class="metric-sub">COVID Crash (Nifty: -38.4%)</div>
+            </div>
+          </div>
+
+          <!-- Allocation Bar -->
+          <div style="font-size: 12px; font-weight: 700; margin-bottom: 4px;">Optimal Asset Allocation: Max Sharpe Basket</div>
+          <div class="alloc-bar">
+            <div style="width: 25%; background: #FBBF24;"></div>
+            <div style="width: 25%; background: #14B8A6;"></div>
+            <div style="width: 25%; background: #8B5CF6;"></div>
+            <div style="width: 15%; background: #EF4444;"></div>
+            <div style="width: 10%; background: #3B82F6;"></div>
+          </div>
+          <div class="alloc-legend">
+            <div class="legend-item"><div class="dot" style="background: #FBBF24;"></div> GOLDBEES: 25% (₹1,25,000)</div>
+            <div class="legend-item"><div class="dot" style="background: #14B8A6;"></div> MID150BEES: 25% (₹1,25,000)</div>
+            <div class="legend-item"><div class="dot" style="background: #8B5CF6;"></div> MON100: 25% (₹1,25,000)</div>
+            <div class="legend-item"><div class="dot" style="background: #EF4444;"></div> JUNIORBEES: 15% (₹75,000)</div>
+            <div class="legend-item"><div class="dot" style="background: #3B82F6;"></div> NIFTYBEES: 10% (₹50,000)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           DESIGN 2: Swiss Monochrome Grid (MSCI Barra / FactSet)
+           ===================================================================== -->
+      <section class="design-card" id="design-2">
+        <div class="design-card-header">
+          <div class="card-title-group">
+            <h2>Direction 2: Swiss Monochrome Grid (FactSet & MSCI Barra Style)</h2>
+            <p>Pure clean white (#FDFDFC), razor micro-borders, zero neon, supreme data density and legible contrast.</p>
+          </div>
+          <span class="badge" style="background: #0F172A15; color: #0F172A; border: 1px solid #0F172A30;">SWISS MINIMALIST</span>
+        </div>
+
+        <div class="stage theme-swiss">
+          <!-- Nav -->
+          <div class="nav-bar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-weight: 900; font-size: 15px; letter-spacing: -0.5px; color: #0F172A;">ETF OPTIMA</span>
+              <span style="font-size: 10px; padding: 2px 6px; background: #F1F5F9; border-radius: 3px; color: #475569; font-weight: 600;">RESEARCH</span>
+            </div>
+            <div style="display: flex; gap: 20px; font-size: 12px; color: #475569; font-weight: 600;">
+              <span style="color: #0F172A; border-bottom: 2px solid #0F172A; padding-bottom: 3px;">Portfolio Engine</span>
+              <span>Market Monitor</span>
+              <span>Correlation Matrix</span>
+              <span>Accounts</span>
+            </div>
+            <button style="background: #0F172A; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">Sign In</button>
+          </div>
+
+          <!-- Ticker Ribbon -->
+          <div style="display: flex; gap: 18px; font-size: 11px; padding: 7px 12px; background: #F8FAFC; border-radius: 4px; margin-bottom: 16px; border: 1px solid #E2E8F0;">
+            <span>NIFTYBEES: <b>₹278.40</b> <span style="color: #16A34A;">+0.42%</span></span>
+            <span>GOLDBEES: <b>₹68.10</b> <span style="color: #16A34A;">+0.85%</span></span>
+            <span>MON100: <b>₹172.50</b> <span style="color: #DC2626;">-0.31%</span></span>
+            <span>MID150BEES: <b>₹184.20</b> <span style="color: #16A34A;">+1.12%</span></span>
+            <span>SETF10GILT: <b>₹104.30</b> <span style="color: #64748B;">+0.05%</span></span>
+          </div>
+
+          <!-- Metrics -->
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-label">EXP. RETURN</div>
+              <div class="metric-value">19.44%</div>
+              <div class="metric-sub">Benchmark: 14.20%</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">VOLATILITY (STD)</div>
+              <div class="metric-value">13.02%</div>
+              <div class="metric-sub">Annualized</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">SHARPE RATIO</div>
+              <div class="metric-value" style="color: #0284C7;">0.963</div>
+              <div class="metric-sub">Rf: 6.85%</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">MAX DRAWDOWN</div>
+              <div class="metric-value" style="color: #DC2626;">-18.4%</div>
+              <div class="metric-sub">COVID-19 Peak-Trough</div>
+            </div>
+          </div>
+
+          <!-- Allocation Bar -->
+          <div style="font-size: 11.5px; font-weight: 700; margin-bottom: 4px; color: #334155;">TARGET ALLOCATION MIX</div>
+          <div class="alloc-bar" style="height: 14px; background: #E2E8F0;">
+            <div style="width: 25%; background: #D97706;"></div>
+            <div style="width: 25%; background: #0D9488;"></div>
+            <div style="width: 25%; background: #6366F1;"></div>
+            <div style="width: 15%; background: #E11D48;"></div>
+            <div style="width: 10%; background: #2563EB;"></div>
+          </div>
+          <div class="alloc-legend">
+            <div class="legend-item"><div class="dot" style="background: #D97706;"></div> GOLDBEES: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #0D9488;"></div> MID150BEES: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #6366F1;"></div> MON100: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #E11D48;"></div> JUNIORBEES: 15%</div>
+            <div class="legend-item"><div class="dot" style="background: #2563EB;"></div> NIFTYBEES: 10%</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           DESIGN 3: Financial Times Editorial (Newsprint & Oxford Navy)
+           ===================================================================== -->
+      <section class="design-card" id="design-3">
+        <div class="design-card-header">
+          <div class="card-title-group">
+            <h2>Direction 3: Financial Times Editorial (Newsprint & Oxford Navy)</h2>
+            <p>Warm newsprint background (#FFF1E5), deep Oxford navy (#0C2340), serif typography (Newsreader). Timeless & prestigious.</p>
+          </div>
+          <span class="badge" style="background: #0C234015; color: #0C2340; border: 1px solid #0C234030;">EDITORIAL MACRO QUANT</span>
+        </div>
+
+        <div class="stage theme-ft">
+          <!-- Nav -->
+          <div class="nav-bar">
+            <div>
+              <span class="brand-logo">ETF Optima</span>
+              <span style="font-size: 10px; color: #665C54; margin-left: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Portfolio Analytics</span>
+            </div>
+            <div style="display: flex; gap: 20px; font-size: 12px; font-weight: 600; color: #0C2340;">
+              <span style="border-bottom: 2px solid #0C2340; padding-bottom: 2px;">Asset Allocation</span>
+              <span>Live Markets</span>
+              <span>Comparative Risk</span>
+              <span>Subscriber Portfolios</span>
+            </div>
+            <button style="background: #0C2340; color: #FFF1E5; border: none; padding: 5px 14px; border-radius: 2px; font-size: 11px; font-weight: 600; cursor: pointer;">Sign In</button>
+          </div>
+
+          <!-- Ticker Ribbon -->
+          <div style="display: flex; gap: 18px; font-size: 11px; padding: 6px 10px; background: #FAF0E6; border-bottom: 1px solid #E9D5C3; margin-bottom: 16px;">
+            <span>NIFTY 50 BEES: <b>₹278.40</b> (+0.42%)</span>
+            <span>GOLD BEES: <b>₹68.10</b> (+0.85%)</span>
+            <span>NASDAQ 100: <b>₹172.50</b> (-0.31%)</span>
+            <span>MIDCAP 150: <b>₹184.20</b> (+1.12%)</span>
+            <span>10Y G-SEC: <b>₹104.30</b> (+0.05%)</span>
+          </div>
+
+          <!-- Metrics -->
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-label">Projected 5-Year CAGR</div>
+              <div class="metric-value">19.44%</div>
+              <div class="metric-sub">+5.24% relative to Nifty 50</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Annualized Volatility</div>
+              <div class="metric-value">13.02%</div>
+              <div class="metric-sub">Standard deviation</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Sharpe Ratio</div>
+              <div class="metric-value" style="color: #0C2340;">0.963</div>
+              <div class="metric-sub">Risk-free benchmark: 6.85%</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Historical Drawdown</div>
+              <div class="metric-value" style="color: #990F3D;">-18.4%</div>
+              <div class="metric-sub">COVID-19 Shock (Nifty: -38.4%)</div>
+            </div>
+          </div>
+
+          <!-- Allocation Bar -->
+          <div style="font-family: 'Newsreader', serif; font-size: 13px; font-weight: 700; color: #0C2340; margin-bottom: 4px;">Optimized Asset Distribution</div>
+          <div class="alloc-bar" style="height: 14px; background: #E9D5C3;">
+            <div style="width: 25%; background: #B38600;"></div>
+            <div style="width: 25%; background: #00665E;"></div>
+            <div style="width: 25%; background: #4D3380;"></div>
+            <div style="width: 15%; background: #990F3D;"></div>
+            <div style="width: 10%; background: #0C2340;"></div>
+          </div>
+          <div class="alloc-legend" style="color: #4D443D;">
+            <div class="legend-item"><div class="dot" style="background: #B38600;"></div> GoldBees: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #00665E;"></div> Mid150Bees: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #4D3380;"></div> Nasdaq 100: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #990F3D;"></div> JuniorBees: 15%</div>
+            <div class="legend-item"><div class="dot" style="background: #0C2340;"></div> NiftyBees: 10%</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           DESIGN 4: Raycast / Supabase Matte Charcoal
+           ===================================================================== -->
+      <section class="design-card" id="design-4">
+        <div class="design-card-header">
+          <div class="card-title-group">
+            <h2>Direction 4: Matte Charcoal & Stone (Raycast & Supabase Style)</h2>
+            <p>Tactile dark matte (#111318), soft stone borders (#282C3A), Geist typography. Pure developer & quant elegance.</p>
+          </div>
+          <span class="badge" style="background: #EDEDED15; color: #EDEDED; border: 1px solid #EDEDED30;">MATTE DARK</span>
+        </div>
+
+        <div class="stage theme-matte">
+          <!-- Nav -->
+          <div class="nav-bar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 12px; height: 12px; background: #EDEDED; border-radius: 2px;"></div>
+              <span style="font-weight: 700; font-size: 14px;">ETF Optima</span>
+              <span style="font-size: 9px; padding: 1px 6px; background: #282C3A; border-radius: 3px; color: #8F96A3;">v3.2</span>
+            </div>
+            <div style="display: flex; gap: 18px; font-size: 12px; color: #8F96A3; font-weight: 500;">
+              <span style="color: #EDEDED; font-weight: 600;">Optimizer</span>
+              <span>Live Tickers</span>
+              <span>Compare</span>
+              <span>Saved</span>
+            </div>
+            <button style="background: #EDEDED; color: #111318; border: none; padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">Log In</button>
+          </div>
+
+          <!-- Metrics -->
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-label">5Y EXP RETURN</div>
+              <div class="metric-value" style="color: #4ADE80;">19.44%</div>
+              <div class="metric-sub">+5.24% vs Nifty 50</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">VOLATILITY</div>
+              <div class="metric-value">13.02%</div>
+              <div class="metric-sub">Ann. standard dev.</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">SHARPE RATIO</div>
+              <div class="metric-value" style="color: #60A5FA;">0.963</div>
+              <div class="metric-sub">Rf: 6.85%</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">MAX DRAWDOWN</div>
+              <div class="metric-value" style="color: #FB7185;">-18.4%</div>
+              <div class="metric-sub">COVID shock</div>
+            </div>
+          </div>
+
+          <!-- Allocation Bar -->
+          <div style="font-size: 11px; font-weight: 600; margin-bottom: 4px; color: #8F96A3;">EFFICIENT ALLOCATION SPREAD</div>
+          <div class="alloc-bar" style="height: 14px; background: #282C3A;">
+            <div style="width: 25%; background: #FBBF24;"></div>
+            <div style="width: 25%; background: #34D399;"></div>
+            <div style="width: 25%; background: #A78BFA;"></div>
+            <div style="width: 15%; background: #F87171;"></div>
+            <div style="width: 10%; background: #60A5FA;"></div>
+          </div>
+          <div class="alloc-legend" style="color: #8F96A3;">
+            <div class="legend-item"><div class="dot" style="background: #FBBF24;"></div> Gold: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #34D399;"></div> Midcap: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #A78BFA;"></div> Nasdaq: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #F87171;"></div> Next 50: 15%</div>
+            <div class="legend-item"><div class="dot" style="background: #60A5FA;"></div> Nifty: 10%</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================================
+           DESIGN 5: Morningstar Institutional Light (BlackRock Aladdin)
+           ===================================================================== -->
+      <section class="design-card" id="design-5">
+        <div class="design-card-header">
+          <div class="card-title-group">
+            <h2>Direction 5: Morningstar & BlackRock Aladdin (Institutional Light)</h2>
+            <p>Executive porcelain (#F8FAFC), crisp navy headers, structured cards with subtle shadows. Trustworthy asset management standard.</p>
+          </div>
+          <span class="badge" style="background: #0284C715; color: #0284C7; border: 1px solid #0284C730;">ASSET MANAGEMENT</span>
+        </div>
+
+        <div class="stage theme-morningstar">
+          <!-- Nav -->
+          <div class="nav-bar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-family: serif; font-weight: 900; font-size: 17px; color: #0F172A;">ETF OPTIMA</span>
+              <span style="font-size: 10px; padding: 2px 6px; background: #F1F5F9; border-radius: 2px; color: #475569; font-weight: 700;">NISM SERIES 15</span>
+            </div>
+            <div style="display: flex; gap: 16px; font-size: 12px; font-weight: 600; color: #475569;">
+              <span style="color: #0284C7; border-bottom: 2px solid #0284C7; padding-bottom: 2px;">Portfolio Optimizer</span>
+              <span>Market Monitor</span>
+              <span>Multi-Asset Compare</span>
+              <span>Client Accounts</span>
+            </div>
+            <button style="background: #0F172A; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">Client Sign In</button>
+          </div>
+
+          <!-- Metrics -->
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-label">ANNUALIZED RETURN (5Y)</div>
+              <div class="metric-value">19.44%</div>
+              <div class="metric-sub" style="color: #059669; font-weight: 600;">+5.24% vs Benchmark</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">ANNUAL VOLATILITY</div>
+              <div class="metric-value">13.02%</div>
+              <div class="metric-sub">Annualized std. dev.</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">SHARPE RATIO (Rf=6.85%)</div>
+              <div class="metric-value" style="color: #0284C7;">0.963</div>
+              <div class="metric-sub" style="color: #0284C7; font-weight: 600;">Top 5% Risk-Adjusted</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">MAX DRAWDOWN (COVID)</div>
+              <div class="metric-value" style="color: #B91C1C;">-18.4%</div>
+              <div class="metric-sub">Recovery: 4.2 Months</div>
+            </div>
+          </div>
+
+          <!-- Allocation Bar -->
+          <div style="font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 4px;">Asset Class Allocation Spread</div>
+          <div class="alloc-bar" style="height: 14px;">
+            <div style="width: 25%; background: #D97706;"></div>
+            <div style="width: 25%; background: #0D9488;"></div>
+            <div style="width: 25%; background: #6366F1;"></div>
+            <div style="width: 15%; background: #E11D48;"></div>
+            <div style="width: 10%; background: #2563EB;"></div>
+          </div>
+          <div class="alloc-legend" style="color: #475569;">
+            <div class="legend-item"><div class="dot" style="background: #D97706;"></div> Gold: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #0D9488;"></div> Midcap: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #6366F1;"></div> Nasdaq: 25%</div>
+            <div class="legend-item"><div class="dot" style="background: #E11D48;"></div> Next 50: 15%</div>
+            <div class="legend-item"><div class="dot" style="background: #2563EB;"></div> Nifty 50: 10%</div>
+          </div>
+        </div>
+      </section>
+
     </div>
-  </div>
-
-  <div class="preview-container">
-
-    <!-- OPTION A: Modern FinTech Slate -->
-    <div class="option-wrapper" id="opt-a">
-      <div class="option-header">
-        <div>
-          <div class="option-title">Option A: Modern FinTech Slate (Linear & Stripe Style) — ⭐ Highly Recommended</div>
-          <div class="option-desc">Deep charcoal slate (#080C14), razor-sharp 1px subtle borders, Inter font, crisp emerald gains. Zero lag, ultra-fast.</div>
-        </div>
-        <span class="badge" style="background: #38bdf822; color: #38bdf8; border: 1px solid #38bdf844;">MODERN FINTECH</span>
-      </div>
-
-      <div class="mock-stage theme-slate">
-        <!-- Top Nav -->
-        <div class="mock-topbar">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 14px; height: 14px; border-radius: 3px; background: #0284c7;"></div>
-            <span style="font-weight: 800; font-size: 15px; letter-spacing: 0.5px;">ETF OPTIMA</span>
-            <span style="font-size: 10px; padding: 2px 8px; background: #1e293b; border-radius: 4px; color: #38bdf8; font-weight: 600;">PRO QUANT v3.2</span>
-          </div>
-          <div style="display: flex; gap: 20px; font-size: 12px; color: #94a3b8; font-weight: 500;">
-            <span style="color: #38bdf8; font-weight: 600; border-bottom: 2px solid #38bdf8; padding-bottom: 4px;">📊 Portfolio Optimizer</span>
-            <span>⚡ Live NSE Prices</span>
-            <span>🔬 Correlation & Compare</span>
-            <span>📂 My Portfolios</span>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <button style="background: transparent; color: #cbd5e1; border: 1px solid #334155; padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer;">Documentation</button>
-            <button style="background: #0284c7; color: white; border: none; padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer;">Sign In</button>
-          </div>
-        </div>
-
-        <!-- Live Ticker Ribbon -->
-        <div style="display: flex; gap: 16px; font-size: 11px; padding: 8px 14px; background: #0f172a; border-radius: 6px; margin-bottom: 18px; border: 1px solid #1e293b; overflow-x: auto;">
-          <span>NIFTYBEES: <b style="color: #10b981;">₹278.40 (+0.42%)</b></span>
-          <span>GOLDBEES: <b style="color: #10b981;">₹68.10 (+0.85%)</b></span>
-          <span>MON100: <b style="color: #ef4444;">₹172.50 (-0.31%)</b></span>
-          <span>MID150BEES: <b style="color: #10b981;">₹184.20 (+1.12%)</b></span>
-          <span>SETF10GILT: <b style="color: #cbd5e1;">₹104.30 (+0.05%)</b></span>
-          <span>SILVERBEES: <b style="color: #10b981;">₹89.50 (+1.40%)</b></span>
-        </div>
-
-        <!-- Strategy Tabs -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <div style="display: flex; gap: 8px;">
-            <button style="background: #0284c7; color: white; border: none; padding: 6px 14px; border-radius: 5px; font-size: 12px; font-weight: 600;">Max Sharpe (Optimal)</button>
-            <button style="background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 6px 14px; border-radius: 5px; font-size: 12px; font-weight: 600;">Min Volatility (Defensive)</button>
-            <button style="background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 6px 14px; border-radius: 5px; font-size: 12px; font-weight: 600;">Equal Weight (1/N)</button>
-            <button style="background: #1e293b; color: #38bdf8; border: 1px solid #0284c744; padding: 6px 14px; border-radius: 5px; font-size: 12px; font-weight: 600;">+ Custom Basket</button>
-          </div>
-          <div style="font-size: 12px; color: #94a3b8;">
-            Investment: <b style="color: white;">₹5,00,000</b>
-          </div>
-        </div>
-
-        <!-- 4 Key MPT Metrics -->
-        <div class="mock-metrics">
-          <div class="mock-metric-card">
-            <div style="font-size: 10px; color: #94a3b8; font-weight: 600;">EXPECTED ANNUAL RETURN</div>
-            <div style="font-size: 20px; font-weight: 800; color: #10b981; margin: 4px 0;">19.44%</div>
-            <div style="font-size: 10px; color: #64748b;">Nifty 50 + 5.2% alpha</div>
-          </div>
-          <div class="mock-metric-card">
-            <div style="font-size: 10px; color: #94a3b8; font-weight: 600;">ANNUAL VOLATILITY (RISK)</div>
-            <div style="font-size: 20px; font-weight: 800; color: #f59e0b; margin: 4px 0;">13.02%</div>
-            <div style="font-size: 10px; color: #64748b;">Downside std: 8.51%</div>
-          </div>
-          <div class="mock-metric-card">
-            <div style="font-size: 10px; color: #94a3b8; font-weight: 600;">SHARPE RATIO (Rf = 6.85%)</div>
-            <div style="font-size: 20px; font-weight: 800; color: #38bdf8; margin: 4px 0;">0.963</div>
-            <div style="font-size: 10px; color: #64748b;">Benchmark: 0.620</div>
-          </div>
-          <div class="mock-metric-card">
-            <div style="font-size: 10px; color: #94a3b8; font-weight: 600;">MAX HISTORICAL DRAWDOWN</div>
-            <div style="font-size: 20px; font-weight: 800; color: #f43f5e; margin: 4px 0;">-18.4%</div>
-            <div style="font-size: 10px; color: #64748b;">COVID Crash (Nifty: -38.4%)</div>
-          </div>
-        </div>
-
-        <!-- Allocation Stack Bar -->
-        <div style="font-size: 12px; font-weight: 700; margin-bottom: 6px;">Target Asset Allocation Breakdown (100%)</div>
-        <div class="mock-bar">
-          <div style="width: 25%; background: #fbbf24;" title="Gold: 25%"></div>
-          <div style="width: 25%; background: #14b8a6;" title="Midcap: 25%"></div>
-          <div style="width: 25%; background: #8b5cf6;" title="Nasdaq 100: 25%"></div>
-          <div style="width: 15%; background: #ef4444;" title="Next 50: 15%"></div>
-          <div style="width: 10%; background: #60a5fa;" title="Nifty 50: 10%"></div>
-        </div>
-
-        <div class="alloc-legend">
-          <div class="legend-item"><div class="legend-dot" style="background: #fbbf24;"></div> <b>GOLDBEES:</b> 25% (₹1,25,000)</div>
-          <div class="legend-item"><div class="legend-dot" style="background: #14b8a6;"></div> <b>MID150BEES:</b> 25% (₹1,25,000)</div>
-          <div class="legend-item"><div class="legend-dot" style="background: #8b5cf6;"></div> <b>MON100:</b> 25% (₹1,25,000)</div>
-          <div class="legend-item"><div class="legend-dot" style="background: #ef4444;"></div> <b>JUNIORBEES:</b> 15% (₹75,000)</div>
-          <div class="legend-item"><div class="legend-dot" style="background: #60a5fa;"></div> <b>NIFTYBEES:</b> 10% (₹50,000)</div>
-        </div>
-
-        <!-- Export Actions -->
-        <div style="display: flex; gap: 10px; border-top: 1px solid #1e293b; padding-top: 14px;">
-          <button style="background: #1e293b; color: white; border: 1px solid #334155; padding: 7px 14px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer;">📄 Export Institutional PDF Report</button>
-          <button style="background: #1e293b; color: white; border: 1px solid #334155; padding: 7px 14px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer;">📊 Download OpenPyxl Wealth Model (.xlsx)</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- OPTION B: Bloomberg Terminal -->
-    <div class="option-wrapper" id="opt-b">
-      <div class="option-header">
-        <div>
-          <div class="option-title">Option B: Bloomberg / High-Density Quant Terminal (TradingView & Koyfin Style)</div>
-          <div class="option-desc">Pure black background (#000000), monospaced figures (JetBrains Mono), high-density data tables, amber/cyan accents.</div>
-        </div>
-        <span class="badge" style="background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b44;">WALL STREET QUANT</span>
-      </div>
-
-      <div class="mock-stage theme-terminal">
-        <div class="mock-topbar">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="background: #f59e0b; color: black; font-weight: 900; padding: 2px 6px; font-size: 12px;">BBG</span>
-            <span style="color: #f59e0b; font-weight: 700; font-size: 14px;">ETF_OPTIMA // SLSQP_SOLVER</span>
-          </div>
-          <div style="display: flex; gap: 16px; font-size: 11px; color: #737373;">
-            <span style="color: #f59e0b;">[1] OPTIMIZER</span>
-            <span>[2] LIVE_FEED</span>
-            <span>[3] COV_MATRIX</span>
-            <span>[4] STRESS_TESTS</span>
-          </div>
-          <span style="font-size: 10px; color: #10b981;">SYS: ONLINE (0.012s) ●</span>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px;">
-          <!-- Left Table -->
-          <table style="width: 100%; border-collapse: collapse; font-size: 11px; border: 1px solid #262626;">
-            <thead>
-              <tr style="background: #171717; color: #a3a3a3; text-align: left;">
-                <th style="padding: 6px 8px;">SECURITY</th>
-                <th style="padding: 6px 8px;">LAST</th>
-                <th style="padding: 6px 8px;">1D_CHG</th>
-                <th style="padding: 6px 8px;">OPT_WEIGHT</th>
-                <th style="padding: 6px 8px;">ALLOCATION</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style="border-bottom: 1px solid #1c1c1c;">
-                <td style="padding: 6px 8px; color: #f59e0b;">GOLDBEES.NS</td>
-                <td style="padding: 6px 8px;">₹68.10</td>
-                <td style="padding: 6px 8px; color: #10b981;">+0.85%</td>
-                <td style="padding: 6px 8px; color: #38bdf8;">25.00% [████]</td>
-                <td style="padding: 6px 8px;">₹1,25,000</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #1c1c1c;">
-                <td style="padding: 6px 8px; color: #f59e0b;">MID150BEES.NS</td>
-                <td style="padding: 6px 8px;">₹184.20</td>
-                <td style="padding: 6px 8px; color: #10b981;">+1.12%</td>
-                <td style="padding: 6px 8px; color: #38bdf8;">25.00% [████]</td>
-                <td style="padding: 6px 8px;">₹1,25,000</td>
-              </tr>
-              <tr style="border-bottom: 1px solid #1c1c1c;">
-                <td style="padding: 6px 8px; color: #f59e0b;">MON100.NS</td>
-                <td style="padding: 6px 8px;">₹172.50</td>
-                <td style="padding: 6px 8px; color: #ef4444;">-0.31%</td>
-                <td style="padding: 6px 8px; color: #38bdf8;">25.00% [████]</td>
-                <td style="padding: 6px 8px;">₹1,25,000</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Right Quant Summary -->
-          <div style="background: #0d0d0d; border: 1px solid #262626; padding: 10px; font-size: 11px;">
-            <div style="color: #f59e0b; font-weight: bold; margin-bottom: 6px;">PORTFOLIO_STATS</div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-              <span style="color: #737373;">EXP_RETURN:</span>
-              <span style="color: #10b981; font-weight: bold;">19.44%</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-              <span style="color: #737373;">VOLATILITY:</span>
-              <span style="color: #f59e0b; font-weight: bold;">13.02%</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-              <span style="color: #737373;">SHARPE_RATIO:</span>
-              <span style="color: #38bdf8; font-weight: bold;">0.9631</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-              <span style="color: #737373;">CVAR_95:</span>
-              <span style="color: #ef4444; font-weight: bold;">-2.41%</span>
-            </div>
-            <div style="margin-top: 8px; border-top: 1px solid #262626; padding-top: 6px; color: #737373; font-size: 9px;">
-              SLSQP CONVERGED: Nit=14, Feval=162
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- OPTION C: Morningstar Institutional Light -->
-    <div class="option-wrapper" id="opt-c">
-      <div class="option-header">
-        <div>
-          <div class="option-title">Option C: Morningstar / Financial Times (Clean Institutional Light)</div>
-          <div class="option-desc">Porcelain off-white (#F8FAFC), crisp navy typography (#0F172A), structured card borders, executive reporting style.</div>
-        </div>
-        <span class="badge" style="background: #10b98122; color: #047857; border: 1px solid #10b98144;">INSTITUTIONAL ASSET MGT</span>
-      </div>
-
-      <div class="mock-stage theme-light">
-        <div class="mock-topbar">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-family: serif; font-weight: 900; font-size: 18px; color: #0f172a;">ETF OPTIMA</span>
-            <span style="font-size: 10px; padding: 2px 6px; background: #f1f5f9; border-radius: 2px; color: #475569; font-weight: 700;">NISM SERIES 15 ALIGNED</span>
-          </div>
-          <div style="display: flex; gap: 16px; font-size: 12px; font-weight: 600; color: #475569;">
-            <span style="color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 2px;">Portfolio Optimizer</span>
-            <span>Market Monitor</span>
-            <span>Multi-Asset Compare</span>
-            <span>Client Accounts</span>
-          </div>
-          <button style="background: #0f172a; color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">Client Sign In</button>
-        </div>
-
-        <div class="mock-metrics">
-          <div class="mock-metric-card">
-            <div style="font-size: 10px; color: #64748b; font-weight: 700;">ANNUALIZED RETURN (5Y)</div>
-            <div style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 4px 0;">19.44%</div>
-            <div style="font-size: 10px; color: #059669; font-weight: 600;">+5.24% vs Benchmark</div>
-          </div>
-          <div class="mock-metric-card">
-            <div style="font-size: 10px; color: #64748b; font-weight: 700;">ANNUAL VOLATILITY</div>
-            <div style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 4px 0;">13.02%</div>
-            <div style="font-size: 10px; color: #64748b;">Annualized std. dev.</div>
-          </div>
-          <div class="mock-metric-card">
-            <div style="font-size: 10px; color: #64748b; font-weight: 700;">SHARPE RATIO (Rf=6.85%)</div>
-            <div style="font-size: 20px; font-weight: 800; color: #0284c7; margin: 4px 0;">0.963</div>
-            <div style="font-size: 10px; color: #0284c7; font-weight: 600;">Top 5% Risk-Adjusted</div>
-          </div>
-          <div class="mock-metric-card">
-            <div style="font-size: 10px; color: #64748b; font-weight: 700;">MAX DRAWDOWN (COVID-19)</div>
-            <div style="font-size: 20px; font-weight: 800; color: #b91c1c; margin: 4px 0;">-18.4%</div>
-            <div style="font-size: 10px; color: #64748b;">Recovery: 4.2 Months</div>
-          </div>
-        </div>
-
-        <div style="font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 4px;">Asset Class Allocation Spread</div>
-        <div class="mock-bar" style="height: 14px;">
-          <div style="width: 25%; background: #d97706;" title="Gold: 25%"></div>
-          <div style="width: 25%; background: #0d9488;" title="Midcap: 25%"></div>
-          <div style="width: 25%; background: #6366f1;" title="Nasdaq: 25%"></div>
-          <div style="width: 15%; background: #e11d48;" title="Next 50: 15%"></div>
-          <div style="width: 10%; background: #2563eb;" title="Nifty 50: 10%"></div>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <script>
-    function showOption(optId) {
+    function filterDesign(id) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
 
-      const items = ['opt-a', 'opt-b', 'opt-c'];
-      if (optId === 'all') {
-        items.forEach(id => document.getElementById(id).style.display = 'block');
+      const allCards = ['design-1', 'design-2', 'design-3', 'design-4', 'design-5'];
+      if (id === 'all') {
+        allCards.forEach(cardId => document.getElementById(cardId).style.display = 'block');
       } else {
-        items.forEach(id => {
-          document.getElementById(id).style.display = (id === optId) ? 'block' : 'none';
+        allCards.forEach(cardId => {
+          document.getElementById(cardId).style.display = (cardId === id) ? 'block' : 'none';
         });
       }
     }

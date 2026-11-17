@@ -150,19 +150,22 @@ def download_and_clean(tickers=TICKERS, start=START_DATE, end=END_DATE,
     # Normalise column names to uppercase
     prices.columns = [c.upper() for c in prices.columns]
 
-    # Drop completely empty rows, forward-fill minor holiday gaps
+    # ── Identify available tickers with sufficient trading history ────────────
+    # Require at least 60 trading days so that a newly listed or sparse ETF (e.g. MID150BEES.NS)
+    # does not wipe out multi-year history for all other assets during dropna().
+    min_obs = 60
+    available = [t for t in tickers if t.upper() in prices.columns
+                 and prices[t.upper()].notna().sum() >= min_obs]
+    prices = prices[[t.upper() for t in available]].copy()
+
+    # Drop completely empty rows, forward-fill minor holiday gaps, then drop remaining gaps
     prices.dropna(how='all', inplace=True)
     prices.ffill(inplace=True)
     prices.dropna(inplace=True)
 
-    # ── Identify available tickers ────────────────────────────────────────────
-    available = [t for t in tickers if t.upper() in prices.columns
-                 and not prices[t.upper()].isna().all()]
-    prices = prices[[t.upper() for t in available]].copy()
-
     if verbose and len(available) < len(tickers):
         missing = [t for t in tickers if t not in available]
-        print(f"  ⚠️   {len(missing)} ticker(s) unavailable: {missing}")
+        print(f"  ⚠️   {len(missing)} ticker(s) unavailable or insufficient history (<{min_obs} days): {missing}")
 
     # ── Clean split / corporate-action price discontinuities ─────────────────
     # Yahoo Finance can produce multi-day price jumps around stock splits

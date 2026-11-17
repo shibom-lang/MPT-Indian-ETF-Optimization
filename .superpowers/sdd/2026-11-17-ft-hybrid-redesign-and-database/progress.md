@@ -5,3 +5,4 @@ Task 2: complete (web/style.css FT newsprint & Oxford Navy palette, tabular typo
 Task 3: complete (web/index.html & web/main.js Option D execution schedule, SLSQP telemetry drawer, KPI cards)
 Task 4: complete (web/dashboard.html FT live charts, 1D/1M/5Y time horizon controls, yfinance history integration)
 Task 5: complete (web/compare.html FT compare studio, 9x9 correlation heatmap in Forest Green & Claret)
+Task 6: complete (25/25 pytest passed, Vite build clean, pushed to origin/main for Vercel deployment)
