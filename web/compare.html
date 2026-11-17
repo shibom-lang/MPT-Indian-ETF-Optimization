@@ -3,285 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETF Optima — Compare Dashboard</title>
-    <meta name="description" content="Compare Max Sharpe, Min Volatility, and Equal Weight ETF portfolios side by side with live charts.">
+    <title>ETF Optima — Financial Times Compare Studio</title>
+    <meta name="description" content="Compare Max Sharpe, Min Volatility, and Equal Weight ETF portfolios side by side with live charts and correlation heatmap.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <style>
-        body { background: #0b0f1a; }
+        body {
+            background-color: var(--ft-paper);
+            color: var(--ft-navy);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
 
         .dash-header {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 1rem 2rem;
-            background: rgba(15,23,42,0.95);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 1.25rem 2rem;
+            background: var(--ft-paper);
+            border-bottom: 2px solid var(--ft-navy);
             position: sticky; top: 0; z-index: 100;
-            backdrop-filter: blur(12px);
         }
-        .dash-header .logo { font-size: 1.2rem; font-weight: 800; color: #fff; }
+        .dash-header .logo {
+            font-family: 'Newsreader', serif;
+            font-size: 1.45rem; font-weight: 800; color: var(--ft-navy);
+            text-decoration: none; letter-spacing: -0.02em;
+        }
         .dash-header nav a {
-            color: rgba(255,255,255,0.7); text-decoration: none;
-            margin-left: 1.5rem; font-size: 0.88rem; transition: color .2s;
+            color: var(--ft-navy-soft); text-decoration: none;
+            margin-left: 1.5rem; font-size: 0.88rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.04em;
+            padding-bottom: 3px; border-bottom: 2px solid transparent;
+            transition: all 0.2s;
         }
-        .dash-header nav a:hover, .dash-header nav a.active { color: #60a5fa; }
+        .dash-header nav a:hover, .dash-header nav a.active {
+            color: var(--ft-navy);
+            border-bottom-color: var(--ft-navy);
+        }
 
         .cmp-main {
             max-width: 1400px; margin: 0 auto;
-            padding: 1.5rem 1.5rem 3rem;
+            padding: 2rem 1.5rem 4rem;
         }
 
-        /* ── Widget ──────────────────────────────────────────────── */
+        /* ── Widget ── */
         .widget {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.09);
-            border-radius: 14px; padding: 1.2rem 1.4rem;
-            transition: border-color .2s;
+            background: var(--ft-paper-card);
+            border: 1px solid var(--ft-border);
+            border-radius: var(--radius-sm); padding: 1.35rem 1.5rem;
+            box-shadow: 0 2px 6px rgba(12, 35, 64, 0.04);
+            transition: border-color 0.2s;
         }
-        .widget:hover { border-color: rgba(96,165,250,0.25); }
+        .widget:hover { border-color: var(--ft-navy); }
         .widget-title {
-            font-size: 0.75rem; text-transform: uppercase; letter-spacing: .08em;
-            color: rgba(255,255,255,0.45); margin-bottom: 1rem; font-weight: 600;
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.15rem; font-weight: 700;
+            color: var(--ft-navy); margin-bottom: 0.85rem;
+            display: flex; align-items: center;
         }
 
-        /* ── Section heading ─────────────────────────────────────── */
+        /* ── Section Heading ── */
         .section-head {
             display: flex; align-items: center; justify-content: space-between;
-            margin: 2rem 0 1rem;
+            margin: 2.25rem 0 1rem;
         }
-        .section-head h2 { font-size: 1.25rem; color: #f1f5f9; margin: 0; }
+        .section-head h2 {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.5rem; color: var(--ft-navy); margin: 0; font-weight: 800;
+        }
 
-        /* ── Portfolio scorecards ────────────────────────────────── */
+        /* ── Portfolio Scorecards ── */
         .scorecard-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 1rem; margin-bottom: 1.5rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem; margin-bottom: 1.5rem;
         }
         @media (max-width: 900px) { .scorecard-grid { grid-template-columns: 1fr; } }
 
         .scorecard {
-            border-radius: 14px; padding: 1.5rem;
+            border-radius: var(--radius-sm); padding: 1.5rem;
             position: relative; overflow: hidden;
+            background: var(--ft-paper-elevated);
+            border: 1px solid var(--ft-border);
         }
-        .sc-gold   { background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(251,191,36,0.05)); border: 1px solid rgba(251,191,36,0.35); }
-        .sc-blue   { background: linear-gradient(135deg, rgba(96,165,250,0.15), rgba(96,165,250,0.05)); border: 1px solid rgba(96,165,250,0.35); }
-        .sc-grey   { background: linear-gradient(135deg, rgba(148,163,184,0.12), rgba(148,163,184,0.04)); border: 1px solid rgba(148,163,184,0.25); }
+        .sc-gold { border: 2px solid var(--ft-gold); }
+        .sc-blue { border: 2px solid var(--ft-navy); }
+        .sc-grey { border: 1px solid var(--ft-border); }
 
         .sc-badge {
-            display: inline-block; font-size: 0.68rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: .06em;
-            padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 0.8rem;
+            display: inline-block; font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            padding: 0.2rem 0.6rem; border-radius: 3px; margin-bottom: 0.8rem;
         }
-        .badge-gold { background: rgba(251,191,36,0.2); color: #fbbf24; }
-        .badge-blue { background: rgba(96,165,250,0.2); color: #60a5fa; }
-        .badge-grey { background: rgba(148,163,184,0.15); color: #94a3b8; }
+        .badge-gold { background: var(--ft-gold-bg); color: var(--ft-gold); border: 1px solid var(--ft-gold); }
+        .badge-blue { background: #EBF3FC; color: var(--ft-navy); border: 1px solid var(--ft-navy); }
+        .badge-grey { background: var(--ft-paper-card); color: var(--ft-text-muted); border: 1px solid var(--ft-border); }
 
-        .sc-title { font-size: 1.1rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.3rem; }
-        .sc-subtitle { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-bottom: 1.2rem; }
-        .sc-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
-        .sc-metric {
-            background: rgba(255,255,255,0.04); border-radius: 8px;
-            padding: 0.6rem 0.8rem;
+        .sc-title {
+            font-family: 'Newsreader', serif;
+            font-size: 1.35rem; font-weight: 800; color: var(--ft-navy); margin-bottom: 0.25rem;
         }
-        .sc-metric-label { font-size: 0.65rem; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 0.2rem; }
-        .sc-metric-val { font-size: 1rem; font-weight: 700; color: #f1f5f9; }
+        .sc-subtitle { font-size: 0.8rem; color: var(--ft-text-muted); margin-bottom: 1.2rem; }
+        .sc-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+        .sc-metric {
+            background: var(--ft-paper-card); border-radius: 3px;
+            padding: 0.6rem 0.8rem; border: 1px solid var(--ft-border-subtle);
+        }
+        .sc-metric-label {
+            font-size: 0.65rem; color: var(--ft-text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.2rem;
+        }
+        .sc-metric-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem; font-weight: 800; color: var(--ft-navy); font-variant-numeric: tabular-nums;
+        }
         .sc-weights { margin-top: 1rem; }
-        .sc-w-bar-wrap { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 0.4rem; }
-        .sc-legend { display: flex; flex-wrap: wrap; gap: 0.35rem 0.7rem; }
-        .sc-leg-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; color: rgba(255,255,255,0.5); }
-        .sc-leg-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .sc-w-bar-wrap {
+            display: flex; height: 10px; border-radius: 2px; overflow: hidden;
+            margin-bottom: 0.5rem; border: 1px solid var(--ft-border);
+        }
+        .sc-legend { display: flex; flex-wrap: wrap; gap: 0.35rem 0.75rem; }
+        .sc-leg-item {
+            display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem;
+            color: var(--ft-navy); font-weight: 600;
+        }
+        .sc-leg-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 
         .sc-winner-badge {
             position: absolute; top: 1.2rem; right: 1.2rem;
-            background: rgba(251,191,36,0.25); color: #fbbf24;
-            font-size: 0.7rem; font-weight: 700;
-            padding: 0.2rem 0.5rem; border-radius: 4px;
-            border: 1px solid rgba(251,191,36,0.4);
+            background: var(--ft-gold-bg); color: var(--ft-gold);
+            font-size: 0.7rem; font-weight: 800;
+            padding: 0.2rem 0.55rem; border-radius: 3px;
+            border: 1px solid var(--ft-gold); text-transform: uppercase;
         }
 
-        /* ── Chart containers ────────────────────────────────────── */
-        .chart-grid-2 {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 1rem; margin-bottom: 1.5rem;
-        }
-        .chart-grid-3 {
-            display: grid; grid-template-columns: 1fr 1fr 1fr;
-            gap: 1rem; margin-bottom: 1.5rem;
-        }
-        @media (max-width: 1000px) {
-            .chart-grid-2 { grid-template-columns: 1fr; }
-            .chart-grid-3 { grid-template-columns: 1fr; }
-        }
-        .chart-wrap { position: relative; }
-        .chart-h300 { height: 300px; }
-        .chart-h380 { height: 380px; }
-        .chart-h260 { height: 260px; }
-
-        /* ── Comparison table ────────────────────────────────────── */
-        .cmp-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        /* ── Comparison Table ── */
+        .cmp-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
         .cmp-table th {
-            text-align: center; padding: 0.7rem 0.8rem;
-            font-size: 0.72rem; text-transform: uppercase; letter-spacing: .06em;
-            color: rgba(255,255,255,0.4);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            font-weight: 600;
+            text-align: right; padding: 0.75rem 1rem;
+            font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: var(--ft-navy); border-bottom: 1.5px solid var(--ft-navy);
+            font-weight: 700; background: var(--ft-paper);
         }
         .cmp-table th:first-child { text-align: left; }
-        .cmp-table td { padding: 0.6rem 0.8rem; color: #cbd5e1; text-align: center; vertical-align: middle; }
-        .cmp-table td:first-child { text-align: left; color: rgba(255,255,255,0.55); font-size: 0.78rem; }
-        .cmp-table tr:not(:last-child) td { border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .cmp-table tr:hover td { background: rgba(255,255,255,0.025); }
-        .best-cell { font-weight: 700; }
-        .best-gold { color: #fbbf24 !important; }
-        .best-blue { color: #60a5fa !important; }
-        .neg-val { color: #f87171 !important; }
-        .pos-val { color: #4ade80 !important; }
-        .cmp-header-sh { color: #fbbf24; }
-        .cmp-header-mv { color: #60a5fa; }
-        .cmp-header-eq { color: #94a3b8; }
-
-        /* ── Heatmap / correlation ───────────────────────────────── */
-        .corr-grid {
-            display: grid;
-            gap: 2px;
+        .cmp-table td {
+            padding: 0.7rem 1rem; color: var(--ft-navy); text-align: right; vertical-align: middle;
+            border-bottom: 1px solid var(--ft-border-subtle);
+            font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums;
         }
+        .cmp-table td:first-child {
+            text-align: left; color: var(--ft-navy); font-weight: 600; font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .cmp-table tr:hover td { background: #FFFBF6; }
+        .best-cell { font-weight: 800; color: var(--ft-navy); }
+        .best-gold { color: var(--ft-gold) !important; }
+        .best-blue { color: var(--ft-green) !important; }
+        .neg-val { color: var(--ft-claret) !important; }
+        .pos-val { color: var(--ft-green) !important; }
+
+        /* ── Heatmap / Correlation Grid ── */
+        .corr-grid { display: grid; gap: 2px; }
         .corr-cell {
-            border-radius: 4px; display: flex; align-items: center;
+            border-radius: 2px; display: flex; align-items: center;
             justify-content: center; font-size: 0.75rem; font-weight: 700;
-            aspect-ratio: 1; min-height: 44px;
+            aspect-ratio: 1; min-height: 40px; font-family: 'JetBrains Mono', monospace;
+            font-variant-numeric: tabular-nums;
         }
 
-        /* ── ETF stats card grid ─────────────────────────────────── */
+        /* ── ETF Stat Card Grid ── */
         .etf-stat-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0.8rem; margin-bottom: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1rem; margin-bottom: 1.5rem;
         }
-        @media (max-width: 1000px) { .etf-stat-grid { grid-template-columns: 1fr 1fr; } }
         .etf-stat-card {
-            border-radius: 10px; padding: 1rem;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.03);
+            border-radius: var(--radius-sm); padding: 1.1rem;
+            border: 1px solid var(--ft-border);
+            background: var(--ft-paper-elevated);
         }
-        .etf-stat-name { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.88rem; }
-        .etf-stat-rows { font-size: 0.76rem; }
-        .etf-stat-row { display: flex; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .etf-stat-name {
+            font-weight: 800; margin-bottom: 0.5rem; font-size: 0.95rem;
+            font-family: 'Newsreader', serif;
+        }
+        .etf-stat-rows { font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+        .etf-stat-row {
+            display: flex; justify-content: space-between; padding: 0.25rem 0;
+            border-bottom: 1px solid var(--ft-border-subtle);
+        }
         .etf-stat-row:last-child { border: none; }
-        .etf-stat-lbl { color: rgba(255,255,255,0.4); }
+        .etf-stat-lbl { color: var(--ft-text-muted); font-family: 'Inter', sans-serif; font-size: 0.74rem; }
 
-        /* ── Spinner ─────────────────────────────────────────────── */
+        /* ── Chart Containers ── */
+        .chart-grid-2 {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.25rem; margin-bottom: 1.5rem;
+        }
+        @media (max-width: 1000px) { .chart-grid-2 { grid-template-columns: 1fr; } }
+
+        .chart-wrap { position: relative; }
+        .chart-h300 { height: 320px; }
+        .chart-h380 { height: 400px; }
+
+        /* ── Tabs (Growth Chart) ── */
+        .view-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.8rem; }
+        .view-tab {
+            padding: 0.35rem 0.85rem;
+            border: 1px solid var(--ft-border);
+            border-radius: 3px; background: var(--ft-paper-elevated);
+            color: var(--ft-navy); font-size: 0.78rem; font-weight: 700;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .view-tab.active {
+            background: var(--ft-navy); border-color: var(--ft-navy); color: var(--ft-paper);
+        }
+
+        /* ── Legend ── */
+        .chart-legend {
+            display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.85rem;
+        }
+        .legend-item {
+            display: flex; align-items: center; gap: 0.4rem;
+            font-size: 0.78rem; color: var(--ft-navy); font-weight: 600;
+            cursor: pointer; padding: 0.2rem 0.5rem;
+            border: 1px solid var(--ft-border-subtle); border-radius: 3px;
+            background: var(--ft-paper-elevated);
+        }
+        .legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+        /* ── Loading / Spinners ── */
         .cmp-loading {
             display: flex; flex-direction: column; align-items: center;
             justify-content: center; min-height: 400px; gap: 1rem;
-            color: rgba(255,255,255,0.4);
+            color: var(--ft-text-muted);
         }
         .cmp-spinner {
-            width: 48px; height: 48px;
-            border: 3px solid rgba(255,255,255,0.08);
-            border-top-color: #60a5fa;
+            width: 44px; height: 44px;
+            border: 3px solid var(--ft-border);
+            border-top-color: var(--ft-navy);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── Legend ──────────────────────────────────────────────── */
-        .chart-legend {
-            display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.7rem;
-        }
-        .legend-item {
-            display: flex; align-items: center; gap: 0.4rem;
-            font-size: 0.76rem; color: rgba(255,255,255,0.6);
-            cursor: pointer;
-        }
-        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-
-        /* ── Radar axis labels ────────────────────────────────────── */
-        .radar-note { font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 0.5rem; text-align: center; }
-
-        /* ── Tabs (growth chart) ──────────────────────────────────── */
-        .view-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.8rem; }
-        .view-tab {
-            padding: 0.3rem 0.7rem;
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 6px; background: transparent;
-            color: rgba(255,255,255,0.5); font-size: 0.75rem;
-            cursor: pointer; transition: all .2s;
-        }
-        .view-tab.active { background: rgba(96,165,250,0.2); border-color: #60a5fa; color: #60a5fa; }
-
-        /* ── Regenerate note ──────────────────────────────────────── */
         .regen-note {
-            margin-top: 1.5rem; padding: 1rem 1.4rem;
-            background: rgba(96,165,250,0.06); border: 1px solid rgba(96,165,250,0.2);
-            border-radius: 10px; font-size: 0.8rem; color: rgba(255,255,255,0.5);
-            display: flex; align-items: center; gap: 1rem;
+            margin-top: 1.5rem; padding: 1.1rem 1.4rem;
+            background: var(--ft-paper-elevated); border: 1px solid var(--ft-border);
+            border-radius: 3px; font-size: 0.82rem; color: var(--ft-navy-soft);
+            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+            flex-wrap: wrap;
         }
         .regen-btn {
             padding: 0.5rem 1.2rem;
-            background: #3b82f6; color: white;
-            border: none; border-radius: 6px;
-            cursor: pointer; font-weight: 600; font-size: 0.8rem;
-            white-space: nowrap; flex-shrink: 0;
-            transition: background .2s;
+            background: var(--ft-navy); color: var(--ft-paper);
+            border: 1px solid var(--ft-navy); border-radius: 3px;
+            cursor: pointer; font-weight: 700; font-size: 0.82rem;
+            white-space: nowrap; transition: all 0.15s;
         }
-        .regen-btn:hover { background: #2563eb; }
+        .regen-btn:hover { background: var(--primary-hover); }
     </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- FINANCIAL TIMES EDITORIAL MASTHEAD -->
 <header class="dash-header">
-    <div class="logo"><svg style="width:1.1em;height:1.1em;vertical-align:middle;margin-right:6px;color:#34d399;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>ETF Optima</div>
+    <a href="/" class="logo">ETF Optima</a>
     <nav>
         <a href="/">Home</a>
         <a href="/dashboard.html">Live Dashboard</a>
         <a href="/compare.html" class="active">Compare</a>
         <a href="/#calculator">Calculator</a>
-        <a href="/#report-section"><svg class="svg-icon" style="color:inherit;margin-right:5px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Report</a>
+        <a href="/#report-section" style="background:var(--ft-navy); color:var(--ft-paper); padding:0.35rem 0.85rem; border-radius:3px; border-bottom:none;">📄 Report</a>
     </nav>
 </header>
 
 <div class="cmp-main">
 
-    <!-- Page header -->
+    <!-- Page Header -->
     <div class="section-head" style="margin-top:0;">
         <div>
-            <h2 style="font-size:1.6rem; margin-bottom:0.3rem;"><svg class="svg-icon" style="color:#a78bfa;margin-right:8px;width:1.3rem;height:1.3rem;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Portfolio Compare Dashboard</h2>
-            <p style="margin:0; font-size:0.82rem; color:rgba(255,255,255,0.4);">
-                Side-by-side analysis of all three MPT strategies using live historical data (2019 – today)
+            <h2 style="font-size:1.8rem; margin-bottom:0.25rem;">Quantitative Portfolio Compare Studio</h2>
+            <p style="margin:0; font-size:0.88rem; color:var(--ft-text-muted);">
+                Side-by-side Modern Portfolio Theory (MPT) evaluation with 7-year historical market depth
             </p>
         </div>
-        <div id="data-status" style="font-size:0.78rem; color:rgba(255,255,255,0.3);">Loading live data…</div>
+        <div id="data-status" style="font-size:0.8rem; color:var(--ft-navy); font-weight:700; font-family:'JetBrains Mono', monospace;">Loading live data…</div>
     </div>
 
-    <!-- Loading state -->
+    <!-- Loading State -->
     <div id="cmp-loading" class="cmp-loading">
         <div class="cmp-spinner"></div>
-        <p>Running full MPT analysis with live data…<br>
-           <span style="font-size:0.78rem;">This takes ~30–60 seconds on first load.</span></p>
+        <p style="font-weight:600; text-align:center;">Executing multi-asset optimization &amp; covariance analysis…<br>
+           <span style="font-size:0.8rem; color:var(--ft-text-muted);">Downloading live market series from NSE. Takes ~15–30 seconds.</span></p>
     </div>
 
-    <!-- Dashboard content (hidden until data loads) -->
+    <!-- Dashboard Content -->
     <div id="cmp-content" style="display:none;">
 
-        <!-- ── Scorecards ───────────────────────────────────────── -->
+        <!-- ── Scorecards ── -->
         <div class="scorecard-grid" id="scorecard-grid"></div>
 
-        <!-- ── Head-to-head comparison table ───────────────────── -->
+        <!-- ── Head-to-Head Comparison Table ── -->
         <div class="section-head">
-            <h2><svg class="svg-icon" style="color:#60a5fa;margin-right:8px;width:1.3rem;height:1.3rem;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>Head-to-Head Metrics Comparison</h2>
+            <h2>Head-to-Head Metrics Comparison</h2>
         </div>
         <div class="widget" style="margin-bottom:1.5rem;">
             <div style="overflow-x:auto;">
                 <table class="cmp-table" id="cmp-table">
                     <thead>
                         <tr>
-                            <th>Metric</th>
-                            <th class="cmp-header-sh"><svg class="svg-icon" style="color:#fbbf24;margin-right:5px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>Max Sharpe</th>
-                            <th class="cmp-header-mv"><svg class="svg-icon" style="color:#ef4444;margin-right:5px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd"/></svg>Min Volatility</th>
-                            <th class="cmp-header-eq"><svg class="svg-icon" style="color:#60a5fa;margin-right:5px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>Equal Weight</th>
+                            <th>Quantitative Metric</th>
+                            <th style="color:var(--ft-gold);">★ Max Sharpe</th>
+                            <th style="color:var(--ft-green);">🛡️ Min Volatility</th>
+                            <th style="color:var(--ft-navy);">⚖️ Equal Weight</th>
                         </tr>
                     </thead>
                     <tbody id="cmp-tbody"></tbody>
@@ -289,9 +322,9 @@
             </div>
         </div>
 
-        <!-- ── Growth chart ──────────────────────────────────────── -->
+        <!-- ── Growth Chart ── -->
         <div class="section-head">
-            <h2><svg class="svg-icon" style="color:#34d399;margin-right:8px;width:1.3rem;height:1.3rem;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Cumulative Growth (₹100 Invested)</h2>
+            <h2>Cumulative Growth (₹100 Invested)</h2>
             <div class="view-tabs">
                 <button class="view-tab active" onclick="setGrowthView('portfolios')">Portfolios</button>
                 <button class="view-tab" onclick="setGrowthView('etfs')">Individual ETFs</button>
@@ -305,41 +338,41 @@
             </div>
         </div>
 
-        <!-- ── Drawdown + Efficient Frontier ───────────────────── -->
+        <!-- ── Drawdown + Efficient Frontier ── -->
         <div class="chart-grid-2" style="margin-bottom:1.5rem;">
             <div class="widget">
-                <div class="widget-title"><svg class="svg-icon" style="color:#f87171;margin-right:6px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>Portfolio Drawdown Analysis</div>
+                <div class="widget-title">Portfolio Drawdown Analysis (Underwater Plot)</div>
                 <div class="chart-legend" id="dd-legend"></div>
                 <div class="chart-wrap chart-h300">
                     <canvas id="ddChart"></canvas>
                 </div>
             </div>
             <div class="widget">
-                <div class="widget-title"><svg class="svg-icon" style="color:#fbbf24;margin-right:6px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>Efficient Frontier — Monte Carlo (3,000 Portfolios)</div>
+                <div class="widget-title">Efficient Frontier — Monte Carlo (3,000 Portfolios)</div>
                 <div class="chart-wrap chart-h300">
                     <canvas id="efChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- ── Radar + Correlation ───────────────────────────────── -->
+        <!-- ── Radar + Correlation Heatmap ── -->
         <div class="chart-grid-2" style="margin-bottom:1.5rem;">
             <div class="widget">
-                <div class="widget-title"><svg class="svg-icon" style="color:#60a5fa;margin-right:6px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Portfolio Risk Radar</div>
+                <div class="widget-title">Portfolio Risk Radar</div>
                 <div class="chart-wrap chart-h300" style="display:flex; align-items:center; justify-content:center;">
                     <canvas id="radarChart" style="max-width:320px;"></canvas>
                 </div>
-                <p class="radar-note">All metrics normalised 0–10 (higher = better for return/sharpe; lower = better for vol/dd)</p>
+                <p style="font-size:0.75rem; color:var(--ft-text-muted); margin-top:0.5rem; text-align:center;">All metrics normalised 0–10 (higher = better for return/sharpe; lower = better for vol/dd)</p>
             </div>
             <div class="widget">
-                <div class="widget-title"><svg class="svg-icon" style="color:#f87171;margin-right:6px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>ETF Correlation Heatmap</div>
+                <div class="widget-title">9x9 ETF Correlation Heatmap</div>
                 <div id="heatmap-container" style="overflow-x:auto;"></div>
             </div>
         </div>
 
-        <!-- ── Weight comparison bar chart ──────────────────────── -->
+        <!-- ── Weight Comparison Bar Chart ── -->
         <div class="section-head">
-            <h2><svg class="svg-icon" style="color:#60a5fa;margin-right:8px;width:1.3rem;height:1.3rem;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>Weight Allocation Comparison</h2>
+            <h2>Weight Allocation Comparison</h2>
         </div>
         <div class="widget" style="margin-bottom:1.5rem;">
             <div class="chart-wrap chart-h300">
@@ -347,93 +380,84 @@
             </div>
         </div>
 
-        <!-- ── Individual ETF stats ──────────────────────────────── -->
+        <!-- ── Individual ETF Stats ── -->
         <div class="section-head">
-            <h2><svg class="svg-icon" style="color:#60a5fa;margin-right:8px;width:1.3rem;height:1.3rem;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1v1H9V7zm5 0h1v1h-1V7zm-5 4h1v1H9v-1zm5 0h1v1h-1v-1zm-5 4h1v1H9v-1zm5 0h1v1h-1v-1z"/></svg>Individual ETF Statistics</h2>
+            <h2>Individual Asset Performance Statistics</h2>
         </div>
         <div class="etf-stat-grid" id="etf-stat-grid"></div>
 
-        <!-- Regenerate note -->
+        <!-- Regenerate Note -->
         <div class="regen-note">
-            <span><svg class="svg-icon" style="color:#94a3b8;margin-right:6px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Compare data is generated live using the latest market data. Results are cached for 6 hours.
-            Click "Regenerate" to force a fresh analysis (takes ~30–60 seconds).</span>
-            <button class="regen-btn" onclick="loadCompareData(true)"><svg class="svg-icon" style="color:inherit;margin-right:5px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Regenerate</button>
+            <span>Market simulation and portfolio weights are calculated live using the latest daily price matrix from the NSE.</span>
+            <button class="regen-btn" onclick="loadCompareData(true)">🔄 Force Live Re-optimization</button>
         </div>
 
         <!-- Disclaimer -->
-        <div style="margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(255,255,255,0.03);
-                    border:1px solid rgba(255,255,255,0.06); border-radius:10px;
-                    font-size:0.76rem; color:rgba(255,255,255,0.3); line-height:1.6;">
-            ⚠️ <strong style="color:rgba(255,255,255,0.5);">Disclaimer:</strong>
-            Analysis based on historical data 2019 to today. Past performance does not guarantee future results.
-            This is for educational purposes only. Not investment advice. Risk-free rate: 6.80% p.a. (India 10-yr G-Sec).
+        <div style="margin-top:1.5rem; padding:1rem 1.5rem; background:var(--ft-paper-card);
+                    border:1px solid var(--ft-border); border-radius:3px;
+                    font-size:0.78rem; color:var(--ft-text-muted); line-height:1.6;">
+            ⚠️ <strong style="color:var(--ft-navy);">Financial Times Quantitative Disclosure:</strong>
+            Analysis is computed with historical trading daily returns (2019 to present). Past performance is not indicative of future returns. Educational research under NISM Research Analyst Series 15. Risk-free benchmark: 6.80% p.a. (RBI 91D / 10-Yr G-Sec).
         </div>
     </div>
 </div>
 
 <script type="module">
-/* ── Chart instances ─────────────────────────────────────────────── */
 let charts = {};
 let compareData = null;
 let growthView = 'portfolios';
 
-/* ── Helpers ─────────────────────────────────────────────────────── */
-const ETF_COLORS = {
-    'NiftyBees':  '#60a5fa', 'JuniorBees': '#ef4444',
-    'BankBees':   '#f59e0b', 'GoldBees':   '#fbbf24', 'LiquidBees': '#a78bfa',
-};
-const PORT_COLORS = { maxsharpe: '#fbbf24', minvol: '#60a5fa', equal: '#94a3b8' };
-
 function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
 
-function darkChartDefaults() {
+function ftChartDefaults() {
     return {
         responsive: true, maintainAspectRatio: false,
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: 'rgba(15,23,42,0.95)',
-                borderColor: 'rgba(255,255,255,0.1)',
+                backgroundColor: '#0C2340',
+                borderColor: '#D8C7B5',
                 borderWidth: 1,
-                titleColor: '#94a3b8',
-                bodyColor: '#e2e8f0',
+                titleColor: '#FFF1E5',
+                bodyColor: '#FFFFFF',
             }
         },
         scales: {
             x: {
-                ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } },
-                grid:  { color: 'rgba(255,255,255,0.04)' }
+                ticks: { color: '#5A5047', font: { size: 10, family: 'Inter' } },
+                grid:  { color: '#E9D5C3' }
             },
             y: {
-                ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } },
-                grid:  { color: 'rgba(255,255,255,0.06)' }
+                ticks: { color: '#5A5047', font: { size: 10, family: 'JetBrains Mono' } },
+                grid:  { color: '#E9D5C3' }
             }
         }
     };
 }
 
-/* ── Scorecards ──────────────────────────────────────────────────── */
+/* ── Scorecards ── */
 function renderScorecards(data) {
     const keys = ['maxsharpe', 'minvol', 'equal'];
     const classes = { maxsharpe: 'sc-gold', minvol: 'sc-blue', equal: 'sc-grey' };
     const badges  = { maxsharpe: 'badge-gold', minvol: 'badge-blue', equal: 'badge-grey' };
     const subtitles = {
-        maxsharpe: 'Best risk-adjusted returns',
-        minvol:    'Lowest volatility portfolio',
-        equal:     'Naive 20% allocation benchmark',
+        maxsharpe: 'Best risk-adjusted returns (Growth engine)',
+        minvol:    'Lowest volatility portfolio (Capital protection)',
+        equal:     'Naive 1/N allocation benchmark',
     };
     const tickers = data.tickers;
     const colors  = data.colors;
     const etfColorMap = Object.fromEntries(tickers.map((t, i) => [t, colors[i]]));
 
     const grid = document.getElementById('scorecard-grid');
-    grid.innerHTML = keys.map((key, ki) => {
+    if (!grid) return;
+
+    grid.innerHTML = keys.map((key) => {
         const p = data.portfolios[key];
         const m = p.metrics;
         const w = p.weights;
         const isWinner = key === 'maxsharpe';
 
-        // Build stacked bar segments
         const segments = tickers.map(t => ({
             name: t, pct: w[t] || 0, color: etfColorMap[t]
         })).filter(s => s.pct > 0);
@@ -449,30 +473,39 @@ function renderScorecards(data) {
             </div>`
         ).join('');
 
-        const metricRows = [
-            ['Ann. Return',  `${m.return}%`,  m.return > 0 ? '#4ade80' : '#f87171'],
-            ['Volatility',   `${m.vol}%`,      '#94a3b8'],
-            ['Sharpe Ratio', `${m.sharpe}`,    '#fbbf24'],
-            ['Sortino Ratio',`${m.sortino}`,   '#60a5fa'],
-            ['Max Drawdown', `${m.max_dd}%`,   '#f87171'],
-            ['CVaR 95%',     `${m.cvar_95}%`,  '#f87171'],
-        ];
-
         return `
         <div class="scorecard ${classes[key]}">
-            ${isWinner ? '<div class="sc-winner-badge"><svg style="width:0.85em;height:0.85em;vertical-align:middle;margin-right:3px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>Best Sharpe</div>' : ''}
-            <div class="sc-badge ${badges[key]}">${p.label}</div>
-            <div class="sc-title">${p.label.replace(/Max Sharpe|Min Volatility|Equal Weight/g, m => m).replace(/[^\x00-\x7F]/g, '').trim()}</div>
+            ${isWinner ? '<span class="sc-winner-badge">★ Recommended</span>' : ''}
+            <span class="sc-badge ${badges[key]}">${p.name}</span>
+            <div class="sc-title">${p.name}</div>
             <div class="sc-subtitle">${subtitles[key]}</div>
             <div class="sc-metrics">
-                ${metricRows.map(([label, val, col]) => `
                 <div class="sc-metric">
-                    <div class="sc-metric-label">${label}</div>
-                    <div class="sc-metric-val" style="color:${col}">${val}</div>
-                </div>`).join('')}
+                    <div class="sc-metric-label">Ann. Return</div>
+                    <div class="sc-metric-val ${m.return > 0 ? 'text-green' : 'text-red'}">${m.return.toFixed(2)}%</div>
+                </div>
+                <div class="sc-metric">
+                    <div class="sc-metric-label">Volatility</div>
+                    <div class="sc-metric-val">${m.vol.toFixed(2)}%</div>
+                </div>
+                <div class="sc-metric">
+                    <div class="sc-metric-label">Sharpe Ratio</div>
+                    <div class="sc-metric-val text-gold">${m.sharpe.toFixed(4)}</div>
+                </div>
+                <div class="sc-metric">
+                    <div class="sc-metric-label">Sortino Ratio</div>
+                    <div class="sc-metric-val">${m.sortino.toFixed(4)}</div>
+                </div>
+                <div class="sc-metric">
+                    <div class="sc-metric-label">Max Drawdown</div>
+                    <div class="sc-metric-val text-red">${m.max_dd.toFixed(2)}%</div>
+                </div>
+                <div class="sc-metric">
+                    <div class="sc-metric-label">CVaR 95% (Tail)</div>
+                    <div class="sc-metric-val text-red">${m.cvar_95.toFixed(2)}%</div>
+                </div>
             </div>
-            <div class="sc-weights" style="margin-top:1rem;">
-                <div style="font-size:0.7rem; color:rgba(255,255,255,0.3); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:.06em;">Allocation</div>
+            <div class="sc-weights">
                 <div class="sc-w-bar-wrap">${segHtml}</div>
                 <div class="sc-legend">${legHtml}</div>
             </div>
@@ -480,26 +513,28 @@ function renderScorecards(data) {
     }).join('');
 }
 
-/* ── Comparison table ────────────────────────────────────────────── */
+/* ── Head-to-Head Comparison Table ── */
 function renderCompareTable(data) {
-    const p = data.portfolios;
-    const sh = p.maxsharpe.metrics;
-    const mv = p.minvol.metrics;
-    const eq = p.equal.metrics;
+    const ports = data.portfolios;
+    const sh = ports.maxsharpe.metrics;
+    const mv = ports.minvol.metrics;
+    const eq = ports.equal.metrics;
 
     const rows = [
-        { label: 'Expected Annual Return', fmt: v => `${v}%`, sh: sh.return, mv: mv.return, eq: eq.return, best: 'highest', unit: 'return' },
-        { label: 'Annual Volatility (Risk)',fmt: v => `${v}%`, sh: sh.vol,    mv: mv.vol,    eq: eq.vol,    best: 'lowest'  },
-        { label: 'Sharpe Ratio',            fmt: v => v,       sh: sh.sharpe, mv: mv.sharpe, eq: eq.sharpe, best: 'highest' },
-        { label: 'Sortino Ratio',           fmt: v => v,       sh: sh.sortino,mv: mv.sortino,eq: eq.sortino,best: 'highest' },
-        { label: 'Max Drawdown',            fmt: v => `${v}%`, sh: sh.max_dd, mv: mv.max_dd, eq: eq.max_dd, best: 'highest' },
-        { label: 'Calmar Ratio',            fmt: v => v,       sh: sh.calmar, mv: mv.calmar, eq: eq.calmar, best: 'highest' },
-        { label: 'CVaR 95% (Daily)',        fmt: v => `${v}%`, sh: sh.cvar_95,mv: mv.cvar_95,eq: eq.cvar_95,best: 'highest' },
+        { label: 'Expected Annual Return', sh: sh.return, mv: mv.return, eq: eq.return, fmt: v => `${v.toFixed(2)}%`, best: 'highest' },
+        { label: 'Annual Volatility (Risk)', sh: sh.vol, mv: mv.vol, eq: eq.vol, fmt: v => `${v.toFixed(2)}%`, best: 'lowest' },
+        { label: 'Sharpe Ratio (Rf = 6.8%)', sh: sh.sharpe, mv: mv.sharpe, eq: eq.sharpe, fmt: v => v.toFixed(4), best: 'highest' },
+        { label: 'Sortino Ratio (Downside)', sh: sh.sortino, mv: mv.sortino, eq: eq.sortino, fmt: v => v.toFixed(4), best: 'highest' },
+        { label: 'Max Historical Drawdown', sh: sh.max_dd, mv: mv.max_dd, eq: eq.max_dd, fmt: v => `${v.toFixed(2)}%`, best: 'highest' },
+        { label: 'Calmar Ratio (Ret / MaxDD)', sh: sh.calmar, mv: mv.calmar, eq: eq.calmar, fmt: v => v.toFixed(4), best: 'highest' },
+        { label: 'Daily Value at Risk (VaR 95%)', sh: sh.var_95, mv: mv.var_95, eq: eq.var_95, fmt: v => `${v.toFixed(2)}%`, best: 'highest' },
+        { label: 'Conditional VaR (CVaR 95%)', sh: sh.cvar_95, mv: mv.cvar_95, eq: eq.cvar_95, fmt: v => `${v.toFixed(2)}%`, best: 'highest' },
     ];
 
     const tbody = document.getElementById('cmp-tbody');
+    if (!tbody) return;
+
     tbody.innerHTML = rows.map(row => {
-        const vals = { sh: row.sh, mv: row.mv, eq: row.eq };
         const nums = [row.sh, row.mv, row.eq];
         const bestVal = row.best === 'highest' ? Math.max(...nums) : Math.min(...nums);
 
@@ -521,13 +556,13 @@ function renderCompareTable(data) {
     }).join('');
 }
 
-/* ── Growth chart ────────────────────────────────────────────────── */
+/* ── Growth Chart ── */
 function buildGrowthDatasets(data) {
     const all = [];
     const portMap = {
-        maxsharpe: { label: '⭐ Max Sharpe',    color: '#fbbf24', width: 2.5, dash: [] },
-        minvol:    { label: '🛡️ Min Volatility', color: '#60a5fa', width: 2.5, dash: [] },
-        equal:     { label: '⚖️ Equal Weight',   color: '#94a3b8', width: 1.8, dash: [4,3] },
+        maxsharpe: { label: '★ Max Sharpe',    color: '#0C2340', width: 2.8, dash: [] },
+        minvol:    { label: '🛡️ Min Volatility', color: '#00665E', width: 2.5, dash: [] },
+        equal:     { label: '⚖️ Equal Weight',   color: '#990F3D', width: 2, dash: [4,3] },
     };
     const etfKeys = data.tickers;
 
@@ -558,19 +593,20 @@ function renderGrowthChart(data) {
     const datasets = buildGrowthDatasets(data);
     const labels = data.dates;
 
-    // Legend
     const legendEl = document.getElementById('growth-legend');
-    legendEl.innerHTML = datasets.map(ds => `
-        <div class="legend-item" onclick="toggleDs('growthChart','${ds.label}')">
-            <div class="legend-dot" style="background:${ds.borderColor}"></div>
-            ${ds.label}
-        </div>`).join('');
+    if (legendEl) {
+        legendEl.innerHTML = datasets.map(ds => `
+            <div class="legend-item" onclick="toggleDs('growthChart','${ds.label}')">
+                <div class="legend-dot" style="background:${ds.borderColor}"></div>
+                ${ds.label}
+            </div>`).join('');
+    }
 
     destroyChart('growthChart');
-    const opts = darkChartDefaults();
+    const opts = ftChartDefaults();
     opts.interaction = { mode: 'index', intersect: false };
     opts.plugins.tooltip.callbacks = { label: ctx => ` ${ctx.dataset.label}: ₹${ctx.parsed.y.toFixed(2)}` };
-    opts.scales.y.title = { display: true, text: 'Value (₹100 invested)', color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
+    opts.scales.y.title = { display: true, text: 'Value (₹100 Invested)', color: '#5A5047', font: { size: 10, weight: 'bold' } };
 
     charts['growthChart'] = new Chart(
         document.getElementById('growthChart').getContext('2d'),
@@ -581,35 +617,38 @@ function renderGrowthChart(data) {
 window.setGrowthView = function(v) {
     growthView = v;
     document.querySelectorAll('.view-tab').forEach(b => b.classList.remove('active'));
-    document.querySelector(`.view-tab[onclick*="'${v}'"]`).classList.add('active');
+    const btn = document.querySelector(`.view-tab[onclick*="'${v}'"]`);
+    if (btn) btn.classList.add('active');
     if (compareData) renderGrowthChart(compareData);
 };
 
-/* ── Drawdown chart ──────────────────────────────────────────────── */
+/* ── Drawdown Chart ── */
 function renderDrawdownChart(data) {
     const labels = data.dates;
     const portMap = {
-        maxsharpe: { label: '⭐ Max Sharpe',    color: '#fbbf24' },
-        minvol:    { label: '🛡️ Min Volatility', color: '#60a5fa' },
-        equal:     { label: '⚖️ Equal Weight',   color: '#94a3b8' },
+        maxsharpe: { label: '★ Max Sharpe',    color: '#0C2340' },
+        minvol:    { label: '🛡️ Min Volatility', color: '#00665E' },
+        equal:     { label: '⚖️ Equal Weight',   color: '#990F3D' },
     };
     const datasets = Object.entries(portMap).map(([key, cfg]) => ({
         label: cfg.label, data: data.drawdown[key],
         borderColor: cfg.color,
         backgroundColor: cfg.color + '15',
-        fill: true, borderWidth: 1.5,
+        fill: true, borderWidth: 1.8,
         pointRadius: 0, tension: 0.1,
     }));
 
     const legendEl = document.getElementById('dd-legend');
-    legendEl.innerHTML = datasets.map(ds => `
-        <div class="legend-item"><div class="legend-dot" style="background:${ds.borderColor}"></div>${ds.label}</div>`
-    ).join('');
+    if (legendEl) {
+        legendEl.innerHTML = datasets.map(ds => `
+            <div class="legend-item"><div class="legend-dot" style="background:${ds.borderColor}"></div>${ds.label}</div>`
+        ).join('');
+    }
 
     destroyChart('ddChart');
-    const opts = darkChartDefaults();
+    const opts = ftChartDefaults();
     opts.plugins.tooltip.callbacks = { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%` };
-    opts.scales.y.title = { display: true, text: 'Drawdown (%)', color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
+    opts.scales.y.title = { display: true, text: 'Drawdown (%)', color: '#5A5047', font: { size: 10, weight: 'bold' } };
 
     charts['ddChart'] = new Chart(
         document.getElementById('ddChart').getContext('2d'),
@@ -617,12 +656,9 @@ function renderDrawdownChart(data) {
     );
 }
 
-/* ── Efficient Frontier scatter ──────────────────────────────────── */
+/* ── Efficient Frontier Scatter ── */
 function renderEFChart(data) {
     const mc = data.monte_carlo;
-    const ports = data.portfolios;
-
-    // Downsample MC to 1000 points for performance
     const step = Math.ceil(mc.vols.length / 1000);
     const mcVols = mc.vols.filter((_, i) => i % step === 0);
     const mcRets = mc.returns.filter((_, i) => i % step === 0);
@@ -634,53 +670,30 @@ function renderEFChart(data) {
         label: 'Monte Carlo Portfolios',
         data: mcVols.map((v, i) => ({ x: v, y: mcRets[i] })),
         backgroundColor: mcSR.map(sr => {
-            const t = (sr - minSR) / (maxSR - minSR);
-            const r = Math.round(248 - t * 174);
-            const g = Math.round(113 + t * 95);
-            const b = Math.round(113 - t * 13);
-            return `rgba(${r},${g},${b},0.5)`;
+            const t = (sr - minSR) / (maxSR - minSR || 1);
+            return `rgba(0, 102, 94, ${0.15 + t * 0.7})`;
         }),
-        pointRadius: 2, pointHoverRadius: 4, showLine: false,
+        pointRadius: 2.2, pointHoverRadius: 4, showLine: false,
     };
 
     const portPoints = [
-        { key: 'maxsharpe', label: '⭐ Max Sharpe',    color: '#fbbf24', radius: 10, style: 'star' },
-        { key: 'minvol',    label: '🛡️ Min Vol',        color: '#60a5fa', radius: 9,  style: 'rect' },
-        { key: 'equal',     label: '⚖️ Equal',          color: '#f87171', radius: 8,  style: 'triangle' },
+        { key: 'maxsharpe', label: '★ Max Sharpe',    color: '#0C2340', radius: 10, style: 'star' },
+        { key: 'minvol',    label: '🛡️ Min Vol',        color: '#00665E', radius: 9,  style: 'rect' },
+        { key: 'equal',     label: '⚖️ Equal',          color: '#990F3D', radius: 8,  style: 'triangle' },
     ].map(p => ({
         label: p.label,
-        data: [{ x: ports[p.key].metrics.vol, y: ports[p.key].metrics.return }],
-        backgroundColor: p.color,
-        borderColor: '#fff', borderWidth: 1.5,
-        pointRadius: p.radius, pointStyle: p.style,
-        showLine: false,
+        data: [{ x: data.portfolios[p.key].metrics.vol, y: data.portfolios[p.key].metrics.return }],
+        backgroundColor: p.color, borderColor: '#FFF1E5', borderWidth: 2,
+        pointRadius: p.radius, pointStyle: p.style, showLine: false,
     }));
 
     destroyChart('efChart');
-    const opts = {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                backgroundColor: 'rgba(15,23,42,0.95)',
-                callbacks: {
-                    label: ctx => ` ${ctx.dataset.label}: Vol ${ctx.parsed.x.toFixed(2)}%, Ret ${ctx.parsed.y.toFixed(2)}%`
-                }
-            }
-        },
-        scales: {
-            x: {
-                title: { display: true, text: 'Volatility (%)', color: 'rgba(255,255,255,0.4)', font: { size: 10 } },
-                ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } },
-                grid: { color: 'rgba(255,255,255,0.05)' },
-            },
-            y: {
-                title: { display: true, text: 'Expected Return (%)', color: 'rgba(255,255,255,0.4)', font: { size: 10 } },
-                ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } },
-                grid: { color: 'rgba(255,255,255,0.06)' },
-            }
-        }
+    const opts = ftChartDefaults();
+    opts.plugins.tooltip.callbacks = {
+        label: ctx => ` ${ctx.dataset.label}: Ret ${ctx.parsed.y.toFixed(2)}%, Vol ${ctx.parsed.x.toFixed(2)}%`
     };
+    opts.scales.x.title = { display: true, text: 'Volatility (Risk %)', color: '#5A5047', font: { size: 10, weight: 'bold' } };
+    opts.scales.y.title = { display: true, text: 'Expected Annual Return (%)', color: '#5A5047', font: { size: 10, weight: 'bold' } };
 
     charts['efChart'] = new Chart(
         document.getElementById('efChart').getContext('2d'),
@@ -688,7 +701,7 @@ function renderEFChart(data) {
     );
 }
 
-/* ── Radar chart ──────────────────────────────────────────────────── */
+/* ── Radar Chart ── */
 function renderRadarChart(data) {
     const ports = data.portfolios;
 
@@ -709,23 +722,23 @@ function renderRadarChart(data) {
     };
 
     const ret_n  = mk(ret_vals);
-    const vol_n  = mk(vol_vals, true); // lower vol = better
+    const vol_n  = mk(vol_vals, true);
     const sr_n   = mk(sr_vals);
-    const dd_n   = mk(dd_vals, true);  // lower dd = better
+    const dd_n   = mk(dd_vals, true);
     const sor_n  = mk(sor_vals);
 
     const labels = ['Return', 'Low Volatility', 'Sharpe', 'Low Drawdown', 'Sortino'];
 
     const portCfgs = [
-        { key: 'maxsharpe', label: '⭐ Max Sharpe',    color: '#fbbf24', idx: 0 },
-        { key: 'minvol',    label: '🛡️ Min Volatility', color: '#60a5fa', idx: 1 },
-        { key: 'equal',     label: '⚖️ Equal Weight',   color: '#94a3b8', idx: 2 },
+        { key: 'maxsharpe', label: '★ Max Sharpe',    color: '#0C2340', idx: 0 },
+        { key: 'minvol',    label: '🛡️ Min Volatility', color: '#00665E', idx: 1 },
+        { key: 'equal',     label: '⚖️ Equal Weight',   color: '#990F3D', idx: 2 },
     ];
 
     const datasets = portCfgs.map(p => ({
         label: p.label,
         data: [ret_n[p.idx], vol_n[p.idx], sr_n[p.idx], dd_n[p.idx], sor_n[p.idx]],
-        borderColor: p.color, backgroundColor: p.color + '25',
+        borderColor: p.color, backgroundColor: p.color + '20',
         borderWidth: 2, pointRadius: 4, pointBackgroundColor: p.color,
     }));
 
@@ -741,10 +754,10 @@ function renderRadarChart(data) {
                 scales: {
                     r: {
                         min: 0, max: 10,
-                        ticks: { stepSize: 2, color: 'rgba(255,255,255,0.2)', backdropColor: 'transparent', font: { size: 9 } },
-                        grid:  { color: 'rgba(255,255,255,0.08)' },
-                        angleLines: { color: 'rgba(255,255,255,0.08)' },
-                        pointLabels: { color: 'rgba(255,255,255,0.55)', font: { size: 10 } },
+                        ticks: { stepSize: 2, color: '#5A5047', backdropColor: 'transparent', font: { size: 9, family: 'JetBrains Mono' } },
+                        grid:  { color: '#E9D5C3' },
+                        angleLines: { color: '#E9D5C3' },
+                        pointLabels: { color: '#0C2340', font: { size: 10, weight: 'bold' } },
                     }
                 }
             }
@@ -752,68 +765,69 @@ function renderRadarChart(data) {
     );
 }
 
-/* ── Correlation heatmap ─────────────────────────────────────────── */
+/* ── 9x9 ETF Correlation Heatmap (FT Racing Green & Claret) ── */
 function renderHeatmap(data) {
     const labels = data.correlation.labels;
     const matrix = data.correlation.matrix;
     const n = labels.length;
     const container = document.getElementById('heatmap-container');
+    if (!container) return;
 
     function valToColor(v) {
         if (v > 0) {
             const t = Math.min(v, 1);
-            return `rgba(74,222,128,${0.15 + t * 0.7})`;
+            return `rgba(0, 102, 94, ${0.15 + t * 0.75})`;
         } else {
             const t = Math.min(Math.abs(v), 1);
-            return `rgba(248,113,113,${0.15 + t * 0.7})`;
+            return `rgba(153, 15, 61, ${0.15 + t * 0.75})`;
         }
     }
 
-    const size = Math.floor(280 / n);
+    const size = Math.floor(290 / n);
     const html = `
-        <div style="display:grid; grid-template-columns: auto repeat(${n}, ${size}px); gap:2px; align-items:center; justify-content:start; font-size:0.7rem;">
+        <div style="display:grid; grid-template-columns: auto repeat(${n}, ${size}px); gap:2px; align-items:center; justify-content:start; font-size:0.72rem;">
             <div></div>
-            ${labels.map(l => `<div style="text-align:center; color:rgba(255,255,255,0.5); font-weight:600; padding:2px 0;">${l.replace('Bees','')}</div>`).join('')}
+            ${labels.map(l => `<div style="text-align:center; color:var(--ft-navy); font-weight:700; padding:2px 0;">${l.replace('Bees','')}</div>`).join('')}
             ${matrix.map((row, ri) => `
-                <div style="color:rgba(255,255,255,0.5); font-weight:600; padding:0 6px 0 0; white-space:nowrap;">${labels[ri].replace('Bees','')}</div>
-                ${row.map((v, ci) => `
-                <div class="corr-cell" style="background:${valToColor(v)}; width:${size}px; height:${size}px; color:${Math.abs(v) > 0.5 ? '#fff' : 'rgba(255,255,255,0.7)'};">
+                <div style="color:var(--ft-navy); font-weight:700; padding:0 6px 0 0; white-space:nowrap;">${labels[ri].replace('Bees','')}</div>
+                ${row.map((v) => `
+                <div class="corr-cell" style="background:${valToColor(v)}; width:${size}px; height:${size}px; color:${Math.abs(v) > 0.45 ? '#FFF1E5' : 'var(--ft-navy)'};">
                     ${v.toFixed(2)}
                 </div>`).join('')}
             `).join('')}
         </div>
-        <div style="margin-top:0.8rem; font-size:0.72rem; color:rgba(255,255,255,0.3);">
-            Green = positive correlation · Red = negative correlation
+        <div style="margin-top:0.85rem; font-size:0.75rem; color:var(--ft-text-muted);">
+            <strong style="color:var(--ft-green);">Green</strong> = positive co-movement · <strong style="color:var(--ft-claret);">Red/Claret</strong> = negative correlation (effective hedging)
         </div>`;
     container.innerHTML = html;
 }
 
-/* ── Weight bar chart ────────────────────────────────────────────── */
+/* ── Weight Bar Chart ── */
 function renderWeightChart(data) {
     const tickers = data.tickers;
     const colors  = data.colors;
     const ports   = data.portfolios;
     const keys    = ['maxsharpe', 'minvol', 'equal'];
-    const labels  = { maxsharpe: '⭐ Max Sharpe', minvol: '🛡️ Min Vol', equal: '⚖️ Equal' };
+    const labels  = { maxsharpe: '★ Max Sharpe', minvol: '🛡️ Min Vol', equal: '⚖️ Equal Weight' };
 
     const datasets = tickers.map((t, i) => ({
         label: t,
         data: keys.map(k => ports[k].weights[t] || 0),
         backgroundColor: colors[i],
-        borderRadius: 4, borderWidth: 0,
+        borderRadius: 2, borderWidth: 0,
     }));
 
     destroyChart('weightChart');
-    const opts = darkChartDefaults();
+    const opts = ftChartDefaults();
     opts.plugins.tooltip.callbacks = { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` };
     opts.scales.x.stacked = false;
     opts.scales.y.stacked = false;
-    opts.scales.y.title = { display: true, text: 'Weight (%)', color: 'rgba(255,255,255,0.3)', font: { size: 10 } };
+    opts.scales.y.title = { display: true, text: 'Allocation Weight (%)', color: '#5A5047', font: { size: 10, weight: 'bold' } };
     opts.scales.y.max = 50;
     opts.plugins.legend = {
         display: true,
         position: 'bottom',
-        labels: { color: 'rgba(255,255,255,0.6)', font: { size: 10 }, boxWidth: 10, padding: 12 }
+        labels: { color: '#0C2340', font: { size: 10, family: 'Inter' }, boxWidth: 10, padding: 12 }
     };
 
     charts['weightChart'] = new Chart(
@@ -826,32 +840,33 @@ function renderWeightChart(data) {
     );
 }
 
-/* ── ETF stat cards ──────────────────────────────────────────────── */
+/* ── Individual ETF Stats ── */
 function renderETFStats(data) {
     const grid = document.getElementById('etf-stat-grid');
+    if (!grid) return;
     grid.innerHTML = data.asset_stats.map(s => `
-        <div class="etf-stat-card" style="border-color:${s.color}30;">
-            <div class="etf-stat-name" style="color:${s.color};">${s.name}</div>
+        <div class="etf-stat-card" style="border-left: 3px solid ${s.color};">
+            <div class="etf-stat-name" style="color:var(--ft-navy);">${s.name}</div>
             <div class="etf-stat-rows">
                 ${[
-                    ['Ann. Return',  `${s.ann_return}%`,  s.ann_return > 0 ? '#4ade80' : '#f87171'],
-                    ['Ann. Vol.',    `${s.ann_vol}%`,      '#94a3b8'],
-                    ['Sharpe',       `${s.sharpe}`,        '#fbbf24'],
-                    ['Max DD',       `${s.max_dd}%`,       '#f87171'],
-                    ['Total Ret.',   `${s.total_return}%`, s.total_return > 0 ? '#4ade80' : '#f87171'],
-                    ['Best Day',    `+${s.best_day}%`,    '#4ade80'],
-                    ['Worst Day',   `${s.worst_day}%`,    '#f87171'],
+                    ['Ann. Return',  `${s.ann_return}%`,  s.ann_return > 0 ? 'var(--ft-green)' : 'var(--ft-claret)'],
+                    ['Ann. Volatility', `${s.ann_vol}%`,    'var(--ft-navy)'],
+                    ['Sharpe Ratio',    `${s.sharpe}`,      'var(--ft-navy)'],
+                    ['Max Drawdown',    `${s.max_dd}%`,     'var(--ft-claret)'],
+                    ['Total 7Y Return', `${s.total_return}%`, s.total_return > 0 ? 'var(--ft-green)' : 'var(--ft-claret)'],
+                    ['Best Day',        `+${s.best_day}%`,  'var(--ft-green)'],
+                    ['Worst Day',       `${s.worst_day}%`,  'var(--ft-claret)'],
                 ].map(([lbl, val, col]) => `
                 <div class="etf-stat-row">
                     <span class="etf-stat-lbl">${lbl}</span>
-                    <span style="font-weight:600; color:${col};">${val}</span>
+                    <span style="font-weight:700; color:${col};">${val}</span>
                 </div>`).join('')}
             </div>
         </div>
     `).join('');
 }
 
-/* ── Dataset toggle ──────────────────────────────────────────────── */
+/* ── Dataset Toggle ── */
 window.toggleDs = function(chartId, label) {
     const chart = charts[chartId];
     if (!chart) return;
@@ -859,11 +874,14 @@ window.toggleDs = function(chartId, label) {
     if (ds) { ds.hidden = !ds.hidden; chart.update(); }
 };
 
-/* ── Load & render all ───────────────────────────────────────────── */
+/* ── Load & Render All ── */
 async function loadCompareData(force = false) {
-    document.getElementById('cmp-loading').style.display = 'flex';
-    document.getElementById('cmp-content').style.display = 'none';
-    document.getElementById('data-status').textContent = 'Loading live data…';
+    const loading = document.getElementById('cmp-loading');
+    const content = document.getElementById('cmp-content');
+    const status = document.getElementById('data-status');
+    if (loading) loading.style.display = 'flex';
+    if (content) content.style.display = 'none';
+    if (status) status.textContent = 'Loading live data…';
 
     const url = force ? '/api/compare?force=1' : '/api/compare';
     try {
@@ -885,27 +903,27 @@ async function loadCompareData(force = false) {
         renderETFStats(data);
 
         const meta = data.meta;
-        document.getElementById('data-status').textContent =
-            `Data: ${meta.start} → ${meta.end} · ${meta.n_days} trading days`;
+        if (status) {
+            status.textContent = `Data: ${meta.start} → ${meta.end} · ${meta.n_days} Trading Days`;
+        }
 
-        document.getElementById('cmp-loading').style.display = 'none';
-        document.getElementById('cmp-content').style.display = 'block';
+        if (loading) loading.style.display = 'none';
+        if (content) content.style.display = 'block';
 
     } catch (err) {
-        document.getElementById('cmp-loading').innerHTML = `
-            <div style="text-align:center; color:#f87171;">
-                <div style="font-size:2.5rem; margin-bottom:0.75rem;">⚠️</div>
-                <p style="font-weight:600; margin-bottom:0.5rem;">Analysis failed: ${err.message}</p>
-                <p style="font-size:0.8rem; color:rgba(255,255,255,0.4); margin-bottom:1.5rem;">
-                    The API may be starting up cold. Please wait 30 seconds and retry.
-                </p>
-                <button onclick="loadCompareData()" style="padding:0.6rem 1.5rem;
-                    background:#3b82f6; color:white; border:none; border-radius:8px;
-                    cursor:pointer; font-weight:600; font-size:0.9rem;">
-                    🔄 Retry
-                </button>
-            </div>`;
-        document.getElementById('data-status').textContent = 'Load failed';
+        if (loading) {
+            loading.innerHTML = `
+                <div style="text-align:center; color:var(--ft-claret);">
+                    <p style="font-weight:700; margin-bottom:0.5rem; font-size:1.1rem;">⚠️ Analysis temporary delay: ${err.message}</p>
+                    <p style="font-size:0.82rem; color:var(--ft-text-muted); margin-bottom:1.5rem;">
+                        Serverless optimizer is warming up. Please wait 15 seconds and retry.
+                    </p>
+                    <button onclick="loadCompareData()" class="btn btn-primary" style="padding:0.5rem 1.4rem;">
+                        🔄 Retry Analysis
+                    </button>
+                </div>`;
+        }
+        if (status) status.textContent = 'Load failed';
     }
 }
 

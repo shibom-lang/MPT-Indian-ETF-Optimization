@@ -56,11 +56,11 @@ def _build_data() -> str:
         'SILVERBEES.NS': 'SilverBees', 'SETF10GILT.NS': 'GSec10Yr', 'LIQUIDBEES.NS': 'LiquidBees'
     }
     COLORS = {
-        'NIFTYBEES.NS': '#60a5fa', 'JUNIORBEES.NS': '#ef4444',
-        'BANKBEES.NS': '#f59e0b',  'GOLDBEES.NS': '#fbbf24',
-        'LIQUIDBEES.NS': '#a78bfa', 'MID150BEES.NS': '#14b8a6',
-        'MON100.NS': '#8b5cf6', 'SILVERBEES.NS': '#94a3b8',
-        'SETF10GILT.NS': '#ec4899'
+        'NIFTYBEES.NS': '#0C2340', 'JUNIORBEES.NS': '#990F3D',
+        'BANKBEES.NS': '#D97706',  'GOLDBEES.NS': '#B8860B',
+        'LIQUIDBEES.NS': '#5B6B82', 'MID150BEES.NS': '#00665E',
+        'MON100.NS': '#4A3E72', 'SILVERBEES.NS': '#8899A6',
+        'SETF10GILT.NS': '#B83280'
     }
     RF = 0.068
     MAX_W = 0.45
