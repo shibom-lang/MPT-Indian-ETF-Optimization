@@ -1,13 +1,24 @@
 -- =============================================================================
--- ETF Optima: Production PostgreSQL Relational Schema
+-- ETF Optima: Production PostgreSQL Relational Schema (Neon Postgres & Supabase)
 -- Supports Multi-User Accounts, Multi-Asset Portfolios & Backtest Analytics
 -- =============================================================================
 
 -- Enable UUID extension if not already present
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- -----------------------------------------------------------------------------
--- 1. Profiles Table (Extends Supabase auth.users)
+-- Compatibility Layer: Supports Standalone Neon Postgres & Supabase Auth
+-- -----------------------------------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS auth;
+CREATE TABLE IF NOT EXISTS auth.users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT UNIQUE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- -----------------------------------------------------------------------------
+-- 1. Profiles Table (Extends auth.users for multi-tenant isolation)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -37,7 +48,7 @@ CREATE TABLE IF NOT EXISTS public.etf_universe (
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.portfolios (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     description TEXT,
     strategy TEXT DEFAULT 'custom', -- 'custom', 'max_sharpe', 'min_vol', 'equal_weight'

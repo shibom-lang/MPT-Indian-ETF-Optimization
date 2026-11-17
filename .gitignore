@@ -38,4 +38,11 @@ profile.jpg
 resume-classic.html
 *.pdf
 
+# Node & Vercel
+node_modules/
+.vercel/
+package-lock.json
+web/package-lock.json
+
+
 
