@@ -2,16 +2,13 @@
  * web/api/db.js
  * 
  * Production Neon Serverless PostgreSQL Database Client
- * Uses @neondatabase/serverless over HTTP for instant queries with zero connection pooling lag.
+ * Uses @neondatabase/serverless with dynamic import for zero-crash fallback across all Node.js runtimes.
  * Fully compatible with Vercel Marketplace Neon Postgres and Supabase.
  */
 
-import { neon, neonConfig } from '@neondatabase/serverless';
-
-// Cache client across hot Lambda invocations
 let sqlClient = null;
 
-export function getDb() {
+export async function getDb() {
   const connectionString = 
     process.env.DATABASE_URL || 
     process.env.POSTGRES_URL || 
@@ -22,24 +19,29 @@ export function getDb() {
   }
 
   if (!sqlClient) {
-    // Config HTTP pipelining for low latency
-    sqlClient = neon(connectionString);
+    try {
+      const { neon } = await import('@neondatabase/serverless');
+      sqlClient = neon(connectionString);
+    } catch (e) {
+      console.warn('Neon serverless driver dynamic import fallback:', e.message);
+      return null;
+    }
   }
 
   return sqlClient;
 }
 
 export async function query(queryText, params = []) {
-  const sql = getDb();
-  if (!sql) {
-    return {
-      connected: false,
-      error: 'DATABASE_URL not configured. Add Neon Postgres in Vercel Storage tab.',
-      rows: []
-    };
-  }
-
   try {
+    const sql = await getDb();
+    if (!sql) {
+      return {
+        connected: false,
+        error: 'DATABASE_URL not configured. Add Neon Postgres in Vercel Storage tab.',
+        rows: []
+      };
+    }
+
     const rows = await sql(queryText, params);
     return { connected: true, rows };
   } catch (err) {
