@@ -8,8 +8,10 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "engines": {
+    "node": ">=20.11.0"
+  },
   "devDependencies": {
-    "vercel": "^58.5.1",
     "vite": "^8.2.0"
   }
 }

@@ -1,9 +1,6 @@
-# Dependencies for Vercel Serverless Functions in web/api/
-# Pre-compiled binary wheel ranges for Amazon Linux 2 / uv runtime
+# Minimal, high-performance dependencies for Vercel Serverless Functions
 numpy>=1.26.0,<2.3.0
 pandas>=2.0.0
-matplotlib>=3.8.0
 scipy>=1.11.0,<1.15.0
 yfinance>=0.2.40
 cffi>=1.0.0
-openpyxl>=3.1.0
