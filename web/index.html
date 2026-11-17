@@ -9,30 +9,29 @@
         content="See exactly how to split your money across 8 major NSE asset classes using Modern Portfolio Theory. Live prices, instant calculator, free PDF report.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
-
-
-    <div class="glow-orb orb-2"></div>
-    <div class="glow-orb orb-3"></div>
-    </div>
-
-    <!-- HEADER -->
+    <!-- FINANCIAL TIMES EDITORIAL MASTHEAD -->
     <header>
-        <div class="container header-container">
-            <div class="logo">ETF Optima</div>
-            <nav>
-                <a href="/dashboard.html"> Live Dashboard</a>
-                <a href="/compare.html">🔬 Compare</a>
-                <a href="#live-market">Live Prices</a>
-                <a href="#calculator">Calculator</a>
-                <a href="#results">Results</a>
-                <a href="#report-section" class="nav-cta">📄 Get Report</a>
-            </nav>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--ft-text-muted); text-transform: uppercase; letter-spacing: 0.06em; padding-bottom: 8px; border-bottom: 1px solid var(--ft-border-subtle); margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                <span>NSE Research Dispatch · Series 15 Quantitative Analysis</span>
+                <span>Markets Data: Live · RBI 91D T-Bill Risk-Free Rate: 6.80%</span>
+            </div>
+            <div class="header-container">
+                <a href="/" class="logo">ETF Optima</a>
+                <nav>
+                    <a href="/dashboard.html">Live Dashboard</a>
+                    <a href="/compare.html">🔬 Compare</a>
+                    <a href="#live-market">Live Prices</a>
+                    <a href="#calculator">Calculator</a>
+                    <a href="#results">Results</a>
+                    <a href="#report-section" class="nav-cta">📄 Get Report</a>
+                </nav>
+            </div>
         </div>
     </header>
 
@@ -253,27 +252,20 @@
 
                     <!-- MAX SHARPE ALLOCATION -->
                     <div id="alloc-maxsharpe" class="alloc-panel active">
-                        <div class="alloc-summary">
-                            <div class="alloc-metric">
-                                <span class="am-label">Expected Annual Return</span>
-                                <span class="am-val text-green">19.44%</span>
-                            </div>
-                            <div class="alloc-metric">
-                                <span class="am-label">Annual Volatility (Risk)</span>
-                                <span class="am-val">13.02%</span>
-                            </div>
-                            <div class="alloc-metric">
-                                <span class="am-label">Sharpe Ratio</span>
-                                <span class="am-val text-gold">0.9631</span>
-                            </div>
-                        </div>
+                        <div id="kpi-container-maxsharpe"></div>
+
                         <div class="alloc-description">
-                            <p>🎯 <strong>Best for:</strong> Investors seeking the <strong>highest risk-adjusted
-                                    returns</strong>. This portfolio combines Gold's stability with the growth engine of
-                                India's top mid and large-cap companies.</p>
+                            <p>🎯 <strong>Best for:</strong> Investors seeking the <strong>highest risk-adjusted returns</strong>. This portfolio balances physical Gold stability with the equity compounding engines of Mid150, Nasdaq-100, and Nifty.</p>
                         </div>
-                        <div class="alloc-bars" id="bars-maxsharpe">
-                            <!-- filled by JS -->
+
+                        <!-- Option D Visual Allocation Stack Bar -->
+                        <div id="stack-bar-maxsharpe"></div>
+
+                        <!-- Option D Actionable Share Execution Schedule Table & Quant Drawer -->
+                        <div id="execution-schedule-maxsharpe"></div>
+
+                        <div class="alloc-bars" id="bars-maxsharpe" style="display: none;">
+                            <!-- populated by main.js -->
                         </div>
                         <div class="growth-projection">
                             <h4>📈 Projected Growth of your investment</h4>
@@ -285,32 +277,20 @@
 
                     <!-- MIN VOL ALLOCATION -->
                     <div id="alloc-minvol" class="alloc-panel">
-                        <div class="alloc-summary">
-                            <div class="alloc-metric">
-                                <span class="am-label">Expected Annual Return</span>
-                                <span class="am-val text-green">8.21%</span>
-                            </div>
-                            <div class="alloc-metric">
-                                <span class="am-label">Annual Volatility (Risk)</span>
-                                <span class="am-val text-blue">5.20%</span>
-                            </div>
-                            <div class="alloc-metric">
-                                <span class="am-label">Sharpe Ratio</span>
-                                <span class="am-val">0.6512</span>
-                            </div>
-                        </div>
+                        <div id="kpi-container-minvol"></div>
+
                         <div class="alloc-description">
-                            <p><svg class="svg-icon" style="color: #ef4444; margin-right: 8px;"
-                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z"
-                                        clip-rule="evenodd" />
-                                </svg><strong>Best for:</strong> <strong>Conservative investors or retirees</strong> who
-                                prioritise capital protection over aggressive growth. The large cash (LiquidBees) and
-                                Gold allocation keeps portfolio swings minimal.</p>
+                            <p>🛡️ <strong>Best for:</strong> <strong>Conservative investors or retirees</strong> who prioritize absolute capital safety. Dominated by overnight LiquidBees cash and 10-Year Government of India sovereign debt.</p>
                         </div>
-                        <div class="alloc-bars" id="bars-minvol">
-                            <!-- filled by JS -->
+
+                        <!-- Option D Visual Allocation Stack Bar -->
+                        <div id="stack-bar-minvol"></div>
+
+                        <!-- Option D Actionable Share Execution Schedule Table & Quant Drawer -->
+                        <div id="execution-schedule-minvol"></div>
+
+                        <div class="alloc-bars" id="bars-minvol" style="display: none;">
+                            <!-- populated by main.js -->
                         </div>
                         <div class="growth-projection">
                             <h4>📈 Projected Growth of your investment</h4>
@@ -322,32 +302,20 @@
 
                     <!-- EQUAL WEIGHT ALLOCATION -->
                     <div id="alloc-equal" class="alloc-panel">
-                        <div class="alloc-summary">
-                            <div class="alloc-metric">
-                                <span class="am-label">Expected Annual Return</span>
-                                <span class="am-val text-green">14.20%</span>
-                            </div>
-                            <div class="alloc-metric">
-                                <span class="am-label">Annual Volatility (Risk)</span>
-                                <span class="am-val">11.50%</span>
-                            </div>
-                            <div class="alloc-metric">
-                                <span class="am-label">Sharpe Ratio</span>
-                                <span class="am-val">0.7300</span>
-                            </div>
-                        </div>
+                        <div id="kpi-container-equal"></div>
+
                         <div class="alloc-description">
-                            <p><svg class="svg-icon" style="color: #60a5fa; margin-right: 8px;"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                                </svg><strong>Best for:</strong> Beginners who want a <strong>simple, no-thought
-                                    approach</strong>. Just put 20% in each ETF. It works, but the math shows it leaves
-                                significant alpha on the table compared to Max Sharpe.</p>
+                            <p>⚖️ <strong>Best for:</strong> Beginners seeking a <strong>naive 1/N benchmark</strong>. Spreads exactly 11.11% across all 9 liquid ETFs without quantitative factor tilt.</p>
                         </div>
-                        <div class="alloc-bars" id="bars-equal">
-                            <!-- filled by JS -->
+
+                        <!-- Option D Visual Allocation Stack Bar -->
+                        <div id="stack-bar-equal"></div>
+
+                        <!-- Option D Actionable Share Execution Schedule Table & Quant Drawer -->
+                        <div id="execution-schedule-equal"></div>
+
+                        <div class="alloc-bars" id="bars-equal" style="display: none;">
+                            <!-- populated by main.js -->
                         </div>
                         <div class="growth-projection">
                             <h4>📈 Projected Growth of your investment</h4>
