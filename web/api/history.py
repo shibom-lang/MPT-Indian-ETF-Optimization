@@ -19,7 +19,7 @@ class handler(BaseHTTPRequestHandler):
             qs = parse_qs(urlparse(self.path).query)
             period = qs.get('period', ['1mo'])[0]
             # Validate period
-            allowed = ['5d', '1mo', '3mo', '6mo', '1y', '2y', '5y']
+            allowed = ['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y']
             if period not in allowed:
                 period = '1mo'
 
@@ -39,15 +39,15 @@ class handler(BaseHTTPRequestHandler):
                 'LIQUIDBEES.NS': 'Liquid BeES',
             }
             colors = {
-                'NIFTYBEES.NS':  '#60a5fa',
-                'JUNIORBEES.NS': '#ef4444',
-                'BANKBEES.NS':   '#f59e0b',
-                'MID150BEES.NS': '#14b8a6',
-                'MON100.NS':     '#8b5cf6',
-                'GOLDBEES.NS':   '#fbbf24',
-                'SILVERBEES.NS': '#94a3b8',
-                'SETF10GILT.NS': '#ec4899',
-                'LIQUIDBEES.NS': '#a78bfa',
+                'NIFTYBEES.NS':  '#0C2340',
+                'JUNIORBEES.NS': '#990F3D',
+                'BANKBEES.NS':   '#D97706',
+                'MID150BEES.NS': '#00665E',
+                'MON100.NS':     '#4A3E72',
+                'GOLDBEES.NS':   '#B8860B',
+                'SILVERBEES.NS': '#8899A6',
+                'SETF10GILT.NS': '#B83280',
+                'LIQUIDBEES.NS': '#5B6B82',
             }
 
             raw = yf.download(
