@@ -68,7 +68,7 @@ def _build_data() -> str:
     RF = 0.068
     MAX_W = 0.45
     TDAYS = 252
-    N_MC = 3000
+    N_MC = 10000
 
     end = datetime.date.today().strftime('%Y-%m-%d')
     raw = yf.download(TICKERS, start='2019-01-01', end=end,

@@ -45,6 +45,8 @@ TICKERS = [
     'SILVERBEES.NS',
     'GSEC10IETF.NS',
     'LIQUIDBEES.NS',
+    'ITBEES.NS',
+    'PHARMABEES.NS',
 ]
 
 BASKET_CLASSIC_5 = [
@@ -55,7 +57,7 @@ BASKET_ALL_WEATHER_8 = [
     'SILVERBEES.NS', 'GSEC10IETF.NS', 'LIQUIDBEES.NS', 'JUNIORBEES.NS'
 ]
 BASKET_EQUITY_ALPHA = [
-    'NIFTYBEES.NS', 'JUNIORBEES.NS', 'MID150BEES.NS', 'MON100.NS'
+    'NIFTYBEES.NS', 'JUNIORBEES.NS', 'MID150BEES.NS', 'MON100.NS', 'ITBEES.NS', 'PHARMABEES.NS'
 ]
 
 BENCHMARK_TICKER = '^NSEI'   # Nifty 50 Total Return proxy
@@ -70,6 +72,8 @@ TICKER_NAMES = {
     'SILVERBEES.NS': 'Silver BeES',
     'GSEC10IETF.NS': '10-Yr G-Sec ETF',
     'LIQUIDBEES.NS': 'Liquid BeES',
+    'ITBEES.NS'    : 'Nifty IT BeES',
+    'PHARMABEES.NS': 'Pharma BeES',
 }
 SHORT_NAMES = {
     'NIFTYBEES.NS' : 'NiftyBees',
@@ -81,6 +85,8 @@ SHORT_NAMES = {
     'SILVERBEES.NS': 'SilverBees',
     'GSEC10IETF.NS': 'GSec10Yr',
     'LIQUIDBEES.NS': 'LiquidBees',
+    'ITBEES.NS'    : 'ITBees',
+    'PHARMABEES.NS': 'PharmaBees',
 }
 DESC = {
     'NIFTYBEES.NS' : "Tracks Nifty 50 — India's benchmark large-cap index (50 stocks)",
@@ -92,6 +98,8 @@ DESC = {
     'SILVERBEES.NS': 'Physical silver ETF — industrial commodity exposure',
     'GSEC10IETF.NS': 'Tracks 10-Yr Sovereign Govt Bonds — long-duration fixed income',
     'LIQUIDBEES.NS': 'Overnight liquid fund — near-zero risk, money-market returns',
+    'ITBEES.NS'    : 'Tracks Nifty IT — top Indian technology & software leaders',
+    'PHARMABEES.NS': 'Tracks Nifty Pharma — Indian pharmaceuticals & healthcare leaders',
 }
 
 START_DATE    = '2019-01-01'
@@ -129,8 +137,18 @@ def download_and_clean(tickers=TICKERS, start=START_DATE, end=END_DATE,
     if verbose:
         print("📥  Downloading historical price data from Yahoo Finance …")
 
+    # Include proxies in download to ensure full 11-asset coverage
+    PROXIES = {
+        'MID150BEES.NS': ['MID150CASE.NS', 'MIDCAP.NS'],
+        'GSEC10IETF.NS': ['SETF10GILT.NS'],
+    }
+    all_symbols = list(tickers)
+    for p_list in PROXIES.values():
+        all_symbols.extend(p_list)
+    all_symbols = list(dict.fromkeys(all_symbols))
+
     raw = yf.download(
-        tickers,
+        all_symbols,
         start=start,
         end=end,
         auto_adjust=True,
@@ -149,6 +167,17 @@ def download_and_clean(tickers=TICKERS, start=START_DATE, end=END_DATE,
 
     # Normalise column names to uppercase
     prices.columns = [c.upper() for c in prices.columns]
+
+    # Resolve proxies if primary ticker has insufficient history (< 60 observations)
+    min_obs = 60
+    for primary, proxy_list in PROXIES.items():
+        p_up = primary.upper()
+        if p_up not in prices.columns or prices[p_up].notna().sum() < min_obs:
+            for prox in proxy_list:
+                prox_up = prox.upper()
+                if prox_up in prices.columns and prices[prox_up].notna().sum() >= min_obs:
+                    prices[p_up] = prices[prox_up]
+                    break
 
     # ── Identify available tickers with sufficient trading history ────────────
     # Require at least 60 trading days so that a newly listed or sparse ETF (e.g. MID150BEES.NS)

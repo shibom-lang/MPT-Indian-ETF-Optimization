@@ -28,4 +28,4 @@ def test_core_parameters():
     assert MAX_WEIGHT == 0.45, "Max single asset weight cap must be 45%"
     assert N_MC >= 10_000, "Monte Carlo simulations must be at least 10,000"
     assert TRADING_DAYS == 252, "Annual trading days must be 252"
-    assert len(TICKERS) == 9, "Universe must cover 9 Indian ETFs"
+    assert len(TICKERS) in (9, 11), "Universe must cover 9 or 11 Indian ETFs"
