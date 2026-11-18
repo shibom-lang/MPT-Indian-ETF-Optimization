@@ -844,7 +844,8 @@ function renderWeightChart(data) {
 function renderETFStats(data) {
     const grid = document.getElementById('etf-stat-grid');
     if (!grid) return;
-    grid.innerHTML = data.asset_stats.map(s => `
+    const stats = Array.isArray(data?.asset_stats) ? data.asset_stats : [];
+    grid.innerHTML = stats.map(s => `
         <div class="etf-stat-card" style="border-left: 3px solid ${s.color};">
             <div class="etf-stat-name" style="color:var(--ft-navy);">${s.name}</div>
             <div class="etf-stat-rows">

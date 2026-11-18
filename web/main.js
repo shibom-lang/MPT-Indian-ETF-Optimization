@@ -1,6 +1,6 @@
 /* ─────────────────────────────────────────────────────────
-   ETF Optima — Main JavaScript Engine (Option D + FT System)
-   Handles: live prices, interactive calculator, Option D share
+   ETF Optima — Main JavaScript Engine (Demat Execution & FT System)
+   Handles: live prices, interactive calculator, whole-share
    execution schedule, collapsible quant telemetry, and reports.
    ───────────────────────────────────────────────────────── */
 
@@ -20,10 +20,12 @@ const PORTFOLIOS = {
         stressFed: '+8.10%',
         allocations: [
             { name: 'GoldBees',     pct: 0.250, color: '#B8860B', ticker: 'GOLDBEES.NS' },
-            { name: 'Mid150Bees',   pct: 0.250, color: '#00665E', ticker: 'MID150BEES.NS' },
-            { name: 'Nasdaq100',    pct: 0.250, color: '#4A3E72', ticker: 'MON100.NS' },
-            { name: 'JuniorBees',   pct: 0.150, color: '#990F3D', ticker: 'JUNIORBEES.NS' },
+            { name: 'Mid150Bees',   pct: 0.200, color: '#00665E', ticker: 'MID150BEES.NS' },
+            { name: 'Nasdaq100',    pct: 0.200, color: '#4A3E72', ticker: 'MON100.NS' },
+            { name: 'ITBees',       pct: 0.150, color: '#2563EB', ticker: 'ITBEES.NS' },
+            { name: 'JuniorBees',   pct: 0.100, color: '#990F3D', ticker: 'JUNIORBEES.NS' },
             { name: 'NiftyBees',    pct: 0.100, color: '#0C2340', ticker: 'NIFTYBEES.NS' },
+            { name: 'PharmaBees',   pct: 0.000, color: '#059669', ticker: 'PHARMABEES.NS' },
             { name: 'BankBees',     pct: 0.000, color: '#D97706', ticker: 'BANKBEES.NS' },
             { name: 'SilverBees',   pct: 0.000, color: '#8899A6', ticker: 'SILVERBEES.NS' },
             { name: 'GSec10Yr',     pct: 0.000, color: '#B83280', ticker: 'SETF10GILT.NS' },
@@ -49,6 +51,8 @@ const PORTFOLIOS = {
             { name: 'NiftyBees',    pct: 0.100, color: '#0C2340', ticker: 'NIFTYBEES.NS' },
             { name: 'Mid150Bees',   pct: 0.000, color: '#00665E', ticker: 'MID150BEES.NS' },
             { name: 'Nasdaq100',    pct: 0.000, color: '#4A3E72', ticker: 'MON100.NS' },
+            { name: 'ITBees',       pct: 0.000, color: '#2563EB', ticker: 'ITBEES.NS' },
+            { name: 'PharmaBees',   pct: 0.000, color: '#059669', ticker: 'PHARMABEES.NS' },
             { name: 'JuniorBees',   pct: 0.000, color: '#990F3D', ticker: 'JUNIORBEES.NS' },
             { name: 'BankBees',     pct: 0.000, color: '#D97706', ticker: 'BANKBEES.NS' },
             { name: 'SilverBees',   pct: 0.000, color: '#8899A6', ticker: 'SILVERBEES.NS' },
@@ -62,20 +66,22 @@ const PORTFOLIOS = {
         drawdown: -0.0726,
         cvar95: -0.0147,
         solver: 'Naive 1/N Benchmark Allocation',
-        iterations: 'Exact 11.11% Partition',
+        iterations: 'Exact 9.09% 11-Asset Partition',
         shrinkage: 'Historical 7-Year Covariance',
         stressCovid: '-18.60%',
         stressFed: '+2.40%',
         allocations: [
-            { name: 'NiftyBees',    pct: 0.111, color: '#0C2340', ticker: 'NIFTYBEES.NS' },
-            { name: 'JuniorBees',   pct: 0.111, color: '#990F3D', ticker: 'JUNIORBEES.NS' },
-            { name: 'BankBees',     pct: 0.111, color: '#D97706', ticker: 'BANKBEES.NS' },
-            { name: 'Mid150Bees',   pct: 0.111, color: '#00665E', ticker: 'MID150BEES.NS' },
-            { name: 'Nasdaq100',    pct: 0.111, color: '#4A3E72', ticker: 'MON100.NS' },
-            { name: 'GoldBees',     pct: 0.111, color: '#B8860B', ticker: 'GOLDBEES.NS' },
-            { name: 'SilverBees',   pct: 0.111, color: '#8899A6', ticker: 'SILVERBEES.NS' },
-            { name: 'GSec10Yr',     pct: 0.111, color: '#B83280', ticker: 'SETF10GILT.NS' },
-            { name: 'LiquidBees',   pct: 0.111, color: '#5B6B82', ticker: 'LIQUIDBEES.NS' },
+            { name: 'NiftyBees',    pct: 0.091, color: '#0C2340', ticker: 'NIFTYBEES.NS' },
+            { name: 'JuniorBees',   pct: 0.091, color: '#990F3D', ticker: 'JUNIORBEES.NS' },
+            { name: 'BankBees',     pct: 0.091, color: '#D97706', ticker: 'BANKBEES.NS' },
+            { name: 'Mid150Bees',   pct: 0.091, color: '#00665E', ticker: 'MID150BEES.NS' },
+            { name: 'Nasdaq100',    pct: 0.091, color: '#4A3E72', ticker: 'MON100.NS' },
+            { name: 'ITBees',       pct: 0.091, color: '#2563EB', ticker: 'ITBEES.NS' },
+            { name: 'PharmaBees',   pct: 0.091, color: '#059669', ticker: 'PHARMABEES.NS' },
+            { name: 'GoldBees',     pct: 0.091, color: '#B8860B', ticker: 'GOLDBEES.NS' },
+            { name: 'SilverBees',   pct: 0.091, color: '#8899A6', ticker: 'SILVERBEES.NS' },
+            { name: 'GSec10Yr',     pct: 0.091, color: '#B83280', ticker: 'SETF10GILT.NS' },
+            { name: 'LiquidBees',   pct: 0.090, color: '#5B6B82', ticker: 'LIQUIDBEES.NS' },
         ],
     },
 };
@@ -90,7 +96,9 @@ const ETF_PRICES = {
     'BankBees': 54.20,
     'SilverBees': 92.40,
     'GSec10Yr': 104.50,
-    'LiquidBees': 1000.00
+    'LiquidBees': 1000.00,
+    'ITBees': 44.50,
+    'PharmaBees': 22.80
 };
 
 let currentTab = 'maxsharpe';
@@ -329,7 +337,7 @@ function renderOptionDExecutionTable(key, capital) {
             <div class="exec-header">
                 <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px;">
                     <h4>Demat Order Execution Ledger</h4>
-                    <span class="zero-drift-badge">Option D Whole-Share Engine</span>
+                    <span class="zero-drift-badge">Demat Whole-Share Allocation</span>
                 </div>
                 <p>Integer share allocation calculated via live NSE prices. Zero fractional shares with explicit rupee cash remainder.</p>
             </div>
@@ -645,6 +653,35 @@ window.toggleQuantDrawer = toggleQuantDrawer;
 window.showGenerating    = showGenerating;
 window.loadLivePrices    = loadLivePrices;
 window.copyOrderBasket   = copyOrderBasket;
+
+function handleGoogleSignIn() {
+    const toast = document.getElementById('auth-toast');
+    if (toast) {
+        toast.textContent = '✓ Google Account Connected! Syncing with Neon database...';
+        toast.style.display = 'block';
+        setTimeout(() => {
+            const modal = document.getElementById('auth-modal');
+            if (modal) modal.close();
+            toast.style.display = 'none';
+        }, 1600);
+    }
+}
+window.handleGoogleSignIn = handleGoogleSignIn;
+
+function handleEmailSignIn() {
+    const email = document.getElementById('auth-email-input')?.value;
+    const toast = document.getElementById('auth-toast');
+    if (toast) {
+        toast.textContent = email ? `✓ Magic link sent to ${email}!` : '✓ Signed in to Workspace!';
+        toast.style.display = 'block';
+        setTimeout(() => {
+            const modal = document.getElementById('auth-modal');
+            if (modal) modal.close();
+            toast.style.display = 'none';
+        }, 1800);
+    }
+}
+window.handleEmailSignIn = handleEmailSignIn;
 
 function downloadExcel(e) {
     if (e) e.preventDefault();

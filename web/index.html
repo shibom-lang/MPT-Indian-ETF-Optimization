@@ -155,6 +155,52 @@
             background: var(--ft-navy);
             color: #FFFFFF;
         }
+        .btn-google-signin {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #FFFFFF;
+            color: #3C4043;
+            border: 1px solid #DADCE0;
+            border-radius: var(--radius-xs);
+            padding: 10px 14px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(60,64,67, 0.08);
+            transition: background-color 0.15s, box-shadow 0.15s;
+        }
+        .btn-google-signin:hover {
+            background: #F8FAFC;
+            box-shadow: 0 1px 4px rgba(60,64,67, 0.15);
+        }
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 14px 0;
+        }
+        .auth-divider::before, .auth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--ft-border-subtle);
+        }
+        .auth-divider span {
+            padding: 0 10px;
+            font-size: 11px;
+            color: var(--ft-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .auth-toast {
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ft-green);
+            text-align: center;
+        }
         /* Modern 4-Step Process Rail */
         .method-rail {
             display: grid;
@@ -210,7 +256,7 @@
                 <span>Markets Data: Live · RBI 91D T-Bill Risk-Free Rate: 6.80% · Asset Cap: 45.0%</span>
             </div>
             <div class="header-container">
-                <a href="/" class="logo">ETF Optima <span style="font-family:'JetBrains Mono';font-size:10px;font-weight:700;background:var(--ft-navy);color:#FFF;padding:2px 5px;border-radius:2px;vertical-align:middle;margin-left:6px;">v5.0</span></a>
+                <a href="/" class="logo">ETF Optima</a>
                 <nav>
                     <a href="#calculator">Calculator</a>
                     <a href="#results">Results</a>
@@ -237,7 +283,7 @@
                 <div class="badge">NISM RA Series 15 Research Framework</div>
                 <h1 class="hero-title">Institutional Modern Portfolio Theory for Indian ETFs</h1>
                 <p class="subtitle">
-                    Mathematical optimization engine mapping 8 liquid NSE asset classes. Solves quadratic risk-return trade-offs, enforces integer whole-share execution constraints, and calculates unallocated rupee cash remainders.
+                    Mathematical optimization engine mapping 11 liquid NSE ETF asset classes. Solves quadratic risk-return trade-offs, enforces integer whole-share execution constraints, and calculates unallocated rupee cash remainders.
                 </p>
                 <div class="hero-actions">
                     <a href="#calculator" class="btn btn-primary btn-cta-modern">
@@ -300,7 +346,7 @@
                     <div class="pipeline-step">
                         <div class="step-badge">STAGE 01</div>
                         <h3 class="step-title">Signal Capture</h3>
-                        <p class="step-summary">We monitor 7+ years of daily closing prices for 8 major Indian ETF asset classes directly from the National Stock Exchange (NSE).</p>
+                        <p class="step-summary">We monitor 7+ years of daily closing prices for 11 major Indian ETF asset classes directly from the National Stock Exchange (NSE).</p>
                         <div class="step-meta">Over 1,750 trading days · Split &amp; dividend adjusted</div>
                     </div>
 
@@ -323,7 +369,7 @@
                         <div class="step-badge">STAGE 03</div>
                         <h3 class="step-title">Whole-Share Demat Execution</h3>
                         <p class="step-summary">Indian brokers (Zerodha, Groww) don't allow fractional shares. We floor weights into exact whole units and track unallocated cash change.</p>
-                        <div class="step-meta">Option D Floor Math · Zero Fractional Cash Drift</div>
+                        <div class="step-meta">Demat Whole-Share Orders · Zero Fractional Cash Drift</div>
                     </div>
                 </div>
 
@@ -359,7 +405,7 @@
         </section>
 
         <!-- ═══════════════════════════════════════════════════════ -->
-        <!-- INVESTMENT CALCULATOR (OPTION D DEPTH) -->
+        <!-- INVESTMENT CALCULATOR (DEMAT WHOLE-SHARE DEPTH) -->
         <!-- ═══════════════════════════════════════════════════════ -->
         <section id="calculator" class="calculator-section">
             <div class="container">
@@ -389,7 +435,7 @@
 
                         <div class="amount-words-preview">
                             <span id="amount-in-words" style="color:var(--ft-navy);font-weight:700;">₹ 1,00,000 · One Lakh Rupees</span>
-                            <span class="zero-drift-badge">Option D Floor Math Active</span>
+                            <span class="zero-drift-badge">Whole-Share Orders Active</span>
                         </div>
                         <div class="quick-amounts" style="margin-top:0.75rem;">
                             <span class="qa-label">Quick select:</span>
@@ -421,7 +467,7 @@
                             <div id="stack-bar-maxsharpe"></div>
                         </div>
 
-                        <!-- Option D Integer Share Execution Matrix & Telemetry -->
+                        <!-- Demat Whole-Share Execution Matrix & Telemetry -->
                         <div id="execution-schedule-maxsharpe"></div>
 
                         <div class="projections-section">
@@ -448,7 +494,7 @@
                             <div id="stack-bar-minvol"></div>
                         </div>
 
-                        <!-- Option D Integer Share Execution Matrix & Telemetry -->
+                        <!-- Demat Whole-Share Execution Matrix & Telemetry -->
                         <div id="execution-schedule-minvol"></div>
 
                         <div class="projections-section">
@@ -475,7 +521,7 @@
                             <div id="stack-bar-equal"></div>
                         </div>
 
-                        <!-- Option D Integer Share Execution Matrix & Telemetry -->
+                        <!-- Demat Whole-Share Execution Matrix & Telemetry -->
                         <div id="execution-schedule-equal"></div>
 
                         <div class="projections-section">
@@ -617,8 +663,8 @@
                         <div class="allocation">
                             <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ft-text-muted);margin-bottom:6px;">Target Weights</h4>
                             <div class="alloc-row">
-                                <div class="alloc-info"><span class="dot dot-blue"></span>8 NSE Assets Balanced</div>
-                                <div class="alloc-right"><span style="font-family:'JetBrains Mono';font-weight:700;">12.5% Each</span></div>
+                                <div class="alloc-info"><span class="dot dot-blue"></span>11 NSE Assets Balanced</div>
+                                <div class="alloc-right"><span style="font-family:'JetBrains Mono';font-weight:700;">9.09% Each</span></div>
                             </div>
                         </div>
                     </div>
@@ -638,8 +684,8 @@
                             <p style="font-size:13.5px;color:var(--ft-text-muted);margin-bottom:1rem;">Download the full 10-page vector PDF research report or export the complete multi-sheet Excel financial model calibrated to your exact capital.</p>
                             <ul class="report-features">
                                 <li>Efficient Frontier with Capital Market Line (10,000 Monte Carlo simulations)</li>
-                                <li>9×9 Ledoit-Wolf regularized correlation matrix &amp; covariance eigenvalues</li>
-                                <li>Option D integer execution table with rupee cash remainders</li>
+                                <li>11×11 Ledoit-Wolf regularized correlation matrix &amp; covariance eigenvalues</li>
+                                <li>Demat whole-share execution table with rupee cash remainders</li>
                                 <li>10-year compounding wealth schedule under expected and volatility stress bounds</li>
                             </ul>
                         </div>
@@ -664,23 +710,36 @@
         </section>
     </main>
 
-    <!-- SIGN-IN DIALOG MODAL -->
+    <!-- SIGN-IN DIALOG MODAL (GOOGLE SIGN-IN) -->
     <dialog id="auth-modal">
         <div class="modal-header">
-            <h3 style="font-family:'Newsreader',serif;font-size:1.15rem;font-weight:700;color:var(--ft-navy);">Workspace Sign In</h3>
+            <h3 style="font-family:'Newsreader',serif;font-size:1.15rem;font-weight:700;color:var(--ft-navy);">Sign In to ETF Optima</h3>
             <button onclick="document.getElementById('auth-modal').close()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--ft-navy);">&times;</button>
         </div>
         <div class="modal-body">
-            <p style="font-size:12px;color:var(--ft-text-muted);margin-bottom:12px;">Sign in to save custom portfolios, sync backtest history, and track real-time rebalancing triggers in Neon Serverless PostgreSQL.</p>
-            <div class="auth-field">
-                <label>Email Address</label>
-                <input type="email" class="auth-input" placeholder="analyst@firm.com">
+            <p style="font-size:12.5px;color:var(--ft-text-muted);margin-bottom:14px;">Sign in to save your custom portfolio splits, sync backtests, and track rebalancing triggers in Neon Serverless PostgreSQL.</p>
+            
+            <!-- Google Sign-In Button -->
+            <button class="btn-google-signin" onclick="handleGoogleSignIn()">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.04h3.88c2.27-2.09 3.665-5.17 3.665-9.14z"/>
+                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.04c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.27v3.13C3.25 21.31 7.31 24 12 24z"/>
+                    <path fill="#FBBC05" d="M5.28 14.28c-.24-.72-.38-1.49-.38-2.28s.14-1.56.38-2.28V6.59H1.27C.46 8.21 0 10.05 0 12s.46 3.79 1.27 5.41l4.01-3.13z"/>
+                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.69 1.27 6.59l4.01 3.13c.95-2.83 3.6-4.97 6.72-4.97z"/>
+                </svg>
+                Continue with Google
+            </button>
+
+            <div class="auth-divider">
+                <span>or continue with email</span>
             </div>
+
             <div class="auth-field">
-                <label>Password</label>
-                <input type="password" class="auth-input" placeholder="••••••••">
+                <label>Work Email</label>
+                <input type="email" id="auth-email-input" class="auth-input" placeholder="analyst@firm.com">
             </div>
-            <button class="btn-submit-auth" onclick="alert('Account authenticated! Syncing with Neon database...');document.getElementById('auth-modal').close();">Sign In with Workspace</button>
+            <button class="btn-submit-auth" onclick="handleEmailSignIn()">Send Magic Link</button>
+            <div id="auth-toast" class="auth-toast" style="display:none;"></div>
         </div>
     </dialog>
 

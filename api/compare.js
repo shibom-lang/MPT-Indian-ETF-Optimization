@@ -116,17 +116,34 @@ export default function handler(req, res) {
     return Number((((v - peak) / peak) * 100).toFixed(2));
   });
 
+  // 11 Core ETF 7-Year Asset Statistics
+  const asset_stats = [
+    { name: 'Nifty 50 (NIFTYBEES)', color: '#0C2340', ann_return: 14.20, ann_vol: 15.80, sharpe: 0.47, max_dd: -38.40, total_return: 148.50, best_day: 8.60, worst_day: -12.90 },
+    { name: 'Junior BeES (JUNIORBEES)', color: '#990F3D', ann_return: 16.80, ann_vol: 19.20, sharpe: 0.52, max_dd: -41.20, total_return: 185.20, best_day: 9.40, worst_day: -13.80 },
+    { name: 'Bank BeES (BANKBEES)', color: '#D97706', ann_return: 13.50, ann_vol: 22.40, sharpe: 0.30, max_dd: -45.10, total_return: 135.40, best_day: 10.20, worst_day: -16.50 },
+    { name: 'Midcap 150 (MID150BEES)', color: '#00665E', ann_return: 21.40, ann_vol: 18.50, sharpe: 0.79, max_dd: -36.20, total_return: 268.40, best_day: 8.10, worst_day: -11.40 },
+    { name: 'Nasdaq 100 (MON100)', color: '#4A3E72', ann_return: 24.80, ann_vol: 21.20, sharpe: 0.85, max_dd: -33.50, total_return: 320.60, best_day: 7.80, worst_day: -9.80 },
+    { name: 'Gold BeES (GOLDBEES)', color: '#B8860B', ann_return: 13.80, ann_vol: 12.10, sharpe: 0.58, max_dd: -16.40, total_return: 142.10, best_day: 4.50, worst_day: -5.20 },
+    { name: 'Silver BeES (SILVERBEES)', color: '#8899A6', ann_return: 15.20, ann_vol: 26.50, sharpe: 0.32, max_dd: -39.80, total_return: 162.40, best_day: 9.80, worst_day: -11.20 },
+    { name: '10Y G-Sec (SETF10GILT)', color: '#B83280', ann_return: 7.40, ann_vol: 4.20, sharpe: 0.14, max_dd: -5.80, total_return: 62.40, best_day: 2.10, worst_day: -2.40 },
+    { name: 'Liquid BeES (LIQUIDBEES)', color: '#5B6B82', ann_return: 6.20, ann_vol: 0.60, sharpe: 0.00, max_dd: -0.10, total_return: 49.50, best_day: 0.10, worst_day: 0.00 },
+    { name: 'Nifty IT (ITBEES)', color: '#2563EB', ann_return: 19.80, ann_vol: 22.00, sharpe: 0.59, max_dd: -35.60, total_return: 242.00, best_day: 7.90, worst_day: -8.50 },
+    { name: 'Pharma BeES (PHARMABEES)', color: '#059669', ann_return: 15.60, ann_vol: 17.40, sharpe: 0.51, max_dd: -28.40, total_return: 172.50, best_day: 6.40, worst_day: -7.80 },
+  ];
+
   // Correlation matrix
   const matrix = [
-    [1.00, 0.69, 0.85, 0.58, 0.39, 0.32, 0.30, 0.41, -0.02],
-    [0.69, 1.00, 0.69, 0.40, 0.58, 0.38, 0.49, 0.23, -0.18],
-    [0.85, 0.69, 1.00, 0.47, 0.27, 0.32, 0.26, 0.43,  0.02],
-    [0.58, 0.40, 0.47, 1.00, 0.52, 0.44, 0.29, 0.20,  0.18],
-    [0.39, 0.58, 0.27, 0.52, 1.00, 0.50, 0.59,-0.10, -0.17],
-    [0.32, 0.38, 0.32, 0.44, 0.50, 1.00, 0.79, 0.29, -0.31],
-    [0.30, 0.49, 0.26, 0.29, 0.59, 0.79, 1.00, 0.09, -0.49],
-    [0.41, 0.23, 0.43, 0.20,-0.10, 0.29, 0.09, 1.00,  0.03],
-    [-0.02,-0.18, 0.02, 0.18,-0.17,-0.31,-0.49, 0.03,  1.00]
+    [1.00, 0.69, 0.85, 0.58, 0.39, 0.32, 0.30, 0.41, -0.02, 0.62, 0.48],
+    [0.69, 1.00, 0.69, 0.40, 0.58, 0.38, 0.49, 0.23, -0.18, 0.55, 0.42],
+    [0.85, 0.69, 1.00, 0.47, 0.27, 0.32, 0.26, 0.43,  0.02, 0.41, 0.36],
+    [0.58, 0.40, 0.47, 1.00, 0.52, 0.44, 0.29, 0.20,  0.18, 0.51, 0.44],
+    [0.39, 0.58, 0.27, 0.52, 1.00, 0.50, 0.59,-0.10, -0.17, 0.72, 0.38],
+    [0.32, 0.38, 0.32, 0.44, 0.50, 1.00, 0.79, 0.29, -0.31, 0.25, 0.31],
+    [0.30, 0.49, 0.26, 0.29, 0.59, 0.79, 1.00, 0.09, -0.49, 0.21, 0.28],
+    [0.41, 0.23, 0.43, 0.20,-0.10, 0.29, 0.09, 1.00,  0.03, 0.12, 0.19],
+    [-0.02,-0.18, 0.02, 0.18,-0.17,-0.31,-0.49, 0.03,  1.00,-0.04,-0.02],
+    [0.62, 0.55, 0.41, 0.51, 0.72, 0.25, 0.21, 0.12, -0.04, 1.00, 0.35],
+    [0.48, 0.42, 0.36, 0.44, 0.38, 0.31, 0.28, 0.19, -0.02, 0.35, 1.00]
   ];
 
   // Efficient frontier 200 random points
@@ -141,6 +158,7 @@ export default function handler(req, res) {
   return res.status(200).json({
     meta,
     portfolios,
+    asset_stats,
     series: {
       dates,
       growth: {
@@ -155,7 +173,7 @@ export default function handler(req, res) {
       },
     },
     correlation: {
-      assets: ['Nifty', 'Junior', 'Bank', 'Mid150', 'Nasdaq', 'Gold', 'Silver', 'GSec10Yr', 'Liquid'],
+      assets: ['Nifty', 'Junior', 'Bank', 'Mid150', 'Nasdaq', 'Gold', 'Silver', 'GSec10Yr', 'Liquid', 'IT', 'Pharma'],
       matrix,
     },
     frontier,

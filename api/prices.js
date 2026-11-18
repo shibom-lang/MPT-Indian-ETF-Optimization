@@ -12,6 +12,8 @@ export default async function handler(req, res) {
     { id: 'SILVERBEES.NS', name: 'Silver BeES', short: 'SILVERBEES' },
     { id: 'SETF10GILT.NS', name: '10-Yr G-Sec ETF', short: 'SETF10GILT' },
     { id: 'LIQUIDBEES.NS', name: 'Liquid BeES', short: 'LIQUIDBEES' },
+    { id: 'ITBEES.NS', name: 'Nifty IT BeES', short: 'ITBEES' },
+    { id: 'PHARMABEES.NS', name: 'Pharma BeES', short: 'PHARMABEES' },
   ];
 
   const fallbackPrices = {
@@ -24,6 +26,8 @@ export default async function handler(req, res) {
     'SILVERBEES.NS': { price: 96.20, prev: 95.80 },
     'SETF10GILT.NS': { price: 104.80, prev: 104.75 },
     'LIQUIDBEES.NS': { price: 1000.00, prev: 1000.00 },
+    'ITBEES.NS': { price: 44.50, prev: 44.10 },
+    'PHARMABEES.NS': { price: 22.80, prev: 22.65 },
   };
 
   const results = await Promise.all(
