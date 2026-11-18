@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "cd web && npm install && npm run build"
+    "build": "cd web && npm install && npm run build && cd .. && rm -rf dist && cp -r web/dist dist"
   },
   "dependencies": {
+    "vite": "^8.2.0",
     "@neondatabase/serverless": "^0.10.4"
   }
 }

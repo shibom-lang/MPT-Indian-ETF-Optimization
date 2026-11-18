@@ -179,7 +179,7 @@ ETF Optima supports multi-user portfolio tracking and backtest snapshot archivin
 │   ├── style.css                         # Financial Times Typography & Newsprint Palette
 │   └── vite.config.js                    # Multi-Page Build Configuration
 ├── package.json                          # Root Node Dependencies & Build Scripts
-├── requirements.txt                      # Quantitative Python Requirements
+├── requirements-core.txt                 # Quantitative Python Requirements
 └── vercel.json                           # Production Vercel Build Orchestrator
 ```
 
@@ -208,7 +208,7 @@ Navigate to `http://localhost:5173` to explore the main terminal, `/dashboard.ht
 # Set up Python environment
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt pytest
+pip install -r requirements-core.txt pytest
 
 # Execute all 25 unit tests
 pytest tests/ -v
