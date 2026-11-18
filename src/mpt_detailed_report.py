@@ -28,7 +28,7 @@ warnings.filterwarnings('ignore', category=FutureWarning, module='pandas')
 # ── Import shared engine (DRY — no data/optimization code duplicated here) ───
 from mpt_core import (
     OUTPUT_DIR, RISK_FREE_RATE, TICKERS, SHORT_NAMES, TICKER_NAMES,
-    START_DATE, END_DATE, REPORT_DATE, MAX_WEIGHT, N_MC, TRADING_DAYS,
+    START_DATE, END_DATE, REPORT_DATE, MAX_WEIGHT, N_MC, TRADING_DAYS, DESC as CORE_DESC,
     download_and_clean, download_benchmark,
     compute_returns, optimize_portfolios, run_monte_carlo,
     compute_asset_stats, portfolio_metrics, portfolio_drawdown,
@@ -42,7 +42,18 @@ from mpt_core import (
 # automatically. No hardcoded paths needed here.
 PDF_PATH = OUTPUT_DIR / "MPT_Indian_ETF_Detailed_Report.pdf"
 
-PALETTE  = ['#1565C0','#E53935','#F9A825','#2E7D32','#6A1B9A']
+PALETTE  = [
+    '#1565C0',  # Blue (Large Cap)
+    '#E53935',  # Red (Next 50)
+    '#F9A825',  # Gold/Yellow (Banking)
+    '#00897B',  # Teal (Midcap 150)
+    '#D81B60',  # Magenta (Nasdaq 100)
+    '#2E7D32',  # Forest Green (Gold)
+    '#FB8C00',  # Amber (Silver)
+    '#3949AB',  # Indigo (G-Sec 10Y)
+    '#6A1B9A',  # Purple (Liquid)
+    '#546E7A',  # Slate Grey fallback
+]
 DARK     = '#1A1A2E'
 GREY     = '#555555'
 LGREY    = '#888888'
@@ -143,12 +154,27 @@ n            = len(available)
 # Name lookups (SHORT / FULL / DESC come from mpt_core via TICKER_NAMES / SHORT_NAMES)
 SHORT = SHORT_NAMES
 FULL  = TICKER_NAMES
-DESC  = {
+DESC  = {**CORE_DESC, **{
     'NIFTYBEES.NS' : "Tracks Nifty 50 — India's benchmark large-cap index (50 stocks)",
     'JUNIORBEES.NS': 'Tracks Nifty Next 50 — mid-to-large cap segment (50 stocks)',
     'BANKBEES.NS'  : 'Tracks Nifty Bank — top 12 liquid banking stocks',
+    'MID150BEES.NS': 'Tracks Nifty Midcap 150 — mid-tier high growth Indian companies',
+    'MON100.NS'    : 'Tracks NASDAQ 100 — top US tech giants in INR',
     'GOLDBEES.NS'  : 'Physical gold ETF — tracks domestic gold spot price',
+    'SILVERBEES.NS': 'Physical silver ETF — tracks domestic silver spot price',
+    'GSEC10IETF.NS': 'India 10-Year Government Bond ETF — sovereign debt yield',
     'LIQUIDBEES.NS': 'Overnight liquid fund — near-zero risk, money-market returns',
+}}
+CATEGORIES = {
+    'NIFTYBEES.NS': 'Equity — Large Cap',
+    'JUNIORBEES.NS': 'Equity — Next 50',
+    'BANKBEES.NS': 'Equity — Banking Sector',
+    'MID150BEES.NS': 'Equity — Midcap 150',
+    'MON100.NS': 'International — US Tech',
+    'GOLDBEES.NS': 'Commodity — Gold',
+    'SILVERBEES.NS': 'Commodity — Silver',
+    'GSEC10IETF.NS': 'Fixed Income — Sovereign G-Sec',
+    'LIQUIDBEES.NS': 'Cash Equivalent — Overnight Liquid',
 }
 snames = [SHORT.get(t, t) for t in available]
 fnames = [FULL.get(t, t)  for t in available]
@@ -284,18 +310,22 @@ with PdfPages(PDF_PATH) as pdf:
 
     col_positions = [0.05, 0.17, 0.38, 0.80]
     hdrs2 = ['Ticker', 'Full Name', 'Description', 'Category']
-    cats  = ['Equity — Large Cap','Equity — Mid-Large Cap',
-             'Equity — Banking','Commodity','Fixed Income / Liquid']
     for hx,h in zip(col_positions,hdrs2):
         fig.text(hx, 0.415, h, fontsize=9, fontweight='bold', color=BLUE, va='top')
+    row_h = min(0.028, 0.34 / max(len(available), 1))
     for ri,t in enumerate(available):
-        ry  = 0.380 - ri*0.032  # Lowered from 0.395 to 0.380
+        ry  = 0.385 - ri * (row_h + 0.003)
         bg  = ALT if ri%2==0 else WH
-        axr = fig.add_axes([0.04, ry-0.004, 0.92, 0.030])
+        axr = fig.add_axes([0.04, ry-0.002, 0.92, row_h])
         axr.set_facecolor(bg); axr.axis('off')
-        row = [SHORT[t], FULL[t], DESC[t], cats[ri]]
+        row = [
+            SHORT.get(t, t),
+            FULL.get(t, t),
+            DESC.get(t, 'Diversified Indian ETF'),
+            CATEGORIES.get(t, 'Diversified Asset')
+        ]
         for hx,cell in zip(col_positions,row):
-            fig.text(hx, ry+0.012, cell, fontsize=8.5, color=DARK, va='center')
+            fig.text(hx, ry+row_h*0.4, cell, fontsize=8, color=DARK, va='center')
 
     # Footer disclaimer
     ax_ftr = fig.add_axes([0, 0, 1, 0.05])
@@ -460,22 +490,32 @@ with PdfPages(PDF_PATH) as pdf:
 
     tbl_bottom = tbl_y_start - (len(tbl_data)+1)*row_h - 0.02
     section_title(fig, '5. Asset Return Distribution (Histograms)', tbl_bottom)
-    hist_top = tbl_bottom - 0.045
+    hist_top = tbl_bottom - 0.040
 
-    # Histogram row for each ETF
-    hist_h = 0.22; hist_w = 0.165; gap = 0.01
+    # Dynamic histogram grid for N ETFs (1 row if <= 5, 2 rows if > 5)
+    n_cols = min(n, 5) if n <= 5 else 4 if n <= 8 else 5
+    n_rows = (n + n_cols - 1) // n_cols
+    gap_x  = 0.015
+    gap_y  = 0.035
+    hist_w = (0.92 - (n_cols - 1) * gap_x) / n_cols
+    hist_h = 0.105 if n_rows > 1 else 0.22
+
     for i, t in enumerate(available):
-        hx = 0.04 + i*(hist_w+gap)
-        ax_h = fig.add_axes([hx, hist_top-hist_h, hist_w, hist_h])
-        dr = daily[t]*100
-        ax_h.hist(dr, bins=60, color=PALETTE[i], alpha=0.8, edgecolor='white', linewidth=0.3)
+        col_idx = i % n_cols
+        row_idx = i // n_cols
+        hx = 0.04 + col_idx * (hist_w + gap_x)
+        hy = hist_top - (row_idx + 1) * hist_h - row_idx * gap_y
+        ax_h = fig.add_axes([hx, hy, hist_w, hist_h])
+        dr = daily[t] * 100
+        clr_idx = i % len(PALETTE)
+        ax_h.hist(dr, bins=45, color=PALETTE[clr_idx], alpha=0.8, edgecolor='white', linewidth=0.3)
         ax_h.axvline(0, color=DARK, linewidth=0.8, linestyle='--')
         ax_h.axvline(dr.mean(), color='red', linewidth=1.2, linestyle=':', label=f'μ={dr.mean():.2f}%')
-        ax_h.set_title(snames[i], fontsize=9, fontweight='bold', color=DARK, pad=4)
-        ax_h.set_xlabel('Daily Return (%)', fontsize=7.5)
-        ax_h.set_ylabel('Frequency', fontsize=7.5)
-        ax_h.tick_params(labelsize=7)
-        ax_h.legend(fontsize=6.5, handlelength=1)
+        ax_h.set_title(snames[i], fontsize=8.5, fontweight='bold', color=DARK, pad=3)
+        ax_h.set_xlabel('Daily Return (%)' if row_idx == n_rows - 1 else '', fontsize=7)
+        ax_h.set_ylabel('Freq' if col_idx == 0 else '', fontsize=7)
+        ax_h.tick_params(labelsize=6.5)
+        ax_h.legend(fontsize=6, handlelength=0.8)
         ax_h.grid(True, alpha=0.3, linestyle='--')
         for sp in ax_h.spines.values(): sp.set_color(BORDER)
 
@@ -542,7 +582,7 @@ with PdfPages(PDF_PATH) as pdf:
         "JuniorBees (mid-cap tilt) is highly correlated with NiftyBees but captures the size-premium factor."
     )
     y_note = 0.115
-    fig.text(0.04, y_note, '📌 Correlation Insights:', fontsize=8.5, fontweight='bold', color=BLUE, va='top')
+    fig.text(0.04, y_note, '▸ Correlation Insights:', fontsize=8.5, fontweight='bold', color=BLUE, va='top')
     for line in textwrap.wrap(corr_text, width=160):
         y_note -= 0.020
         fig.text(0.04, y_note, line, fontsize=8.5, color=DARK, va='top')
@@ -820,7 +860,7 @@ with PdfPages(PDF_PATH) as pdf:
         fig.text(hx+0.005, tbl_top+0.012, h, fontsize=9, fontweight='bold',
                  color=WH, va='center')
 
-    m_row_h = 0.033
+    m_row_h = min(0.029, 0.54 / max(len(all_rows) + 1, 1))
     for ri, row in enumerate(all_rows):
         ry  = tbl_top - (ri+1)*m_row_h
         is_div = '──' in str(row[0])
@@ -837,21 +877,23 @@ with PdfPages(PDF_PATH) as pdf:
                         clr = RED
                     elif ri==0 and ci==1: clr = GOLD
                 except: pass
-            fig.text(hx+0.005, ry+m_row_h/2, cell, fontsize=8.5,
+            fig.text(hx+0.005, ry+m_row_h/2, cell, fontsize=8,
                      color=clr, va='center', fontweight='bold' if bld else 'normal')
 
-    tbl_bottom2 = tbl_top - (len(all_rows)+1)*m_row_h - 0.025
+    tbl_bottom2 = max(0.21, tbl_top - (len(all_rows)+1)*m_row_h - 0.020)
     section_title(fig, '11. Asset Weight Contribution to Portfolio Risk', tbl_bottom2)
 
     # Stacked risk contribution bar
-    ax_rc_bar = fig.add_axes([0.05, 0.060, 0.90, 0.130])
+    bar_h = min(0.125, max(0.08, tbl_bottom2 - 0.075))
+    ax_rc_bar = fig.add_axes([0.05, 0.055, 0.90, bar_h])
     port_names = ['Max Sharpe ★', 'Min Volatility ■', 'Equal Weight ▲']
     port_ws    = [w_sh, w_mv, w_eq]
     bar_left   = np.zeros(3)
     for i,sn in enumerate(snames):
         weights_per_port = np.array([pw[i] for pw in port_ws])*100
+        clr_idx = i % len(PALETTE)
         ax_rc_bar.barh(port_names, weights_per_port, left=bar_left,
-                       color=PALETTE[i], edgecolor=WH, linewidth=0.8,
+                       color=PALETTE[clr_idx], edgecolor=WH, linewidth=0.8,
                        label=sn, alpha=0.9)
         for j,(pw,bl) in enumerate(zip(weights_per_port, bar_left)):
             if pw > 2:
@@ -874,23 +916,33 @@ with PdfPages(PDF_PATH) as pdf:
     fig = new_page('Conclusions & Investment Considerations', 'Indian ETF MPT Report', '9')
     section_title(fig, '12. Conclusions', 0.90)
 
+    # Dynamic asset weight lookups for commentary
+    gold_t, bank_t, nifty_t, jr_t, liq_t = 'GOLDBEES.NS', 'BANKBEES.NS', 'NIFTYBEES.NS', 'JUNIORBEES.NS', 'LIQUIDBEES.NS'
+    gw = w_sh[available.index(gold_t)] if gold_t in available else 0.0
+    jw = w_sh[available.index(jr_t)] if jr_t in available else 0.0
+    nw = w_sh[available.index(nifty_t)] if nifty_t in available else 0.0
+    g_ret = stats.get(gold_t, {}).get('ann_ret', 0.15)
+    b_sr = stats.get(bank_t, {}).get('sharpe', 0.82)
+    n_sr = stats.get(nifty_t, {}).get('sharpe', 1.05)
+    l_ret = stats.get(liq_t, {}).get('ann_ret', 0.065)
+
     conclusion_paras = [
         ("Optimal Portfolio Construction & The Role of Gold",
-         f"The Sharpe-maximising portfolio heavily favours low-correlation assets, allocating {w_sh[3]:.0%} to Gold BeES alongside "
-         f"equity exposure ({w_sh[1]:.0%} Junior BeES, {w_sh[0]:.0%} Nifty 50 BeES). Gold acted as a powerful diversifier during the 2019-2026 period, "
-         f"delivering robust returns (~{stats['GOLDBEES.NS']['ann_ret']:.1%} p.a.) with near-zero correlation to broad equities. "
+         f"The Sharpe-maximising portfolio heavily favours low-correlation assets, allocating {gw:.0%} to Gold BeES alongside "
+         f"equity exposure ({jw:.0%} Junior BeES, {nw:.0%} Nifty 50 BeES). Gold acted as a powerful diversifier during the 2019-2026 period, "
+         f"delivering robust returns (~{g_ret:.1%} p.a.) with near-zero correlation to broad equities. "
          f"This allowed the portfolio to achieve a high Sharpe ratio of {sr_sh:.4f} while keeping volatility to {v_sh:.2%}."),
 
         ("Asset Redundancy (BankBees & LiquidBees)",
-         f"BankBees was entirely excluded by the optimiser because its high correlation (>0.80) to NiftyBees offers no diversification benefit, "
-         f"while yielding a lower Sharpe ratio ({stats['BANKBEES.NS']['sharpe']:.3f} vs {stats['NIFTYBEES.NS']['sharpe']:.3f}). "
-         f"LiquidBees is only useful for absolute capital preservation; its {stats['LIQUIDBEES.NS']['ann_ret']:.2%} p.a. return drags down "
-         f"the Sharpe ratio in aggressive portfolios, but dominates the Min Volatility portfolio (45% weight) to suppress total risk."),
+         f"BankBees was minimized or excluded by the optimiser because its high correlation (>0.80) to NiftyBees offers limited diversification benefit, "
+         f"while yielding a lower risk-adjusted profile ({b_sr:.3f} vs {n_sr:.3f} Sharpe). "
+         f"LiquidBees is only useful for capital preservation; its {l_ret:.2%} p.a. return anchors "
+         f"the Min Volatility portfolio (up to 45% weight) to suppress drawdowns during turbulent markets."),
 
         ("ACTIONABLE RECOMMENDATION FOR MUTUAL FUND ADVISORS",
          "For clients seeking growth, transition away from ad-hoc equal-weighting and adopt the Max Sharpe weights. "
          "Specifically, cap banking sector overexposure (as it behaves too similarly to the broader Nifty 50) and establish a "
-         "strategic 25-35% allocation to physical Gold ETFs to act as a ballast against equity market shocks. "
+         "strategic allocation to physical Gold and multi-asset ETFs to act as a ballast against equity market shocks. "
          "This barbell approach captures the size premium of Mid/Next-50 caps while hedging tail risks through gold."),
          
         ("Model Limitations to Monitor",

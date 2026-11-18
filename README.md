@@ -4,7 +4,7 @@
 [![Neon Postgres](https://img.shields.io/badge/Neon-Serverless%20Postgres-00E599?style=for-the-badge&logo=postgresql&logoColor=black)](https://neon.tech)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
-[![Pytest 25 Passed](https://img.shields.io/badge/Pytest-25%20Passed-green?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
+[![Pytest 29 Passed](https://img.shields.io/badge/Pytest-29%20Passed-green?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 **Live Production Terminal:** [https://web-six-zeta-72.vercel.app](https://web-six-zeta-72.vercel.app)  

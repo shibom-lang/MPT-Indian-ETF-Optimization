@@ -16,14 +16,16 @@ import matplotlib.patches as mpatches
 from matplotlib.table import Table
 import yfinance as yf
 from scipy.optimize import minimize
-import warnings, os, datetime
+import warnings, os, datetime, pathlib
 
 warnings.filterwarnings('ignore')
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIG
 # ─────────────────────────────────────────────────────────────────────────────
-OUTPUT_DIR      = "/Users/surajitdas/untitled folder 5"
+PROJECT_ROOT    = pathlib.Path(__file__).parent
+OUTPUT_DIR      = str(PROJECT_ROOT / "output")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 RISK_FREE_RATE  = 0.068        # 6.80% India 10-Yr G-Sec, Jul-2026
 START_DATE      = '2019-01-01'
 END_DATE        = datetime.date.today().strftime('%Y-%m-%d')
