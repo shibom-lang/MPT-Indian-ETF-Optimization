@@ -8,6 +8,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
+  color-scheme: light; /* Ensures iOS Safari/Chrome renders inputs with light native form controls */
   /* Financial Times Primary Palette */
   --ft-paper: #FFF1E5;           /* Iconic FT Newsprint */
   --ft-paper-card: #FAF0E6;      /* Lighter Newsprint Card Surface */
@@ -467,22 +468,29 @@ section h2 {
 }
 .input-row {
   display: flex; align-items: center;
-  background: var(--ft-paper-elevated);
-  border: 1.5px solid var(--ft-border);
+  background: #FFFFFF !important;
+  border: 2px solid var(--ft-navy);
   border-radius: var(--radius-sm);
-  overflow: hidden; margin-bottom: 1rem;
+  overflow: hidden; margin-bottom: 0.6rem;
+  box-shadow: 0 2px 6px rgba(12, 35, 64, 0.08);
 }
 .input-row:focus-within {
-  border-color: var(--ft-navy);
+  border-color: var(--ft-claret);
+  box-shadow: 0 0 0 3px rgba(153, 15, 61, 0.15);
 }
 .rupee-sign {
   padding: 0.8rem 1.2rem; font-size: 1.3rem; font-weight: 800;
-  color: var(--ft-navy); background: var(--ft-paper-card);
-  border-right: 1.5px solid var(--ft-border);
+  color: #0C2340 !important; background: #F8F3ED !important;
+  border-right: 2px solid var(--ft-border);
 }
 .calc-input {
-  flex: 1; padding: 0.8rem 1rem; background: transparent;
-  border: none; outline: none; color: var(--ft-navy);
+  flex: 1; padding: 0.8rem 1rem;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: none; outline: none;
+  color: #0C2340 !important;
+  -webkit-text-fill-color: #0C2340 !important;
+  -webkit-appearance: none !important;
   font-size: 1.4rem; font-weight: 700;
   font-family: 'JetBrains Mono', monospace;
   font-variant-numeric: tabular-nums;
