@@ -293,29 +293,37 @@
         <!-- ═══════════════════════════════════════════════════════ -->
         <section id="how-it-works" class="how-section">
             <div class="container">
-                <h2 class="section-title">Quantitative Pipeline Architecture</h2>
-                <p class="section-desc">The algorithmic engine executing behind every portfolio calculation.</p>
+                <h2 class="section-title">How Your Allocation Is Calculated</h2>
+                <p class="section-desc">Three transparent quantitative stages turning real market history into actionable Demat orders.</p>
 
-                <div class="method-rail">
-                    <div class="method-step-card">
-                        <span class="method-pill">01 · INGESTION</span>
-                        <h3 class="method-step-title">Live NSE Data</h3>
-                        <p class="method-step-desc">Automated ingestion of daily adjusted closes across 8 liquid ETF asset classes with outlier and split artifact cleaning.</p>
+                <div class="pipeline-stepper">
+                    <div class="pipeline-step">
+                        <div class="step-badge">STAGE 01</div>
+                        <h3 class="step-title">Signal Capture</h3>
+                        <p class="step-summary">We monitor 7+ years of daily closing prices for 8 major Indian ETF asset classes directly from the National Stock Exchange (NSE).</p>
+                        <div class="step-meta">Over 1,750 trading days · Split &amp; dividend adjusted</div>
                     </div>
-                    <div class="method-step-card">
-                        <span class="method-pill">02 · SHRINKAGE</span>
-                        <h3 class="method-step-title">Ledoit-Wolf Matrix</h3>
-                        <p class="method-step-desc">Applies analytical covariance shrinkage to stabilize ill-conditioned sample covariance matrices and prevent extreme weight errors.</p>
+
+                    <div class="pipeline-connector">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </div>
-                    <div class="method-step-card">
-                        <span class="method-pill">03 · OPTIMIZATION</span>
-                        <h3 class="method-step-title">SLSQP Quadratic Solver</h3>
-                        <p class="method-step-desc">Maximizes Sharpe ratio subject to $\sum w_i = 1$ and $0 \le w_i \le 0.45$ regulatory single-asset concentration limits.</p>
+
+                    <div class="pipeline-step">
+                        <div class="step-badge">STAGE 02</div>
+                        <h3 class="step-title">Risk-Return Balancing</h3>
+                        <p class="step-summary">Modern Portfolio Theory tests thousands of asset weight combinations to find the peak Sharpe ratio (maximum return per unit of volatility).</p>
+                        <div class="step-meta">SLSQP Quadratic Solver · 45% Safety Concentration Cap</div>
                     </div>
-                    <div class="method-step-card">
-                        <span class="method-pill">04 · EXECUTION</span>
-                        <h3 class="method-step-title">Option D Floor Math</h3>
-                        <p class="method-step-desc">Calculates exact integer whole-share counts ($\lfloor \text{Rupees} / \text{LTP} \rfloor$) and tracks unallocated cash remainder without drift.</p>
+
+                    <div class="pipeline-connector">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="step-badge">STAGE 03</div>
+                        <h3 class="step-title">Whole-Share Demat Execution</h3>
+                        <p class="step-summary">Indian brokers (Zerodha, Groww) don't allow fractional shares. We floor weights into exact whole units and track unallocated cash change.</p>
+                        <div class="step-meta">Option D Floor Math · Zero Fractional Cash Drift</div>
                     </div>
                 </div>
 
@@ -355,20 +363,33 @@
         <!-- ═══════════════════════════════════════════════════════ -->
         <section id="calculator" class="calculator-section">
             <div class="container">
-                <h2 class="section-title">Portfolio Allocation Engine (Option D Execution)</h2>
-                <p class="section-desc">Enter your investment capital and calculate the exact integer whole shares, invested rupees, and cash remainder.</p>
+                <h2 class="section-title">Demat Execution Console</h2>
+                <p class="section-desc">Enter your investment capital to calculate whole shares, invested rupees, and cash remainders.</p>
 
                 <div class="calculator-wrapper glass-card">
                     <div class="calc-input-area">
                         <label for="invest-amount" class="calc-label">My Investment Capital (INR)</label>
                         <div class="input-row">
                             <span class="rupee-sign">₹</span>
-                            <input type="number" id="invest-amount" class="calc-input" value="100000" min="1000"
-                                step="1000" inputmode="numeric" placeholder="Enter amount in ₹">
+                            <input type="number" id="invest-amount" class="calc-input" value="100000" min="5000" max="1000000"
+                                step="1000" inputmode="numeric" placeholder="1,00,000">
                         </div>
+
+                        <!-- Smooth range slider synced with input -->
+                        <div class="slider-wrapper">
+                            <input type="range" id="invest-slider" min="10000" max="1000000" step="5000" value="100000" class="ft-slider">
+                            <div class="slider-ticks">
+                                <span>₹10K</span>
+                                <span>₹2.5L</span>
+                                <span>₹5L</span>
+                                <span>₹7.5L</span>
+                                <span>₹10L</span>
+                            </div>
+                        </div>
+
                         <div class="amount-words-preview">
                             <span id="amount-in-words" style="color:var(--ft-navy);font-weight:700;">₹ 1,00,000 · One Lakh Rupees</span>
-                            <span style="color:var(--ft-green);font-weight:700;">Zero Drift Floor Math Active</span>
+                            <span class="zero-drift-badge">Option D Floor Math Active</span>
                         </div>
                         <div class="quick-amounts" style="margin-top:0.75rem;">
                             <span class="qa-label">Quick select:</span>
@@ -382,7 +403,7 @@
                     </div>
 
                     <div class="strategy-tabs">
-                        <button class="tab-btn active" id="tab-maxsharpe" onclick="switchTab('maxsharpe')">★ Max Sharpe (Growth)</button>
+                        <button class="tab-btn active" id="tab-maxsharpe" onclick="switchTab('maxsharpe')">★ Max Sharpe (Optimal)</button>
                         <button class="tab-btn" id="tab-minvol" onclick="switchTab('minvol')">🛡️ Min Volatility</button>
                         <button class="tab-btn" id="tab-equal" onclick="switchTab('equal')">⚖️ Equal Weight</button>
                     </div>
@@ -400,67 +421,8 @@
                             <div id="stack-bar-maxsharpe"></div>
                         </div>
 
-                        <!-- Option D Integer Share Execution Table -->
-                        <div class="execution-schedule-wrapper">
-                            <div class="execution-schedule-header">
-                                <div>
-                                    <h4>Option D Integer Share Execution Schedule</h4>
-                                    <p class="exec-subtitle">Calculated using live NSE prices. Enforces integer whole-share execution with explicit cash remainder tracking.</p>
-                                </div>
-                                <span class="exec-tag">Zero Fractional Drift</span>
-                            </div>
-                            <div class="exec-table-responsive">
-                                <table class="exec-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Asset &amp; NSE Ticker</th>
-                                            <th class="num">Live LTP</th>
-                                            <th class="num">Target %</th>
-                                            <th class="num">Whole Shares</th>
-                                            <th class="num">Actual Value</th>
-                                            <th class="num">Tracking Diff</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="execution-schedule-maxsharpe"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Collapsible Quant Telemetry -->
-                        <div class="quant-drawer">
-                            <div class="quant-drawer-header" onclick="toggleQuantDrawer('maxsharpe')">
-                                <span class="quant-drawer-title">Mathematical Telemetry &amp; Covariance Stress Matrix</span>
-                                <span class="quant-drawer-toggle" id="quant-drawer-toggle-maxsharpe">▼ EXPAND QUANT TELEMETRY</span>
-                            </div>
-                            <div class="quant-drawer-body" id="quant-drawer-body-maxsharpe">
-                                <div class="quant-metric-grid">
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Mathematical Solver</div>
-                                        <div class="qm-value">scipy.optimize.minimize (SLSQP)</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Convergence Criteria</div>
-                                        <div class="qm-value">24 iterations (ftol: 1e-09)</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Covariance Regularization</div>
-                                        <div class="qm-value">Ledoit-Wolf Analytical Shrinkage</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Historical Stress: 2020 Crash</div>
-                                        <div class="qm-value text-red">-24.20% (vs -38.4% Nifty)</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Historical Stress: 2022 Tightening</div>
-                                        <div class="qm-value text-green">+8.10% (Gold diversification hedge)</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Daily CVaR (95% Confidence)</div>
-                                        <div class="qm-value text-red">-1.42% (Expected tail loss)</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Option D Integer Share Execution Matrix & Telemetry -->
+                        <div id="execution-schedule-maxsharpe"></div>
 
                         <div class="projections-section">
                             <h4>Compound Growth Projections (1 to 15 Years)</h4>
@@ -486,67 +448,8 @@
                             <div id="stack-bar-minvol"></div>
                         </div>
 
-                        <!-- Option D Integer Share Execution Table -->
-                        <div class="execution-schedule-wrapper">
-                            <div class="execution-schedule-header">
-                                <div>
-                                    <h4>Option D Integer Share Execution Schedule</h4>
-                                    <p class="exec-subtitle">Calculated using live NSE prices. Enforces integer whole-share execution with explicit cash remainder tracking.</p>
-                                </div>
-                                <span class="exec-tag">Zero Fractional Drift</span>
-                            </div>
-                            <div class="exec-table-responsive">
-                                <table class="exec-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Asset &amp; NSE Ticker</th>
-                                            <th class="num">Live LTP</th>
-                                            <th class="num">Target %</th>
-                                            <th class="num">Whole Shares</th>
-                                            <th class="num">Actual Value</th>
-                                            <th class="num">Tracking Diff</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="execution-schedule-minvol"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Collapsible Quant Telemetry -->
-                        <div class="quant-drawer">
-                            <div class="quant-drawer-header" onclick="toggleQuantDrawer('minvol')">
-                                <span class="quant-drawer-title">Mathematical Telemetry &amp; Covariance Stress Matrix</span>
-                                <span class="quant-drawer-toggle" id="quant-drawer-toggle-minvol">▼ EXPAND QUANT TELEMETRY</span>
-                            </div>
-                            <div class="quant-drawer-body" id="quant-drawer-body-minvol">
-                                <div class="quant-metric-grid">
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Mathematical Solver</div>
-                                        <div class="qm-value">scipy.optimize.minimize (SLSQP)</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Convergence Criteria</div>
-                                        <div class="qm-value">18 iterations (ftol: 1e-09)</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Covariance Regularization</div>
-                                        <div class="qm-value">Ledoit-Wolf Analytical Shrinkage</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Historical Stress: 2020 Crash</div>
-                                        <div class="qm-value text-red">-4.80% (Extreme preservation)</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Historical Stress: 2022 Tightening</div>
-                                        <div class="qm-value text-green">+5.20% (Yield driven)</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Daily CVaR (95% Confidence)</div>
-                                        <div class="qm-value text-red">-0.40% (Ultra-safe tail)</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Option D Integer Share Execution Matrix & Telemetry -->
+                        <div id="execution-schedule-minvol"></div>
 
                         <div class="projections-section">
                             <h4>Compound Growth Projections (1 to 15 Years)</h4>
@@ -572,59 +475,8 @@
                             <div id="stack-bar-equal"></div>
                         </div>
 
-                        <!-- Option D Integer Share Execution Table -->
-                        <div class="execution-schedule-wrapper">
-                            <div class="execution-schedule-header">
-                                <div>
-                                    <h4>Option D Integer Share Execution Schedule</h4>
-                                    <p class="exec-subtitle">Calculated using live NSE prices. Enforces integer whole-share execution with explicit cash remainder tracking.</p>
-                                </div>
-                                <span class="exec-tag">Zero Fractional Drift</span>
-                            </div>
-                            <div class="exec-table-responsive">
-                                <table class="exec-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Asset &amp; NSE Ticker</th>
-                                            <th class="num">Live LTP</th>
-                                            <th class="num">Target %</th>
-                                            <th class="num">Whole Shares</th>
-                                            <th class="num">Actual Value</th>
-                                            <th class="num">Tracking Diff</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="execution-schedule-equal"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Collapsible Quant Telemetry -->
-                        <div class="quant-drawer">
-                            <div class="quant-drawer-header" onclick="toggleQuantDrawer('equal')">
-                                <span class="quant-drawer-title">Mathematical Telemetry &amp; Covariance Stress Matrix</span>
-                                <span class="quant-drawer-toggle" id="quant-drawer-toggle-equal">▼ EXPAND QUANT TELEMETRY</span>
-                            </div>
-                            <div class="quant-drawer-body" id="quant-drawer-body-equal">
-                                <div class="quant-metric-grid">
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Mathematical Allocation</div>
-                                        <div class="qm-value">Naive 1/N Unweighted Split</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Rebalance Frequency</div>
-                                        <div class="qm-value">Quarterly equal reconstitution</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Historical Stress: 2020 Crash</div>
-                                        <div class="qm-value text-red">-18.60% (Broad equity exposure)</div>
-                                    </div>
-                                    <div class="quant-metric-item">
-                                        <div class="qm-label">Daily CVaR (95% Confidence)</div>
-                                        <div class="qm-value text-red">-1.47% (Unconstrained downside)</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Option D Integer Share Execution Matrix & Telemetry -->
+                        <div id="execution-schedule-equal"></div>
 
                         <div class="projections-section">
                             <h4>Compound Growth Projections (1 to 15 Years)</h4>

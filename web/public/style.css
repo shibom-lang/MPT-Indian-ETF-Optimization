@@ -820,3 +820,334 @@ footer {
   vertical-align: text-bottom;
   width: 1.2em; height: 1.2em;
 }
+
+/* ─────────────────────────────────────────────────────────
+   V5.1 MODERN DEMAT EXECUTION & PIPELINE DESIGN SYSTEM
+   Zero stickers | Precision micro-borders | Linear/Groww style
+   ───────────────────────────────────────────────────────── */
+
+/* ── Interactive 3-Stage Pipeline Stepper ── */
+.pipeline-stepper {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin: 1.5rem 0 2rem;
+}
+@media (max-width: 860px) {
+  .pipeline-stepper {
+    flex-direction: column;
+    gap: 14px;
+  }
+  .pipeline-connector {
+    transform: rotate(90deg);
+    align-self: center;
+  }
+}
+.pipeline-step {
+  flex: 1;
+  background: var(--ft-paper-card);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.pipeline-step:hover {
+  border-color: var(--ft-navy);
+  box-shadow: 0 2px 8px rgba(12, 35, 64, 0.05);
+}
+.step-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--ft-navy);
+  background: #EBE0D3;
+  padding: 2px 7px;
+  border-radius: 2px;
+  width: fit-content;
+  margin-bottom: 8px;
+  letter-spacing: 0.06em;
+}
+.step-title {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ft-navy);
+  margin-bottom: 6px;
+}
+.step-summary {
+  font-size: 12.5px;
+  color: var(--ft-navy-soft);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  flex-grow: 1;
+}
+.step-meta {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ft-text-muted);
+  border-top: 1px dashed var(--ft-border-subtle);
+  padding-top: 8px;
+}
+.pipeline-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ft-border);
+}
+
+/* ── Interactive Range Slider ── */
+.slider-wrapper {
+  margin: 12px 0 8px;
+}
+.ft-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #E5D7C9;
+  outline: none;
+  transition: background 0.15s ease;
+}
+.ft-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--ft-navy);
+  border: 2px solid #FFFFFF;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(12, 35, 64, 0.25);
+  transition: transform 0.1s ease;
+}
+.ft-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ft-text-muted);
+  margin-top: 4px;
+}
+.zero-drift-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ft-green);
+  background: var(--ft-green-bg);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+/* ── Demat Execution Ledger Container ── */
+.execution-container {
+  margin: 1.5rem 0 1.25rem;
+}
+.exec-header {
+  margin-bottom: 0.85rem;
+}
+.exec-header h4 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ft-navy);
+  margin-bottom: 0.2rem;
+}
+.exec-header p {
+  font-size: 12.5px;
+  color: var(--ft-text-muted);
+}
+
+/* ── Mobile Execution Cards (< 768px) ── */
+.exec-mobile-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1.25rem;
+}
+.exec-card {
+  background: var(--ft-paper-elevated);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(12, 35, 64, 0.04);
+}
+.exec-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.exec-card-asset {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.exec-card-name {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--ft-navy);
+}
+.exec-card-ticker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ft-text-muted);
+  background: #F4EBE1;
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+.exec-card-ltp {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ft-navy);
+}
+.exec-card-bar-wrap {
+  width: 100%;
+  height: 4px;
+  background: #EFE6DD;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.exec-card-bar {
+  height: 100%;
+  border-radius: 2px;
+}
+.exec-card-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: var(--ft-paper-card);
+  padding: 8px 10px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 8px;
+}
+.exec-card-stat {
+  display: flex;
+  flex-direction: column;
+}
+.stat-meta {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ft-text-muted);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.stat-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px;
+  color: var(--ft-navy);
+  font-variant-numeric: tabular-nums;
+}
+.exec-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--ft-text-muted);
+}
+
+/* ── Desktop Execution Table (>= 768px) ── */
+.exec-desktop-table {
+  display: block;
+  overflow-x: auto;
+  margin-bottom: 1.25rem;
+}
+@media (min-width: 768px) {
+  .exec-mobile-cards { display: none; }
+}
+@media (max-width: 767px) {
+  .exec-desktop-table { display: none; }
+}
+
+/* ── Capital Execution Summary Card ── */
+.exec-summary-card {
+  background: var(--ft-paper-elevated);
+  border: 1px solid var(--ft-border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 4px rgba(12, 35, 64, 0.05);
+}
+.exec-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ft-border-subtle);
+  margin-bottom: 12px;
+}
+@media (max-width: 640px) {
+  .exec-summary-grid { grid-template-columns: 1fr 1fr; }
+}
+.summary-item .summary-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--ft-text-muted);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+.summary-item .summary-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ft-navy);
+  font-variant-numeric: tabular-nums;
+}
+.exec-summary-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.btn-copy-basket {
+  background: var(--ft-navy);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-xs);
+  padding: 7px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease;
+}
+.btn-copy-basket:hover {
+  background: #183A64;
+}
+.copy-toast {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ft-green);
+}
+
+/* ── Mobile Header Tightening ── */
+@media (max-width: 640px) {
+  header { padding: 0.65rem 0 !important; }
+  .header-container { gap: 6px !important; }
+  .logo { font-size: 1.25rem !important; }
+  nav { gap: 6px !important; }
+  .btn-signin-nav {
+    font-size: 10px !important;
+    padding: 3px 7px !important;
+  }
+  .nav-cta {
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+  }
+}

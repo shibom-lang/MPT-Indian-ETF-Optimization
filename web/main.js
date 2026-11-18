@@ -130,7 +130,9 @@ function formatIndianWords(num) {
 // ─── TAB & AMOUNT CONTROLLERS ─────────────────────────────
 function setAmount(val) {
     const input = document.getElementById('invest-amount');
+    const slider = document.getElementById('invest-slider');
     if (input) input.value = val;
+    if (slider) slider.value = val;
     currentAmount = val;
     renderCalculator();
 }
@@ -241,7 +243,8 @@ function renderOptionDExecutionTable(key, capital) {
     let totalInvested = 0;
     const nonZero = p.allocations.filter(a => a.pct > 0);
 
-    const rows = nonZero.map(asset => {
+    // Desktop Table Rows
+    const tableRows = nonZero.map(asset => {
         const targetRupees = capital * asset.pct;
         const ltp = ETF_PRICES[asset.name] || 100.0;
         const units = Math.floor(targetRupees / ltp);
@@ -251,14 +254,15 @@ function renderOptionDExecutionTable(key, capital) {
 
         const diffCls = diff >= 0 ? 'text-green' : 'text-muted';
         const diffSign = diff >= 0 ? '+' : '';
+        const cleanTicker = asset.ticker.replace('.NS', '');
 
         return `
             <tr>
                 <td>
                     <span class="asset-pill">
                         <span class="asset-color-dot" style="background: ${asset.color}"></span>
-                        ${asset.name}
-                        <span style="font-size: 11px; color: var(--ft-text-muted); font-family: 'JetBrains Mono', monospace;">${asset.ticker}</span>
+                        <strong>${asset.name}</strong>
+                        <span class="exec-card-ticker">NSE: ${cleanTicker}</span>
                     </span>
                 </td>
                 <td class="num">${fmtCurrencyExact(ltp)}</td>
@@ -270,79 +274,161 @@ function renderOptionDExecutionTable(key, capital) {
         `;
     }).join('');
 
+    // Mobile Order Cards (Recalculate accurately without double counting totalInvested)
+    const cardRows = nonZero.map(asset => {
+        const targetRupees = capital * asset.pct;
+        const ltp = ETF_PRICES[asset.name] || 100.0;
+        const units = Math.floor(targetRupees / ltp);
+        const actualValue = units * ltp;
+        const diff = actualValue - targetRupees;
+
+        const diffCls = diff >= 0 ? 'text-green' : 'text-muted';
+        const diffSign = diff >= 0 ? '+' : '';
+        const cleanTicker = asset.ticker.replace('.NS', '');
+
+        return `
+            <div class="exec-card">
+                <div class="exec-card-head">
+                    <div class="exec-card-asset">
+                        <span class="asset-color-dot" style="background: ${asset.color}"></span>
+                        <span class="exec-card-name">${asset.name}</span>
+                        <span class="exec-card-ticker">NSE: ${cleanTicker}</span>
+                    </div>
+                    <div class="exec-card-ltp">${fmtCurrencyExact(ltp)}</div>
+                </div>
+                
+                <div class="exec-card-bar-wrap">
+                    <div class="exec-card-bar" style="width: ${(asset.pct * 100).toFixed(1)}%; background: ${asset.color};"></div>
+                </div>
+
+                <div class="exec-card-body">
+                    <div class="exec-card-stat">
+                        <span class="stat-meta">Units to Buy</span>
+                        <span class="stat-number"><strong>${units.toLocaleString('en-IN')}</strong> Shares</span>
+                    </div>
+                    <div class="exec-card-stat" style="text-align: right;">
+                        <span class="stat-meta">Allocated Value</span>
+                        <span class="stat-number"><strong>${fmtCurrencyExact(actualValue)}</strong></span>
+                    </div>
+                </div>
+                
+                <div class="exec-card-foot">
+                    <span>Target Weight: <strong>${(asset.pct * 100).toFixed(1)}%</strong></span>
+                    <span class="${diffCls}">Variance: ${diffSign}${fmtCurrencyExact(diff)}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
     const cashRemainder = capital - totalInvested;
     const trackingDrift = Math.abs((totalInvested - capital) / capital * 100).toFixed(2);
+    const efficiency = ((totalInvested / capital) * 100).toFixed(2);
 
     container.innerHTML = `
-        <div class="ft-table-wrap">
-            <table class="ft-table">
-                <thead>
-                    <tr>
-                        <th>Asset / NSE Ticker</th>
-                        <th class="num">LTP (₹)</th>
-                        <th class="num">Target Wt</th>
-                        <th class="num">Units to Buy</th>
-                        <th class="num">Actual Capital</th>
-                        <th class="num">Variance</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${rows}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td><strong>Portfolio Execution Total</strong></td>
-                        <td class="num">—</td>
-                        <td class="num">100.0%</td>
-                        <td class="num">—</td>
-                        <td class="num text-navy"><strong>${fmtCurrencyExact(totalInvested)}</strong></td>
-                        <td class="num text-muted">Drift: ${trackingDrift}%</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--ft-paper-elevated); border: 1px solid var(--ft-border); padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 18px; font-size: 12.5px; flex-wrap: wrap; gap: 8px;">
-            <div>
-                <span class="text-muted">Uninvested Cash Remainder:</span>
-                <strong class="text-green" style="font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-left: 6px;">${fmtCurrencyExact(cashRemainder)}</strong>
+        <div class="execution-container">
+            <div class="exec-header">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px;">
+                    <h4>Demat Order Execution Ledger</h4>
+                    <span class="zero-drift-badge">Option D Whole-Share Engine</span>
+                </div>
+                <p>Integer share allocation calculated via live NSE prices. Zero fractional shares with explicit rupee cash remainder.</p>
             </div>
-            <div style="color: var(--ft-text-muted);">
-                <span>Execution Efficiency:</span>
-                <strong style="color: var(--ft-navy); font-family: 'JetBrains Mono', monospace;">${((totalInvested / capital) * 100).toFixed(2)}% Invested</strong>
-            </div>
-        </div>
 
-        <!-- Collapsible SLSQP Quant Solver Telemetry Drawer -->
-        <div class="quant-drawer">
-            <div class="quant-drawer-head" onclick="toggleQuantDrawer('${key}')">
-                <span>Quantitative Solver Telemetry &amp; Tail Risk (SLSQP)</span>
-                <span id="quant-drawer-toggle-${key}" style="color: var(--ft-navy); font-family: 'JetBrains Mono', monospace;">▼ EXPAND QUANT TELEMETRY</span>
+            <!-- Mobile-first Order Cards (< 768px) -->
+            <div class="exec-mobile-cards">
+                ${cardRows}
             </div>
-            <div class="quant-drawer-body" id="quant-drawer-body-${key}">
-                <div class="quant-telemetry-grid">
-                    <div class="quant-tele-box">
-                        <div class="quant-tele-label">Optimizer Engine</div>
-                        <div class="quant-tele-val">${p.solver}</div>
+
+            <!-- Desktop Institutional Ledger (>= 768px) -->
+            <div class="exec-desktop-table ft-table-wrap">
+                <table class="ft-table">
+                    <thead>
+                        <tr>
+                            <th>Asset / NSE Ticker</th>
+                            <th class="num">Live LTP</th>
+                            <th class="num">Target Wt</th>
+                            <th class="num">Units to Buy</th>
+                            <th class="num">Actual Capital</th>
+                            <th class="num">Variance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><strong>Portfolio Execution Total</strong></td>
+                            <td class="num">—</td>
+                            <td class="num">100.0%</td>
+                            <td class="num">—</td>
+                            <td class="num text-navy"><strong>${fmtCurrencyExact(totalInvested)}</strong></td>
+                            <td class="num text-muted">Drift: ${trackingDrift}%</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Capital Execution Summary & Broker Basket Action -->
+            <div class="exec-summary-card">
+                <div class="exec-summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-label">Total Capital</div>
+                        <div class="summary-val">${fmtCurrencyExact(capital)}</div>
                     </div>
-                    <div class="quant-tele-box">
-                        <div class="quant-tele-label">Convergence Status</div>
-                        <div class="quant-tele-val text-green">${p.iterations}</div>
+                    <div class="summary-item">
+                        <div class="summary-label">Capital Invested</div>
+                        <div class="summary-val text-navy">${fmtCurrencyExact(totalInvested)}</div>
                     </div>
-                    <div class="quant-tele-box">
-                        <div class="quant-tele-label">Covariance Regularization</div>
-                        <div class="quant-tele-val">${p.shrinkage}</div>
+                    <div class="summary-item">
+                        <div class="summary-label">Cash Remainder</div>
+                        <div class="summary-val text-green">${fmtCurrencyExact(cashRemainder)}</div>
                     </div>
-                    <div class="quant-tele-box">
-                        <div class="quant-tele-label">Conditional VaR (95% Daily)</div>
-                        <div class="quant-tele-val text-red">${(p.cvar95 * 100).toFixed(2)}% (Expected Shortfall)</div>
+                    <div class="summary-item">
+                        <div class="summary-label">Floor Efficiency</div>
+                        <div class="summary-val">${efficiency}%</div>
                     </div>
-                    <div class="quant-tele-box">
-                        <div class="quant-tele-label">Stress Scenario: COVID-19 Shock</div>
-                        <div class="quant-tele-val text-red">${p.stressCovid}</div>
-                    </div>
-                    <div class="quant-tele-box">
-                        <div class="quant-tele-label">Stress Scenario: 2022 Rate Hikes</div>
-                        <div class="quant-tele-val text-green">${p.stressFed}</div>
+                </div>
+                <div class="exec-summary-action">
+                    <button class="btn-copy-basket" onclick="copyOrderBasket('${key}')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Copy Demat Order Basket
+                    </button>
+                    <span id="copy-toast-${key}" class="copy-toast" style="display:none;">✓ Basket copied! Ready to paste into Zerodha Kite / Groww</span>
+                </div>
+            </div>
+
+            <!-- Collapsible SLSQP Quant Solver Telemetry Drawer -->
+            <div class="quant-drawer">
+                <div class="quant-drawer-head" onclick="toggleQuantDrawer('${key}')">
+                    <span>Quantitative Solver Telemetry &amp; Tail Risk (SLSQP)</span>
+                    <span id="quant-drawer-toggle-${key}" style="color: var(--ft-navy); font-family: 'JetBrains Mono', monospace;">▼ EXPAND QUANT TELEMETRY</span>
+                </div>
+                <div class="quant-drawer-body" id="quant-drawer-body-${key}">
+                    <div class="quant-telemetry-grid">
+                        <div class="quant-tele-box">
+                            <div class="quant-tele-label">Optimizer Engine</div>
+                            <div class="quant-tele-val">${p.solver}</div>
+                        </div>
+                        <div class="quant-tele-box">
+                            <div class="quant-tele-label">Convergence Status</div>
+                            <div class="quant-tele-val text-green">${p.iterations}</div>
+                        </div>
+                        <div class="quant-tele-box">
+                            <div class="quant-tele-label">Covariance Regularization</div>
+                            <div class="quant-tele-val">${p.shrinkage}</div>
+                        </div>
+                        <div class="quant-tele-box">
+                            <div class="quant-tele-label">Conditional VaR (95% Daily)</div>
+                            <div class="quant-tele-val text-red">${(p.cvar95 * 100).toFixed(2)}% (Expected Shortfall)</div>
+                        </div>
+                        <div class="quant-tele-box">
+                            <div class="quant-tele-label">Stress Scenario: COVID-19 Shock</div>
+                            <div class="quant-tele-val text-red">${p.stressCovid}</div>
+                        </div>
+                        <div class="quant-tele-box">
+                            <div class="quant-tele-label">Stress Scenario: 2022 Rate Hikes</div>
+                            <div class="quant-tele-val text-green">${p.stressFed}</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -482,15 +568,70 @@ function showGenerating(e) {
     }, 90000);
 }
 
+// ─── ORDER BASKET CLIPBOARD COPY ──────────────────────────
+function copyOrderBasket(key) {
+    const p = PORTFOLIOS[key];
+    const nonZero = p.allocations.filter(a => a.pct > 0);
+    let totalInvested = 0;
+
+    const lines = [
+        `ETF OPTIMA DEMAT ORDER BASKET · ${p.title.toUpperCase()}`,
+        `Total Capital: ₹${currentAmount.toLocaleString('en-IN')}`,
+        `Execution Date: ${new Date().toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}`,
+        `────────────────────────────────────────`
+    ];
+
+    nonZero.forEach((asset, idx) => {
+        const targetRupees = currentAmount * asset.pct;
+        const ltp = ETF_PRICES[asset.name] || 100.0;
+        const units = Math.floor(targetRupees / ltp);
+        const actualValue = units * ltp;
+        totalInvested += actualValue;
+        const cleanTicker = asset.ticker.replace('.NS', '');
+        lines.push(`${idx + 1}. BUY ${cleanTicker} (${asset.name}): ${units.toLocaleString('en-IN')} shares @ ₹${ltp.toFixed(2)} = ₹${actualValue.toLocaleString('en-IN')}`);
+    });
+
+    const cashRemainder = currentAmount - totalInvested;
+    lines.push(`────────────────────────────────────────`);
+    lines.push(`Capital Invested: ₹${totalInvested.toLocaleString('en-IN')} (${((totalInvested / currentAmount) * 100).toFixed(2)}%)`);
+    lines.push(`Uninvested Cash Left: ₹${cashRemainder.toFixed(2)}`);
+    lines.push(`Ready for execution in Zerodha Kite / Groww / Upstox.`);
+
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
+        const toast = document.getElementById(`copy-toast-${key}`);
+        if (toast) {
+            toast.style.display = 'inline-block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3500);
+        }
+    }).catch(err => {
+        console.error('Clipboard copy failed:', err);
+        alert(lines.join('\n'));
+    });
+}
+
 // ─── INITIALIZATION ──────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     renderCalculator();
 
     const input = document.getElementById('invest-amount');
+    const slider = document.getElementById('invest-slider');
+
     if (input) {
         input.addEventListener('input', () => {
             const val = parseFloat(input.value);
-            if (val > 0) renderCalculator();
+            if (val > 0) {
+                if (slider) slider.value = Math.min(Math.max(val, 10000), 1000000);
+                renderCalculator();
+            }
+        });
+    }
+
+    if (slider) {
+        slider.addEventListener('input', () => {
+            const val = parseFloat(slider.value);
+            if (input) input.value = val;
+            currentAmount = val;
+            renderCalculator();
         });
     }
 
@@ -503,6 +644,7 @@ window.switchTab         = switchTab;
 window.toggleQuantDrawer = toggleQuantDrawer;
 window.showGenerating    = showGenerating;
 window.loadLivePrices    = loadLivePrices;
+window.copyOrderBasket   = copyOrderBasket;
 
 function downloadExcel(e) {
     if (e) e.preventDefault();
