@@ -88,17 +88,17 @@ const PORTFOLIOS = {
 
 // ─── LIVE & REFERENCE LTP PRICES (NSE) ────────────────────
 const ETF_PRICES = {
-    'GoldBees': 64.20,
-    'Mid150Bees': 22.80,
-    'Nasdaq100': 168.50,
-    'JuniorBees': 712.40,
-    'NiftyBees': 268.10,
-    'BankBees': 54.20,
-    'SilverBees': 92.40,
-    'GSec10Yr': 104.50,
+    'GoldBees': 108.26,
+    'Mid150Bees': 23.50,
+    'Nasdaq100': 295.87,
+    'JuniorBees': 776.00,
+    'NiftyBees': 287.00,
+    'BankBees': 640.20,
+    'SilverBees': 155.94,
+    'GSec10Yr': 104.80,
     'LiquidBees': 1000.00,
-    'ITBees': 44.50,
-    'PharmaBees': 22.80
+    'ITBees': 34.80,
+    'PharmaBees': 29.10
 };
 
 let currentTab = 'maxsharpe';
@@ -254,7 +254,8 @@ function renderOptionDExecutionTable(key, capital) {
     // Desktop Table Rows
     const tableRows = nonZero.map(asset => {
         const targetRupees = capital * asset.pct;
-        const ltp = ETF_PRICES[asset.name] || 100.0;
+        const cleanTicker = (asset.ticker || '').toUpperCase().replace('.NS', '');
+        const ltp = ETF_PRICES[asset.name] || ETF_PRICES[cleanTicker] || ETF_PRICES[asset.ticker] || 100.0;
         const units = Math.floor(targetRupees / ltp);
         const actualValue = units * ltp;
         const diff = actualValue - targetRupees;
@@ -262,7 +263,6 @@ function renderOptionDExecutionTable(key, capital) {
 
         const diffCls = diff >= 0 ? 'text-green' : 'text-muted';
         const diffSign = diff >= 0 ? '+' : '';
-        const cleanTicker = asset.ticker.replace('.NS', '');
 
         return `
             <tr>
@@ -285,14 +285,14 @@ function renderOptionDExecutionTable(key, capital) {
     // Mobile Order Cards (Recalculate accurately without double counting totalInvested)
     const cardRows = nonZero.map(asset => {
         const targetRupees = capital * asset.pct;
-        const ltp = ETF_PRICES[asset.name] || 100.0;
+        const cleanTicker = (asset.ticker || '').toUpperCase().replace('.NS', '');
+        const ltp = ETF_PRICES[asset.name] || ETF_PRICES[cleanTicker] || ETF_PRICES[asset.ticker] || 100.0;
         const units = Math.floor(targetRupees / ltp);
         const actualValue = units * ltp;
         const diff = actualValue - targetRupees;
 
         const diffCls = diff >= 0 ? 'text-green' : 'text-muted';
         const diffSign = diff >= 0 ? '+' : '';
-        const cleanTicker = asset.ticker.replace('.NS', '');
 
         return `
             <div class="exec-card">
@@ -516,9 +516,30 @@ async function loadLivePrices() {
 
         grid.innerHTML = '';
 
+        const TICKER_TO_KEY = {
+            'GOLDBEES': 'GoldBees',
+            'MON100': 'Nasdaq100',
+            'NIFTYBEES': 'NiftyBees',
+            'JUNIORBEES': 'JuniorBees',
+            'BANKBEES': 'BankBees',
+            'MID150BEES': 'Mid150Bees',
+            'SILVERBEES': 'SilverBees',
+            'SETF10GILT': 'GSec10Yr',
+            'GSEC10IETF': 'GSec10Yr',
+            'LIQUIDBEES': 'LiquidBees',
+            'ITBEES': 'ITBees',
+            'PHARMABEES': 'PharmaBees'
+        };
+
         prices.forEach(item => {
-            if (item.price && item.name) {
-                ETF_PRICES[item.name] = Number(item.price);
+            if (item.price) {
+                const num = Number(item.price);
+                const cleanTicker = (item.ticker || '').toUpperCase().replace('.NS', '');
+                const mappedKey = TICKER_TO_KEY[cleanTicker];
+                if (mappedKey) ETF_PRICES[mappedKey] = num;
+                if (item.ticker) ETF_PRICES[item.ticker] = num;
+                if (item.name) ETF_PRICES[item.name] = num;
+                ETF_PRICES[`${cleanTicker}.NS`] = num;
             }
             const isUp   = item.pct_change > 0;
             const isDown = item.pct_change < 0;
@@ -591,11 +612,11 @@ function copyOrderBasket(key) {
 
     nonZero.forEach((asset, idx) => {
         const targetRupees = currentAmount * asset.pct;
-        const ltp = ETF_PRICES[asset.name] || 100.0;
+        const cleanTicker = (asset.ticker || '').toUpperCase().replace('.NS', '');
+        const ltp = ETF_PRICES[asset.name] || ETF_PRICES[cleanTicker] || ETF_PRICES[asset.ticker] || 100.0;
         const units = Math.floor(targetRupees / ltp);
         const actualValue = units * ltp;
         totalInvested += actualValue;
-        const cleanTicker = asset.ticker.replace('.NS', '');
         lines.push(`${idx + 1}. BUY ${cleanTicker} (${asset.name}): ${units.toLocaleString('en-IN')} shares @ ₹${ltp.toFixed(2)} = ₹${actualValue.toLocaleString('en-IN')}`);
     });
 
