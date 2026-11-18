@@ -115,6 +115,18 @@ function compoundGrow(principal, rate, years) {
     return principal * Math.pow(1 + rate, years);
 }
 
+function formatIndianWords(num) {
+    if (isNaN(num) || num <= 0) return 'Enter an investment amount';
+    if (num >= 10000000) return `₹ ${(num/10000000).toFixed(2)} Crore Rupees`;
+    if (num >= 100000) {
+        const lakhs = (num / 100000);
+        const lText = lakhs === 1 ? 'One Lakh' : `${lakhs.toLocaleString('en-IN', {maximumFractionDigits:2})} Lakh`;
+        return `₹ ${num.toLocaleString('en-IN')} · ${lText} Rupees`;
+    }
+    if (num >= 1000) return `₹ ${num.toLocaleString('en-IN')} · ${(num/1000).toFixed(0)} Thousand Rupees`;
+    return `₹ ${num.toLocaleString('en-IN')} Rupees`;
+}
+
 // ─── TAB & AMOUNT CONTROLLERS ─────────────────────────────
 function setAmount(val) {
     const input = document.getElementById('invest-amount');
@@ -152,6 +164,9 @@ function renderCalculator() {
     const input = document.getElementById('invest-amount');
     const amount = parseFloat(input ? input.value : 0) || 100000;
     currentAmount = amount;
+
+    const wordsEl = document.getElementById('amount-in-words');
+    if (wordsEl) wordsEl.textContent = formatIndianWords(amount);
 
     Object.keys(PORTFOLIOS).forEach(key => {
         renderKpiCards(key);
