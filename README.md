@@ -18,13 +18,13 @@
 
 Unlike generic robo-advisors that output theoretical fractional percentages or generic "AI-slop" card decks, ETF Optima combines:
 1. **Financial Times Editorial Design System:** Bespoke newsprint aesthetic (`#FFF1E5`), Oxford Navy typography (`#0C2340`), Claret drawdown accents (`#990F3D`), and monospaced tabular numerals (`JetBrains Mono`).
-2. **Option D Execution Depth:** Instant integer whole-share calculation ($\lfloor \text{Allocation} / \text{LTP} \rfloor$), rupee cash remainders, allocation drift tracking, and single-click broker order slips.
+2.**Execution Depth:** Instant integer whole-share calculation ($\lfloor \text{Allocation} / \text{LTP} \rfloor$), rupee cash remainders, allocation drift tracking, and single-click broker order slips.
 3. **Institutional Quantitative Telemetry:** Ledoit-Wolf analytical covariance shrinkage, SLSQP quadratic optimization, CVaR 95% tail-risk, Sortino, Calmar, and historical stress testing (COVID-19 2020 crash, 2022 Fed rate tightening).
 4. **Neon Serverless PostgreSQL:** Multi-tenant relational schema with Row-Level Security (RLS), connection pooling via `@neondatabase/serverless` over stateless HTTP pipelining, and sub-10ms query execution.
 
 ---
 
-## 🏗️ End-to-End System Architecture
+## End-to-End System Architecture
 
 ```mermaid
 flowchart TD
